@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 
+#include "linkerconfig/configwriter.h"
 #include "modules_testbase.h"
 
 constexpr const char* kExpectedSimpleNamespaceConfig =
@@ -57,21 +58,27 @@ namespace.test_namespace.link.target_namespace2.allow_all_shared_libs = true
 )";
 
 TEST(linkerconfig_namespace, simple_namespace) {
+  android::linkerconfig::modules::ConfigWriter writer;
   auto ns = std::make_shared<android::linkerconfig::modules::Namespace>(
       "test_namespace");
+
   DecorateNamespaceWithPaths(ns);
-  auto config = ns->GenerateConfig();
+  ns->WriteConfig(writer);
+  auto config = writer.ToString();
 
   ASSERT_EQ(config, kExpectedSimpleNamespaceConfig);
 }
 
 TEST(linkerconfig_namespace, namespace_with_links) {
+  android::linkerconfig::modules::ConfigWriter writer;
   auto ns = std::make_shared<android::linkerconfig::modules::Namespace>(
       "test_namespace", /*is_isolated*/ true,
       /*is_visible*/ true);
+
   DecorateNamespaceWithPaths(ns);
   DecorateNamespaceWithLinks(ns, "target_namespace1", "target_namespace2");
-  auto config = ns->GenerateConfig();
+  ns->WriteConfig(writer);
+  auto config = writer.ToString();
 
   ASSERT_EQ(config, kExpectedNamespaceWithLinkConfig);
 }

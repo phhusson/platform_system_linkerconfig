@@ -19,7 +19,8 @@
 #include <utility>
 #include <vector>
 
-#include <android-base/logging.h>
+#include "linkerconfig/configwriter.h"
+#include "linkerconfig/log.h"
 
 #define LOG_TAG "linkerconfig"
 
@@ -36,7 +37,7 @@ class Link {
   }
   template <typename T, typename... Args>
   void AddSharedLib(T&& lib_name, Args&&... lib_names);
-  std::string GenerateConfig();
+  void WriteConfig(ConfigWriter& writer);
 
  private:
   const std::string origin_namespace_;
