@@ -16,7 +16,7 @@
 
 #include "linkerconfig/namespace.h"
 
-#include <android-base/logging.h>
+#include "linkerconfig/log.h"
 
 #define LOG_TAG "linkerconfig"
 
@@ -26,17 +26,15 @@ namespace modules {
 
 constexpr const char* kDataAsanPath = "/data/asan";
 
-std::string Namespace::GetPathString(const std::string& path_type,
-                                     const std::vector<std::string>& path_list) {
-  std::string prefix = "namespace." + name_ + "." + path_type + ".paths ";
-  std::string path_string = "";
+void Namespace::WritePathString(ConfigWriter& writer,
+                                const std::string& path_type,
+                                const std::vector<std::string>& path_list) {
+  std::string prefix = path_type + ".paths ";
   bool is_first = true;
   for (auto& path : path_list) {
-    path_string += prefix + (is_first ? "= " : "+= ") + path + "\n";
+    writer.WriteLine(prefix + (is_first ? "= " : "+= ") + path);
     is_first = false;
   }
-
-  return path_string;
 }
 
 std::shared_ptr<Link> Namespace::CreateLink(const std::string& target_namespace,
@@ -53,41 +51,40 @@ std::shared_ptr<Link> Namespace::CreateLink(const std::string& target_namespace,
   return new_link;
 }
 
-std::string Namespace::GenerateConfig() {
-  std::string config = "";
-  std::string prefix = "namespace." + name_ + ".";
+void Namespace::WriteConfig(ConfigWriter& writer) {
+  writer.SetPrefix("namespace." + name_ + ".");
 
-  config += prefix + "isolated = " + (is_isolated_ ? "true" : "false") + "\n";
+  writer.WriteLine("isolated = %s", is_isolated_ ? "true" : "false");
 
   if (is_visible_) {
-    config += prefix + "visible = true\n";
+    writer.WriteLine("visible = true");
   }
 
-  config += GetPathString("search", search_paths_);
-  config += GetPathString("permitted", permitted_paths_);
-  config += GetPathString("asan.search", asan_search_paths_);
-  config += GetPathString("asan.permitted", asan_permitted_paths_);
+  WritePathString(writer, "search", search_paths_);
+  WritePathString(writer, "permitted", permitted_paths_);
+  WritePathString(writer, "asan.search", asan_search_paths_);
+  WritePathString(writer, "asan.permitted", asan_permitted_paths_);
 
   if (!links_.empty()) {
-    config += prefix + "links = ";
+    std::string link_list = "";
 
     bool is_first = true;
     for (auto& link : links_) {
       if (!is_first) {
-        config += ",";
+        link_list += ",";
       }
-      config += link.first;
+      link_list += link.first;
       is_first = false;
     }
 
-    config += "\n";
+    writer.WriteLine("links = " + link_list);
 
     for (auto& link : links_) {
-      config += link.second->GenerateConfig();
+      link.second->WriteConfig(writer);
     }
   }
 
-  return config;
+  writer.ResetPrefix();
 }
 
 void Namespace::AddSearchPath(const std::string& path, bool in_asan,

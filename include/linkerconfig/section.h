@@ -21,7 +21,8 @@
 #include <utility>
 #include <vector>
 
-#include "namespace.h"
+#include "linkerconfig/configwriter.h"
+#include "linkerconfig/namespace.h"
 
 namespace android {
 namespace linkerconfig {
@@ -35,8 +36,8 @@ class Section {
   std::shared_ptr<Namespace> CreateNamespace(const std::string& namespace_name,
                                              bool is_isolated = false,
                                              bool is_visible = false);
-  std::string GenerateConfig();
-  std::string GenerateBinaryPaths();
+  void WriteConfig(ConfigWriter& writer);
+  void WriteBinaryPaths(ConfigWriter& writer);
   std::string GetName();
 
  private:

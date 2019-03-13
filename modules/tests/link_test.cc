@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 
+#include "linkerconfig/configwriter.h"
 #include "linkerconfig/link.h"
 
 constexpr const char* kSharedLibsExpectedResult =
@@ -25,18 +26,27 @@ namespace.originalNamespace.link.targetNamespace.shared_libs += lib3.so
 )";
 
 TEST(linkerconfig_link, link_with_all_shared_libs) {
+  android::linkerconfig::modules::ConfigWriter writer;
+
   auto link = std::make_shared<android::linkerconfig::modules::Link>(
       "originalNamespace", "targetNamespace", true);
-  auto config_text = link->GenerateConfig();
+
+  link->WriteConfig(writer);
+  auto config_text = writer.ToString();
+
   ASSERT_EQ(config_text,
             "namespace.originalNamespace.link.targetNamespace.allow_all_shared_"
             "libs = true\n");
 }
 
 TEST(linkerconfig_link, link_with_shared_libs) {
+  android::linkerconfig::modules::ConfigWriter writer;
   auto link = std::make_shared<android::linkerconfig::modules::Link>(
       "originalNamespace", "targetNamespace");
   link->AddSharedLib("lib1.so", "lib2.so", "lib3.so");
-  auto config_text = link->GenerateConfig();
+
+  link->WriteConfig(writer);
+  auto config_text = writer.ToString();
+
   ASSERT_EQ(config_text, kSharedLibsExpectedResult);
 }
