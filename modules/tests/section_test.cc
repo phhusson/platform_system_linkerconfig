@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 
+#include "linkerconfig/configwriter.h"
 #include "linkerconfig/section.h"
 #include "modules_testbase.h"
 
@@ -96,7 +97,9 @@ constexpr const char* kSectionBinaryPathExpectedResult =
 dir.test_section = binary_path2
 dir.test_section = binary_path3
 )";
+
 TEST(linkerconfig_section, section_with_namespaces) {
+  android::linkerconfig::modules::ConfigWriter writer;
   android::linkerconfig::modules::Section section("test_section");
 
   auto default_namespace = section.CreateNamespace(
@@ -111,23 +114,28 @@ TEST(linkerconfig_section, section_with_namespaces) {
   auto namespace2 = section.CreateNamespace("namespace2");
   DecorateNamespaceWithPaths(namespace2);
 
-  auto config = section.GenerateConfig();
+  section.WriteConfig(writer);
+  auto config = writer.ToString();
   ASSERT_EQ(config, kSectionWithNamespacesExpectedResult);
 }
 
 TEST(linkerconfig_section, section_with_one_namespace) {
+  android::linkerconfig::modules::ConfigWriter writer;
   android::linkerconfig::modules::Section section("test_section");
   auto ns = section.CreateNamespace("default");
   DecorateNamespaceWithPaths(ns);
 
-  auto config = section.GenerateConfig();
+  section.WriteConfig(writer);
+  auto config = writer.ToString();
   ASSERT_EQ(config, kSectionWithOneNamespaceExpectedResult);
 }
 
 TEST(linkerconfig_section, binary_paths) {
+  android::linkerconfig::modules::ConfigWriter writer;
   android::linkerconfig::modules::Section section("test_section");
   section.AddBinaryPath("binary_path1", "binary_path2", "binary_path3");
 
-  auto binary_paths = section.GenerateBinaryPaths();
+  section.WriteBinaryPaths(writer);
+  auto binary_paths = writer.ToString();
   ASSERT_EQ(binary_paths, kSectionBinaryPathExpectedResult);
 }

@@ -19,7 +19,8 @@
 #include <string>
 #include <vector>
 
-#include "link.h"
+#include "linkerconfig/configwriter.h"
+#include "linkerconfig/link.h"
 
 namespace android {
 namespace linkerconfig {
@@ -71,7 +72,7 @@ class Namespace {
                         bool with_data_asan = true);
   std::shared_ptr<Link> CreateLink(const std::string& target_namespace,
                                    bool allow_all_shared_libs = false);
-  std::string GenerateConfig();
+  void WriteConfig(ConfigWriter& writer);
 
  private:
   const bool is_isolated_;
@@ -82,8 +83,8 @@ class Namespace {
   std::vector<std::string> asan_search_paths_;
   std::vector<std::string> asan_permitted_paths_;
   std::map<std::string, std::shared_ptr<Link>> links_;
-  std::string GetPathString(const std::string& path_type,
-                            const std::vector<std::string>& path_list);
+  void WritePathString(ConfigWriter& writer, const std::string& path_type,
+                       const std::vector<std::string>& path_list);
 };
 }  // namespace modules
 }  // namespace linkerconfig
