@@ -16,7 +16,7 @@
 
 #include "linkerconfig/section.h"
 
-#include <android-base/logging.h>
+#include "linkerconfig/log.h"
 
 #define LOG_TAG "linkerconfig"
 
@@ -37,8 +37,8 @@ std::shared_ptr<Namespace> Section::CreateNamespace(
   return new_namespace;
 }
 
-std::string Section::GenerateConfig() {
-  std::string config = "[" + name_ + "]\n";
+void Section::WriteConfig(ConfigWriter& writer) {
+  writer.WriteLine("[%s]", name_.c_str());
 
   std::string additional_namespaces = "";
 
@@ -55,25 +55,22 @@ std::string Section::GenerateConfig() {
   }
 
   if (!is_first) {
-    config += "additional.namespaces = " + additional_namespaces + "\n";
+    writer.WriteLine("additional.namespaces = " + additional_namespaces);
   }
 
   for (auto& ns : namespaces_) {
-    config += ns.second->GenerateConfig();
+    ns.second->WriteConfig(writer);
   }
-
-  return config;
 }
 
-std::string Section::GenerateBinaryPaths() {
-  std::string binary_path = "";
-  std::string prefix = "dir." + name_ + " = ";
+void Section::WriteBinaryPaths(ConfigWriter& writer) {
+  writer.SetPrefix("dir." + name_ + " = ");
 
   for (auto& path : binary_paths_) {
-    binary_path += prefix + path + "\n";
+    writer.WriteLine(path);
   }
 
-  return binary_path;
+  writer.ResetPrefix();
 }
 
 std::string Section::GetName() {

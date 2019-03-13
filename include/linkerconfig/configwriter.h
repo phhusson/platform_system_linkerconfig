@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
 
-#include "linkerconfig/link.h"
+#include <sstream>
+#include <string>
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
-void Link::WriteConfig(ConfigWriter& writer) {
-  writer.SetPrefix("namespace." + origin_namespace_ + ".link." +
-                   target_namespace_);
-  if (allow_all_shared_libs_) {
-    writer.WriteLine(".allow_all_shared_libs = true");
-  } else {
-    bool is_first = true;
 
-    for (auto& lib_name : shared_libs_) {
-      writer.WriteLine(".shared_libs %s %s",
-                       is_first ? "=" : "+=", lib_name.c_str());
-      is_first = false;
-    }
-  }
-  writer.ResetPrefix();
-}
+class ConfigWriter {
+ public:
+  void SetPrefix(const std::string& prefix);
+  void ResetPrefix();
+  void WriteLine(const std::string& line);
+  void WriteLine(const char* format, ...);
+  std::string ToString();
+
+ private:
+  std::stringstream content_;
+  std::string prefix_;
+
+  std::string ResolveVariables(const std::string& str);
+};
+
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
