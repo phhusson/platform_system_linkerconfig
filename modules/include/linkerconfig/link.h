@@ -22,8 +22,6 @@
 #include "linkerconfig/configwriter.h"
 #include "linkerconfig/log.h"
 
-#define LOG_TAG "linkerconfig"
-
 namespace android {
 namespace linkerconfig {
 namespace modules {
@@ -37,6 +35,7 @@ class Link {
   }
   template <typename T, typename... Args>
   void AddSharedLib(T&& lib_name, Args&&... lib_names);
+  void AddSharedLib(std::vector<std::string> lib_names);
   void WriteConfig(ConfigWriter& writer);
 
  private:
