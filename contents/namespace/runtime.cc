@@ -14,31 +14,24 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/link.h"
+#include "linkerconfig/namespacebuilder.h"
+
+using android::linkerconfig::modules::CreateNamespace;
+using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
-namespace modules {
-void Link::WriteConfig(ConfigWriter& writer) {
-  writer.SetPrefix("namespace." + origin_namespace_ + ".link." +
-                   target_namespace_);
-  if (allow_all_shared_libs_) {
-    writer.WriteLine(".allow_all_shared_libs = true");
-  } else {
-    bool is_first = true;
+namespace contents {
+std::shared_ptr<Namespace> BuildRuntimeNamespace([
+    [maybe_unused]] const Context& ctx) {
+  auto ns = CreateNamespace("runtime", true, !ctx.IsVendorSection());
+  ns->AddSearchPath("/apex/com.android.runtime/${LIB}", true, false);
+  // TODO(b/119867084): Restrict to Bionic dlopen dependencies and PALette
+  // library when it exists.
+  ns->CreateLink(ctx.IsVendorSection() ? "system" : "default", true);
 
-    for (auto& lib_name : shared_libs_) {
-      writer.WriteLine(".shared_libs %s %s",
-                       is_first ? "=" : "+=", lib_name.c_str());
-      is_first = false;
-    }
-  }
-  writer.ResetPrefix();
+  return ns;
 }
-
-void Link::AddSharedLib(std::vector<std::string> lib_names) {
-  shared_libs_.insert(shared_libs_.end(), lib_names.begin(), lib_names.end());
-}
-}  // namespace modules
+}  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

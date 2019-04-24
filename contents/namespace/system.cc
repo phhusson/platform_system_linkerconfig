@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/link.h"
+#include "linkerconfig/namespacebuilder.h"
+
+using android::linkerconfig::modules::CreateNamespace;
+using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
-namespace modules {
-void Link::WriteConfig(ConfigWriter& writer) {
-  writer.SetPrefix("namespace." + origin_namespace_ + ".link." +
-                   target_namespace_);
-  if (allow_all_shared_libs_) {
-    writer.WriteLine(".allow_all_shared_libs = true");
-  } else {
-    bool is_first = true;
+namespace contents {
+std::shared_ptr<Namespace> BuildSystemNamespace([
+    [maybe_unused]] const Context& ctx) {
+  auto ns = CreateNamespace("system", false, false);
+  ns->AddSearchPath("/system/${LIB}", true, true);
+  ns->AddSearchPath("/@{PRODUCT:product}/${LIB}", true, true);
+  ns->AddSearchPath("/@{PRODUCT_SERVICES}/${LIB}", true, true);
 
-    for (auto& lib_name : shared_libs_) {
-      writer.WriteLine(".shared_libs %s %s",
-                       is_first ? "=" : "+=", lib_name.c_str());
-      is_first = false;
-    }
-  }
-  writer.ResetPrefix();
-}
+  ns->CreateLink("runtime")->AddSharedLib(
+      {"libdexfile_external.so", "libnativebridge.so", "libnativehelper.so",
+       "libnativeloader.so", "libandroidicu.so"});
 
-void Link::AddSharedLib(std::vector<std::string> lib_names) {
-  shared_libs_.insert(shared_libs_.end(), lib_names.begin(), lib_names.end());
+  return ns;
 }
-}  // namespace modules
+}  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
