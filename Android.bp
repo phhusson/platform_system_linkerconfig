@@ -25,19 +25,29 @@ cc_defaults {
         "libbase",
         "liblog",
     ],
-    header_libs: ["linkerconfig_headers"],
-}
-
-cc_library_headers {
-    name: "linkerconfig_headers",
-    export_include_dirs: ["include"],
 }
 
 cc_library_static {
     name: "linkerconfig_modules",
     defaults: [ "linkerconfig_defaults" ],
+    export_include_dirs: [ "modules/include" ],
     srcs: [
         "modules/*.cc",
+    ],
+}
+
+cc_library_static {
+    name: "linkerconfig_contents",
+    defaults: [ "linkerconfig_defaults" ],
+    export_include_dirs: [ "contents/include" ],
+    static_libs: [
+        "linkerconfig_modules",
+    ],
+    srcs: [
+        "contents/namespace/*.cc",
+        "contents/section/*.cc",
+        "contents/configuration/*.cc",
+        "contents/context/*.cc",
     ],
 }
 
@@ -49,6 +59,23 @@ cc_test {
     ],
     static_libs: [
         "linkerconfig_modules",
+    ],
+    cflags: [
+        "-g",
+        "-Wunused",
+    ],
+    test_suites: ["general-tests"],
+}
+
+cc_test {
+    name: "linkerconfig_backward_compatibility_test",
+    defaults: [ "linkerconfig_defaults" ],
+    srcs: [
+        "contents/tests/backward_compatibility/*_test.cc",
+    ],
+    static_libs: [
+        "linkerconfig_modules",
+        "linkerconfig_contents",
     ],
     cflags: [
         "-g",

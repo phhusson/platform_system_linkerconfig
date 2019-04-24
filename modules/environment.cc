@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/link.h"
+#include "linkerconfig/environment.h"
+
+#include "linkerconfig/variables.h"
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
-void Link::WriteConfig(ConfigWriter& writer) {
-  writer.SetPrefix("namespace." + origin_namespace_ + ".link." +
-                   target_namespace_);
-  if (allow_all_shared_libs_) {
-    writer.WriteLine(".allow_all_shared_libs = true");
-  } else {
-    bool is_first = true;
+bool IsLegacyDevice() {
+  // TODO : Implement
+  auto legacy_device = Variables::GetValue("is_legacy").value_or("false");
 
-    for (auto& lib_name : shared_libs_) {
-      writer.WriteLine(".shared_libs %s %s",
-                       is_first ? "=" : "+=", lib_name.c_str());
-      is_first = false;
-    }
-  }
-  writer.ResetPrefix();
+  return legacy_device == "true";
 }
 
-void Link::AddSharedLib(std::vector<std::string> lib_names) {
-  shared_libs_.insert(shared_libs_.end(), lib_names.begin(), lib_names.end());
+bool IsVndkInSystemNamespace() {
+  // TODO : Implement
+  return true;
+}
+
+std::string GetVendorVndkVersion() {
+  return Variables::GetValue("ro.vndk.version").value_or("");
 }
 }  // namespace modules
 }  // namespace linkerconfig
