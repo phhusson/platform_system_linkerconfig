@@ -19,21 +19,29 @@
 
 #include "linkerconfig/namespace.h"
 
-inline void DecorateNamespaceWithPaths(
-    std::shared_ptr<android::linkerconfig::modules::Namespace> ns) {
+using namespace android::linkerconfig::modules;
+
+inline std::shared_ptr<Namespace> CreateNamespaceWithPaths(std::string name,
+                                                           bool is_isolated,
+                                                           bool is_visible) {
+  auto ns = CreateNamespace(name, is_isolated, is_visible);
   ns->AddSearchPath("/search_path1");
   ns->AddSearchPath("/search_path2", true, false);
   ns->AddSearchPath("/search_path3", false, false);
   ns->AddPermittedPath("/permitted_path1");
   ns->AddPermittedPath("/permitted_path2", true, false);
   ns->AddPermittedPath("/permitted_path3", false, false);
+
+  return ns;
 }
 
-inline void DecorateNamespaceWithLinks(
-    std::shared_ptr<android::linkerconfig::modules::Namespace> ns,
-    std::string target_1, std::string target_2) {
+inline std::shared_ptr<Namespace> CreateNamespaceWithLinks(
+    std::string name, bool is_isolated, bool is_visible, std::string target_1,
+    std::string target_2) {
+  auto ns = CreateNamespaceWithPaths(name, is_isolated, is_visible);
   auto link = ns->CreateLink(target_1, false);
   link->AddSharedLib("lib1.so", "lib2.so", "lib3.so");
 
   ns->CreateLink(target_2, true);
+  return ns;
 }

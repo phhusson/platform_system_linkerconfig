@@ -27,32 +27,33 @@
 namespace android {
 namespace linkerconfig {
 namespace modules {
+
+using BinaryPathPriority = unsigned int;
+using BinaryPathMap = std::multimap<BinaryPathPriority, std::string>;
+using BinaryPathList = std::vector<std::pair<std::string, BinaryPathPriority>>;
+
+constexpr const static BinaryPathPriority kHighPriority = 20;
+constexpr const static BinaryPathPriority kDefaultPriority = 50;
+constexpr const static BinaryPathPriority kLowPriority = 80;
+
 class Section {
  public:
-  Section(const std::string& name) : name_(name) {
+  Section(const std::string& name, BinaryPathList binary_paths,
+          std::vector<std::shared_ptr<Namespace>> namespaces)
+      : name_(name), binary_paths_(binary_paths), namespaces_(namespaces) {
   }
-  template <typename T, typename... Args>
-  void AddBinaryPath(T&& binary_path, Args&&... binary_paths);
-  std::shared_ptr<Namespace> CreateNamespace(const std::string& namespace_name,
-                                             bool is_isolated = false,
-                                             bool is_visible = false);
   void WriteConfig(ConfigWriter& writer);
-  void WriteBinaryPaths(ConfigWriter& writer);
+  void CollectBinaryPaths(BinaryPathMap& binary_paths);
+
+  // For test usage
+  std::shared_ptr<Namespace> GetNamespace(const std::string& namespace_name);
   std::string GetName();
 
  private:
   const std::string name_;
-  std::vector<std::string> binary_paths_;
-  std::map<std::string, std::shared_ptr<Namespace>> namespaces_;
+  BinaryPathList binary_paths_;
+  std::vector<std::shared_ptr<Namespace>> namespaces_;
 };
-
-template <typename T, typename... Args>
-void Section::AddBinaryPath(T&& binary_path, Args&&... binary_paths) {
-  binary_paths_.push_back(std::forward<T>(binary_path));
-  if constexpr (sizeof...(Args) > 0) {
-    AddBinaryPath(std::forward<Args>(binary_paths)...);
-  }
-}
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android

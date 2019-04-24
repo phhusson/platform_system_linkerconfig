@@ -13,32 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
 
-#include "linkerconfig/link.h"
+#include <memory>
+#include <string>
+
+#include "linkerconfig/context.h"
+#include "linkerconfig/section.h"
+
+typedef std::shared_ptr<android::linkerconfig::modules::Section> SectionBuilder(
+    android::linkerconfig::contents::Context& ctx);
 
 namespace android {
 namespace linkerconfig {
-namespace modules {
-void Link::WriteConfig(ConfigWriter& writer) {
-  writer.SetPrefix("namespace." + origin_namespace_ + ".link." +
-                   target_namespace_);
-  if (allow_all_shared_libs_) {
-    writer.WriteLine(".allow_all_shared_libs = true");
-  } else {
-    bool is_first = true;
-
-    for (auto& lib_name : shared_libs_) {
-      writer.WriteLine(".shared_libs %s %s",
-                       is_first ? "=" : "+=", lib_name.c_str());
-      is_first = false;
-    }
-  }
-  writer.ResetPrefix();
-}
-
-void Link::AddSharedLib(std::vector<std::string> lib_names) {
-  shared_libs_.insert(shared_libs_.end(), lib_names.begin(), lib_names.end());
-}
-}  // namespace modules
+namespace contents {
+SectionBuilder BuildSystemSection;
+SectionBuilder BuildVendorSection;
+SectionBuilder BuildUnrestrictedSection;
+SectionBuilder BuildLegacySection;
+SectionBuilder BuildPostInstallSection;
+}  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
