@@ -13,32 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "linkerconfig/link.h"
+#pragma once
 
 namespace android {
 namespace linkerconfig {
-namespace modules {
-void Link::WriteConfig(ConfigWriter& writer) {
-  writer.SetPrefix("namespace." + origin_namespace_ + ".link." +
-                   target_namespace_);
-  if (allow_all_shared_libs_) {
-    writer.WriteLine(".allow_all_shared_libs = true");
-  } else {
-    bool is_first = true;
+namespace contents {
 
-    for (auto& lib_name : shared_libs_) {
-      writer.WriteLine(".shared_libs %s %s",
-                       is_first ? "=" : "+=", lib_name.c_str());
-      is_first = false;
-    }
+enum class SectionType {
+  System,
+  Vendor,
+  Other,
+};
+
+class Context {
+ public:
+  Context() : current_section(SectionType::System) {
   }
-  writer.ResetPrefix();
-}
+  bool IsSystemSection() const;
+  bool IsVendorSection() const;
 
-void Link::AddSharedLib(std::vector<std::string> lib_names) {
-  shared_libs_.insert(shared_libs_.end(), lib_names.begin(), lib_names.end());
-}
-}  // namespace modules
+  void SetCurrentSection(SectionType value);
+
+ private:
+  SectionType current_section;
+};
+}  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

@@ -57,12 +57,27 @@ namespace.test_namespace.link.target_namespace1.shared_libs += lib3.so
 namespace.test_namespace.link.target_namespace2.allow_all_shared_libs = true
 )";
 
+constexpr const char* kExpectedNamespaceWithWhitelisted =
+    R"(namespace.test_namespace.isolated = false
+namespace.test_namespace.search.paths = /search_path1
+namespace.test_namespace.search.paths += /search_path2
+namespace.test_namespace.search.paths += /search_path3
+namespace.test_namespace.permitted.paths = /permitted_path1
+namespace.test_namespace.permitted.paths += /permitted_path2
+namespace.test_namespace.permitted.paths += /permitted_path3
+namespace.test_namespace.asan.search.paths = /search_path1
+namespace.test_namespace.asan.search.paths += /data/asan/search_path1
+namespace.test_namespace.asan.search.paths += /search_path2
+namespace.test_namespace.asan.permitted.paths = /permitted_path1
+namespace.test_namespace.asan.permitted.paths += /data/asan/permitted_path1
+namespace.test_namespace.asan.permitted.paths += /permitted_path2
+namespace.test_namespace.whitelisted = whitelisted_path1
+namespace.test_namespace.whitelisted += whitelisted_path2
+)";
+
 TEST(linkerconfig_namespace, simple_namespace) {
   android::linkerconfig::modules::ConfigWriter writer;
-  auto ns = std::make_shared<android::linkerconfig::modules::Namespace>(
-      "test_namespace");
-
-  DecorateNamespaceWithPaths(ns);
+  auto ns = CreateNamespaceWithPaths("test_namespace", false, false);
   ns->WriteConfig(writer);
   auto config = writer.ToString();
 
@@ -71,14 +86,23 @@ TEST(linkerconfig_namespace, simple_namespace) {
 
 TEST(linkerconfig_namespace, namespace_with_links) {
   android::linkerconfig::modules::ConfigWriter writer;
-  auto ns = std::make_shared<android::linkerconfig::modules::Namespace>(
-      "test_namespace", /*is_isolated*/ true,
-      /*is_visible*/ true);
 
-  DecorateNamespaceWithPaths(ns);
-  DecorateNamespaceWithLinks(ns, "target_namespace1", "target_namespace2");
+  auto ns = CreateNamespaceWithLinks("test_namespace", true, true,
+                                     "target_namespace1", "target_namespace2");
   ns->WriteConfig(writer);
   auto config = writer.ToString();
 
   ASSERT_EQ(config, kExpectedNamespaceWithLinkConfig);
+}
+
+TEST(linkerconfig_namespace, namespace_with_whitelisted) {
+  android::linkerconfig::modules::ConfigWriter writer;
+  auto ns = CreateNamespaceWithPaths("test_namespace", false, false);
+  ns->AddWhitelisted("whitelisted_path1");
+  ns->AddWhitelisted("whitelisted_path2");
+  ns->WriteConfig(writer);
+
+  auto config = writer.ToString();
+
+  ASSERT_EQ(config, kExpectedNamespaceWithWhitelisted);
 }

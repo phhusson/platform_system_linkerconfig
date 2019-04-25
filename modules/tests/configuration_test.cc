@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <gtest/gtest.h>
+#include <vector>
 
-#include "linkerconfig/configwriter.h"
-#include "linkerconfig/section.h"
+#include "linkerconfig/configuration.h"
 #include "modules_testbase.h"
 
 using namespace android::linkerconfig::modules;
 
-constexpr const char* kSectionWithNamespacesExpectedResult =
-    R"([test_section]
+constexpr const char* kExpectedConfiguration =
+    R"(dir.system = /system/bin
+dir.system = /system/xbin
+dir.vendor = /odm/bin
+dir.vendor = /vendor/bin
+dir.vendor = /data/nativetest/odm
+dir.system = /product/bin
+[system]
 additional.namespaces = namespace1,namespace2
-namespace.default.isolated = true
-namespace.default.visible = true
+namespace.default.isolated = false
 namespace.default.search.paths = /search_path1
 namespace.default.search.paths += /search_path2
 namespace.default.search.paths += /search_path3
@@ -57,11 +61,6 @@ namespace.namespace1.asan.search.paths += /search_path2
 namespace.namespace1.asan.permitted.paths = /permitted_path1
 namespace.namespace1.asan.permitted.paths += /data/asan/permitted_path1
 namespace.namespace1.asan.permitted.paths += /permitted_path2
-namespace.namespace1.links = default,namespace2
-namespace.namespace1.link.default.shared_libs = lib1.so
-namespace.namespace1.link.default.shared_libs += lib2.so
-namespace.namespace1.link.default.shared_libs += lib3.so
-namespace.namespace1.link.namespace2.allow_all_shared_libs = true
 namespace.namespace2.isolated = false
 namespace.namespace2.search.paths = /search_path1
 namespace.namespace2.search.paths += /search_path2
@@ -75,10 +74,7 @@ namespace.namespace2.asan.search.paths += /search_path2
 namespace.namespace2.asan.permitted.paths = /permitted_path1
 namespace.namespace2.asan.permitted.paths += /data/asan/permitted_path1
 namespace.namespace2.asan.permitted.paths += /permitted_path2
-)";
-
-constexpr const char* kSectionWithOneNamespaceExpectedResult =
-    R"([test_section]
+[vendor]
 namespace.default.isolated = false
 namespace.default.search.paths = /search_path1
 namespace.default.search.paths += /search_path2
@@ -94,60 +90,38 @@ namespace.default.asan.permitted.paths += /data/asan/permitted_path1
 namespace.default.asan.permitted.paths += /permitted_path2
 )";
 
-constexpr const char* kSectionBinaryPathExpectedResult =
-    R"(dir.test_section = binary_path1
-dir.test_section = binary_path2
-dir.test_section = binary_path3
-)";
+TEST(linkerconfig_configuration, generate_configuration) {
+  std::vector<std::shared_ptr<Section>> sections;
 
-TEST(linkerconfig_section, section_with_namespaces) {
-  ConfigWriter writer;
+  std::vector<std::shared_ptr<Namespace>> system_namespaces;
+  BinaryPathList system_binary_path = {{"/system/bin", kDefaultPriority},
+                                       {"/system/xbin", kDefaultPriority},
+                                       {"/product/bin", kLowPriority + 10}};
 
-  std::vector<std::shared_ptr<Namespace>> namespaces;
+  system_namespaces.push_back(CreateNamespaceWithLinks(
+      "default", false, false, "namespace1", "namespace2"));
+  system_namespaces.push_back(
+      CreateNamespaceWithPaths("namespace1", false, false));
+  system_namespaces.push_back(
+      CreateNamespaceWithPaths("namespace2", false, false));
 
-  namespaces.push_back(CreateNamespaceWithLinks("default", true, true,
-                                                "namespace1", "namespace2"));
-  namespaces.push_back(CreateNamespaceWithLinks("namespace1", false, false,
-                                                "default", "namespace2"));
-  namespaces.push_back(CreateNamespaceWithPaths("namespace2", false, false));
+  sections.push_back(std::make_shared<Section>("system", system_binary_path,
+                                               system_namespaces));
 
-  BinaryPathList empty_list;
+  std::vector<std::shared_ptr<Namespace>> vendor_namespaces;
+  BinaryPathList vendor_binary_path = {{"/odm/bin", kLowPriority},
+                                       {"/vendor/bin", kLowPriority},
+                                       {"/data/nativetest/odm", kLowPriority}};
 
-  Section section("test_section", empty_list, namespaces);
+  vendor_namespaces.push_back(CreateNamespaceWithPaths("default", false, false));
 
-  section.WriteConfig(writer);
-  auto config = writer.ToString();
-  ASSERT_EQ(config, kSectionWithNamespacesExpectedResult);
-}
+  sections.push_back(std::make_shared<Section>("vendor", vendor_binary_path,
+                                               vendor_namespaces));
 
-TEST(linkerconfig_section, section_with_one_namespace) {
+  Configuration conf(sections);
+
   android::linkerconfig::modules::ConfigWriter writer;
+  conf.WriteConfig(writer);
 
-  std::vector<std::shared_ptr<Namespace>> namespaces;
-  namespaces.push_back(CreateNamespaceWithPaths("default", false, false));
-
-  BinaryPathList empty_list;
-
-  Section section("test_section", empty_list, namespaces);
-  section.WriteConfig(writer);
-  auto config = writer.ToString();
-  ASSERT_EQ(config, kSectionWithOneNamespaceExpectedResult);
-}
-
-TEST(linkerconfig_section, binary_paths) {
-  BinaryPathList binary_paths = {{"binary_path2", kLowPriority},
-                                 {"binary_path3", kLowPriority + 10},
-                                 {"binary_path1", kDefaultPriority}};
-  std::vector<std::shared_ptr<Namespace>> empty_namespace;
-  Section section("test_section", binary_paths, empty_namespace);
-
-  android::linkerconfig::modules::BinaryPathMap paths;
-  section.CollectBinaryPaths(paths);
-
-  std::string binary_path_output = "";
-  for (auto& item : paths) {
-    binary_path_output += item.second + "\n";
-  }
-
-  ASSERT_EQ(binary_path_output, kSectionBinaryPathExpectedResult);
+  ASSERT_EQ(writer.ToString(), kExpectedConfiguration);
 }
