@@ -15,8 +15,6 @@
  */
 #pragma once
 
-#include <memory>
-
 #include "linkerconfig/configuration.h"
 
 namespace android {

@@ -16,25 +16,26 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildVndkInSystemNamespace([
-    [maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("vndk_in_system", true, true);
+Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("vndk_in_system", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns->AddSearchPath("/system/${LIB}", true, true);
-  ns->AddSearchPath("/@{PRODUCT:product}/${LIB}", true, true);
-  ns->AddSearchPath("/@{PRODUCT_SERVICES:product_services}/${LIB}", true, true);
+  ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/@{PRODUCT_SERVICES:product_services}/${LIB}",
+                   /*also_in_asan=*/true, /*with_data_asan=*/true);
 
-  ns->AddWhitelisted("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
+  ns.AddWhitelisted("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
 
-  ns->CreateLink("system")->AddSharedLib(
+  ns.CreateLink("system").AddSharedLib(
       {"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
-  ns->CreateLink("vndk", true);
+  ns.CreateLink("vndk", true);
 
   return ns;
 }

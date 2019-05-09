@@ -35,20 +35,20 @@ const android::linkerconfig::modules::BinaryPathList kBinaryPath = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Section> BuildSystemSection(Context& ctx) {
+Section BuildSystemSection(Context& ctx) {
   ctx.SetCurrentSection(SectionType::System);
-  std::vector<std::shared_ptr<Namespace>> namespaces;
+  std::vector<Namespace> namespaces;
 
-  namespaces.push_back(BuildSystemDefaultNamespace(ctx));
-  namespaces.push_back(BuildRuntimeNamespace(ctx));
-  namespaces.push_back(BuildMediaNamespace(ctx));
-  namespaces.push_back(BuildConscryptNamespace(ctx));
-  namespaces.push_back(BuildResolvNamespace(ctx));
-  namespaces.push_back(BuildSphalNamespace(ctx));
-  namespaces.push_back(BuildRsNamespace(ctx));
-  namespaces.push_back(BuildVndkNamespace(ctx));
+  namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
+  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
+  namespaces.emplace_back(BuildMediaNamespace(ctx));
+  namespaces.emplace_back(BuildConscryptNamespace(ctx));
+  namespaces.emplace_back(BuildResolvNamespace(ctx));
+  namespaces.emplace_back(BuildSphalNamespace(ctx));
+  namespaces.emplace_back(BuildRsNamespace(ctx));
+  namespaces.emplace_back(BuildVndkNamespace(ctx));
 
-  return std::make_shared<Section>("system", kBinaryPath, namespaces);
+  return Section("system", kBinaryPath, std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig

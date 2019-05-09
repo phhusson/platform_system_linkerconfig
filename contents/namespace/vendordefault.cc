@@ -18,35 +18,38 @@
 
 #include "linkerconfig/environment.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::GetVendorVndkVersion;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildVendorDefaultNamespace([
-    [maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("default", true, true);
+Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns->AddSearchPath("/odm/${LIB}", true, true);
-  ns->AddSearchPath("/vendor/${LIB}", true, true);
+  ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
 
   if (GetVendorVndkVersion() == "27") {
-    ns->AddSearchPath("/vendor/${LIB}/hw", true, true);
-    ns->AddSearchPath("/vendor/${LIB}/egl", true, true);
+    ns.AddSearchPath("/vendor/${LIB}/hw", /*also_in_asan=*/true,
+                     /*with_data_asan=*/true);
+    ns.AddSearchPath("/vendor/${LIB}/egl", /*also_in_asan=*/true,
+                     /*with_data_asan=*/true);
   }
 
-  ns->AddPermittedPath("/odm", true, true);
-  ns->AddPermittedPath("/vendor", true, true);
-  ns->AddPermittedPath("/system/vendor", false, false);
+  ns.AddPermittedPath("/odm", /*also_in_asan=*/true, /*with_data_asan=*/true);
+  ns.AddPermittedPath("/vendor", /*also_in_asan=*/true, /*with_data_asan=*/true);
+  ns.AddPermittedPath("/system/vendor", /*also_in_asan=*/false,
+                      /*with_data_asan=*/false);
 
-  ns->CreateLink("system")->AddSharedLib("@{LLNDK_LIBRARIES}");
-  ns->CreateLink("vndk")->AddSharedLib(
+  ns.CreateLink("system").AddSharedLib("@{LLNDK_LIBRARIES}");
+  ns.CreateLink("vndk").AddSharedLib(
       {"@{VNDK_SAMEPROCESS_LIBRARIES", "@{VNDK_CORE_LIBRARIES}"});
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
-    ns->CreateLink("vndk_in_system")
-        ->AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
+    ns.CreateLink("vndk_in_system")
+        .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
   }
 
   return ns;

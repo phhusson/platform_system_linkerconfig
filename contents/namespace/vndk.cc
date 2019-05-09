@@ -18,47 +18,58 @@
 
 #include "linkerconfig/environment.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildVndkNamespace([
-    [maybe_unused]] const Context& ctx) {
+Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
   bool is_system_section = ctx.IsSystemSection();
-  auto ns = CreateNamespace("vndk", true, true);
+  Namespace ns("vndk", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns->AddSearchPath("/odm/${LIB}/vndk-sp", true, true);
-  ns->AddSearchPath("/vendor/${LIB}/vndk-sp", true, true);
-  ns->AddSearchPath("/system/${LIB}/vndk-sp@{VNDK_VER}", true, true);
+  ns.AddSearchPath("/odm/${LIB}/vndk-sp", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/vendor/${LIB}/vndk-sp", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/system/${LIB}/vndk-sp@{VNDK_VER}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
 
   if (!is_system_section) {
-    ns->AddSearchPath("/odm/${LIB}/vndk", true, true);
-    ns->AddSearchPath("/vendor/${LIB}/vndk", true, true);
-    ns->AddSearchPath("/system/${LIB}/vndk@{VNDK_VER}", true, true);
+    ns.AddSearchPath("/odm/${LIB}/vndk", /*also_in_asan=*/true,
+                     /*with_data_asan=*/true);
+    ns.AddSearchPath("/vendor/${LIB}/vndk", /*also_in_asan=*/true,
+                     /*with_data_asan=*/true);
+    ns.AddSearchPath("/system/${LIB}/vndk@{VNDK_VER}", /*also_in_asan=*/true,
+                     /*with_data_asan=*/true);
   }
 
   if (is_system_section) {
-    ns->AddPermittedPath("/odm/${LIB}/hw", true, true);
-    ns->AddPermittedPath("/odm/${LIB}/egl", true, true);
-    ns->AddPermittedPath("/vendor/${LIB}/hw", true, true);
-    ns->AddPermittedPath("/vendor/${LIB}/egl", true, true);
-    ns->AddPermittedPath("/system/vendor/${LIB}/hw", false, false);
-    ns->AddPermittedPath("/system/vendor/${LIB}/egl", false, false);
-    ns->AddPermittedPath("/system/${LIB}/vndk-sp@{VNDK_VER}/hw", true, true);
+    ns.AddPermittedPath("/odm/${LIB}/hw", /*also_in_asan=*/true,
+                        /*with_data_asan=*/true);
+    ns.AddPermittedPath("/odm/${LIB}/egl", /*also_in_asan=*/true,
+                        /*with_data_asan=*/true);
+    ns.AddPermittedPath("/vendor/${LIB}/hw", /*also_in_asan=*/true,
+                        /*with_data_asan=*/true);
+    ns.AddPermittedPath("/vendor/${LIB}/egl", /*also_in_asan=*/true,
+                        /*with_data_asan=*/true);
+    ns.AddPermittedPath("/system/vendor/${LIB}/hw", /*also_in_asan=*/false,
+                        /*with_data_asan=*/false);
+    ns.AddPermittedPath("/system/vendor/${LIB}/egl", /*also_in_asan=*/false,
+                        /*with_data_asan=*/false);
+    ns.AddPermittedPath("/system/${LIB}/vndk-sp@{VNDK_VER}/hw",
+                        /*also_in_asan=*/true, /*with_data_asan=*/true);
   }
 
-  ns->CreateLink(is_system_section ? "default" : "system")
-      ->AddSharedLib({"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
+  ns.CreateLink(is_system_section ? "default" : "system")
+      .AddSharedLib({"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
   if (is_system_section) {
-    ns->CreateLink("sphal", true);
+    ns.CreateLink("sphal", true);
   } else {
-    ns->CreateLink("default", true);
+    ns.CreateLink("default", true);
 
     if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
-      ns->CreateLink("vndk_in_system")
-          ->AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES");
+      ns.CreateLink("vndk_in_system")
+          .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES");
     }
   }
 
