@@ -33,17 +33,17 @@ const android::linkerconfig::modules::BinaryPathList kBinaryPath = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Section> BuildUnrestrictedSection(Context& ctx) {
+Section BuildUnrestrictedSection(Context& ctx) {
   ctx.SetCurrentSection(SectionType::Other);
-  std::vector<std::shared_ptr<Namespace>> namespaces;
+  std::vector<Namespace> namespaces;
 
-  namespaces.push_back(BuildUnrestrictedDefaultNamespace(ctx));
-  namespaces.push_back(BuildRuntimeNamespace(ctx));
-  namespaces.push_back(BuildMediaNamespace(ctx));
-  namespaces.push_back(BuildConscryptNamespace(ctx));
-  namespaces.push_back(BuildResolvNamespace(ctx));
+  namespaces.emplace_back(BuildUnrestrictedDefaultNamespace(ctx));
+  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
+  namespaces.emplace_back(BuildMediaNamespace(ctx));
+  namespaces.emplace_back(BuildConscryptNamespace(ctx));
+  namespaces.emplace_back(BuildResolvNamespace(ctx));
 
-  return std::make_shared<Section>("unrestricted", kBinaryPath, namespaces);
+  return Section("unrestricted", kBinaryPath, std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig

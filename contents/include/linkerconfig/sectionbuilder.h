@@ -15,13 +15,10 @@
  */
 #pragma once
 
-#include <memory>
-#include <string>
-
 #include "linkerconfig/context.h"
 #include "linkerconfig/section.h"
 
-typedef std::shared_ptr<android::linkerconfig::modules::Section> SectionBuilder(
+typedef android::linkerconfig::modules::Section SectionBuilder(
     android::linkerconfig::contents::Context& ctx);
 
 namespace android {

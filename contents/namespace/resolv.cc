@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 const std::vector<std::string> kLibsFromDefault = {
@@ -32,12 +31,11 @@ const std::vector<std::string> kLibsFromUnrestrictedDefault = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildResolvNamespace([
-    [maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("resolv", true, true);
-  ns->AddSearchPath("/apex/com.android.resolv/${LIB}", true, false);
-  auto link_to_default = ns->CreateLink("default");
-  link_to_default->AddSharedLib(
+Namespace BuildResolvNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("resolv", /*is_isolated=*/true, /*is_visible=*/true);
+  ns.AddSearchPath("/apex/com.android.resolv/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/false);
+  ns.CreateLink("default").AddSharedLib(
       ctx.IsSystemSection() ? kLibsFromDefault : kLibsFromUnrestrictedDefault);
 
   return ns;

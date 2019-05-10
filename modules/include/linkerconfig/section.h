@@ -16,7 +16,6 @@
 #pragma once
 
 #include <map>
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,20 +38,26 @@ constexpr const static BinaryPathPriority kLowPriority = 80;
 class Section {
  public:
   Section(const std::string& name, BinaryPathList binary_paths,
-          std::vector<std::shared_ptr<Namespace>> namespaces)
-      : name_(name), binary_paths_(binary_paths), namespaces_(namespaces) {
+          std::vector<Namespace> namespaces)
+      : name_(name),
+        binary_paths_(binary_paths),
+        namespaces_(std::move(namespaces)) {
   }
+
+  Section(const Section&) = delete;
+  Section(Section&&) = default;
+
   void WriteConfig(ConfigWriter& writer);
   void CollectBinaryPaths(BinaryPathMap& binary_paths);
 
   // For test usage
-  std::shared_ptr<Namespace> GetNamespace(const std::string& namespace_name);
+  Namespace* GetNamespace(const std::string& namespace_name);
   std::string GetName();
 
  private:
   const std::string name_;
   BinaryPathList binary_paths_;
-  std::vector<std::shared_ptr<Namespace>> namespaces_;
+  std::vector<Namespace> namespaces_;
 };
 }  // namespace modules
 }  // namespace linkerconfig

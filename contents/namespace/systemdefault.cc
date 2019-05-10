@@ -19,7 +19,6 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 const std::vector<std::string> kLibsFromRuntimeLegacy = {
@@ -49,9 +48,9 @@ const std::vector<std::string> kPermittedPaths = {
 
 namespace {
 using android::linkerconfig::modules::Namespace;
-void BuildPermittedPath(std::shared_ptr<Namespace> ns) {
+void BuildPermittedPath(Namespace& ns) {
   for (const auto& path : kPermittedPaths) {
-    ns->AddPermittedPath(path, true, false);
+    ns.AddPermittedPath(path, true, false);
   }
 }
 }  // namespace
@@ -59,28 +58,31 @@ void BuildPermittedPath(std::shared_ptr<Namespace> ns) {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildSystemDefaultNamespace([
-    [maybe_unused]] const Context& ctx) {
+Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
   bool is_legacy = android::linkerconfig::modules::IsLegacyDevice();
-  auto ns = CreateNamespace("default", !is_legacy, true);
+  Namespace ns("default", /*is_isolated=*/!is_legacy, /*is_visible=*/true);
 
-  ns->AddSearchPath("/system/${LIB}", true, true);
-  ns->AddSearchPath("/@{PRODUCT:product}/${LIB}", true, true);
+  ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
   if (is_legacy) {
-    ns->AddSearchPath("/vendor/${LIB}", true, true);
-    ns->AddSearchPath("/odm/${LIB}", true, true);
+    ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
+                     /*with_data_asan=*/true);
+    ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
+                     /*with_data_asan=*/true);
   } else {
-    ns->AddSearchPath("/@{PRODUCT_SERVICES:product_services}/${LIB}", true,
-                      true);
+    ns.AddSearchPath("/@{PRODUCT_SERVICES:product_services}/${LIB}",
+                     /*also_in_asan=*/true, /*with_data_asan=*/true);
   }
 
   if (!is_legacy) {
     BuildPermittedPath(ns);
   }
 
-  ns->CreateLink("runtime")->AddSharedLib(is_legacy ? kLibsFromRuntimeLegacy
-                                                    : kLibsFromRuntime);
-  ns->CreateLink("resolv")->AddSharedLib("libnetd_resolv.so");
+  ns.CreateLink("runtime").AddSharedLib(is_legacy ? kLibsFromRuntimeLegacy
+                                                  : kLibsFromRuntime);
+  ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
 
   return ns;
 }

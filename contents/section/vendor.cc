@@ -40,19 +40,19 @@ const android::linkerconfig::modules::BinaryPathList kBinaryPath = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Section> BuildVendorSection(Context& ctx) {
+Section BuildVendorSection(Context& ctx) {
   ctx.SetCurrentSection(SectionType::Vendor);
-  std::vector<std::shared_ptr<Namespace>> namespaces;
+  std::vector<Namespace> namespaces;
 
-  namespaces.push_back(BuildVendorDefaultNamespace(ctx));
-  namespaces.push_back(BuildRuntimeNamespace(ctx));
-  namespaces.push_back(BuildVndkNamespace(ctx));
-  namespaces.push_back(BuildSystemNamespace(ctx));
+  namespaces.emplace_back(BuildVendorDefaultNamespace(ctx));
+  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
+  namespaces.emplace_back(BuildVndkNamespace(ctx));
+  namespaces.emplace_back(BuildSystemNamespace(ctx));
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
-    namespaces.push_back(BuildVndkInSystemNamespace(ctx));
+    namespaces.emplace_back(BuildVndkInSystemNamespace(ctx));
   }
 
-  return std::make_shared<Section>("vendor", kBinaryPath, namespaces);
+  return Section("vendor", kBinaryPath, std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig
