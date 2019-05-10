@@ -19,7 +19,6 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 const std::vector<std::string> kLibsFromRuntime = {
@@ -29,16 +28,18 @@ const std::vector<std::string> kLibsFromRuntime = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildUnrestrictedDefaultNamespace([
-    [maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("default", false, true);
+Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("default", /*is_isolated=*/false, /*is_visible=*/true);
 
-  ns->AddSearchPath("/system/${LIB}", true, true);
-  ns->AddSearchPath("/odm/${LIB}", true, true);
-  ns->AddSearchPath("/vendor/${LIB}", true, true);
+  ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
 
-  ns->CreateLink("runtime")->AddSharedLib(kLibsFromRuntime);
-  ns->CreateLink("resolv")->AddSharedLib("libnetd_resolv.so");
+  ns.CreateLink("runtime").AddSharedLib(kLibsFromRuntime);
+  ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
 
   return ns;
 }

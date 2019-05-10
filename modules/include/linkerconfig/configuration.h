@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -27,16 +26,19 @@ namespace linkerconfig {
 namespace modules {
 class Configuration {
  public:
-  Configuration(std::vector<std::shared_ptr<Section>> sections)
-      : sections_(sections) {
+  explicit Configuration(std::vector<Section> sections)
+      : sections_(std::move(sections)) {
   }
+  Configuration(const Configuration&) = delete;
+  Configuration(Configuration&&) = default;
+
   void WriteConfig(ConfigWriter& writer);
 
   // For test usage
-  std::shared_ptr<Section> GetSection(const std::string& name);
+  Section* GetSection(const std::string& name);
 
  private:
-  std::vector<std::shared_ptr<Section>> sections_;
+  std::vector<Section> sections_;
 };
 }  // namespace modules
 }  // namespace linkerconfig

@@ -103,17 +103,17 @@ dir.test_section = binary_path3
 TEST(linkerconfig_section, section_with_namespaces) {
   ConfigWriter writer;
 
-  std::vector<std::shared_ptr<Namespace>> namespaces;
+  std::vector<Namespace> namespaces;
 
-  namespaces.push_back(CreateNamespaceWithLinks("default", true, true,
-                                                "namespace1", "namespace2"));
-  namespaces.push_back(CreateNamespaceWithLinks("namespace1", false, false,
-                                                "default", "namespace2"));
-  namespaces.push_back(CreateNamespaceWithPaths("namespace2", false, false));
+  namespaces.emplace_back(CreateNamespaceWithLinks("default", true, true,
+                                                   "namespace1", "namespace2"));
+  namespaces.emplace_back(CreateNamespaceWithLinks("namespace1", false, false,
+                                                   "default", "namespace2"));
+  namespaces.emplace_back(CreateNamespaceWithPaths("namespace2", false, false));
 
   BinaryPathList empty_list;
 
-  Section section("test_section", empty_list, namespaces);
+  Section section("test_section", empty_list, std::move(namespaces));
 
   section.WriteConfig(writer);
   auto config = writer.ToString();
@@ -123,12 +123,12 @@ TEST(linkerconfig_section, section_with_namespaces) {
 TEST(linkerconfig_section, section_with_one_namespace) {
   android::linkerconfig::modules::ConfigWriter writer;
 
-  std::vector<std::shared_ptr<Namespace>> namespaces;
-  namespaces.push_back(CreateNamespaceWithPaths("default", false, false));
+  std::vector<Namespace> namespaces;
+  namespaces.emplace_back(CreateNamespaceWithPaths("default", false, false));
 
   BinaryPathList empty_list;
 
-  Section section("test_section", empty_list, namespaces);
+  Section section("test_section", empty_list, std::move(namespaces));
   section.WriteConfig(writer);
   auto config = writer.ToString();
   ASSERT_EQ(config, kSectionWithOneNamespaceExpectedResult);
@@ -138,8 +138,8 @@ TEST(linkerconfig_section, binary_paths) {
   BinaryPathList binary_paths = {{"binary_path2", kLowPriority},
                                  {"binary_path3", kLowPriority + 10},
                                  {"binary_path1", kDefaultPriority}};
-  std::vector<std::shared_ptr<Namespace>> empty_namespace;
-  Section section("test_section", binary_paths, empty_namespace);
+  std::vector<Namespace> empty_namespace;
+  Section section("test_section", binary_paths, std::move(empty_namespace));
 
   android::linkerconfig::modules::BinaryPathMap paths;
   section.CollectBinaryPaths(paths);

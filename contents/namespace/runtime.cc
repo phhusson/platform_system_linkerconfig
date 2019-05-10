@@ -16,19 +16,19 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildRuntimeNamespace([
-    [maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("runtime", true, !ctx.IsVendorSection());
-  ns->AddSearchPath("/apex/com.android.runtime/${LIB}", true, false);
+Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("runtime", /*is_isolated=*/true,
+               /*is_visible=*/!ctx.IsVendorSection());
+  ns.AddSearchPath("/apex/com.android.runtime/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/false);
   // TODO(b/119867084): Restrict to Bionic dlopen dependencies and PALette
   // library when it exists.
-  ns->CreateLink(ctx.IsVendorSection() ? "system" : "default", true);
+  ns.CreateLink(ctx.IsVendorSection() ? "system" : "default", true);
 
   return ns;
 }

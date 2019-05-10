@@ -15,8 +15,6 @@
  */
 #pragma once
 
-#include <memory>
-
 #include "linkerconfig/variables.h"
 
 inline void MockVariables(std::string vndk_ver = "Q") {

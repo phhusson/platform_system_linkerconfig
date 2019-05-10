@@ -29,13 +29,13 @@ const android::linkerconfig::modules::BinaryPathList kBinaryPath = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Section> BuildPostInstallSection(Context& ctx) {
+Section BuildPostInstallSection(Context& ctx) {
   ctx.SetCurrentSection(SectionType::Other);
-  std::vector<std::shared_ptr<Namespace>> namespaces;
+  std::vector<Namespace> namespaces;
 
-  namespaces.push_back(BuildPostInstallNamespace(ctx));
+  namespaces.emplace_back(BuildPostInstallNamespace(ctx));
 
-  return std::make_shared<Section>("postinstall", kBinaryPath, namespaces);
+  return Section("postinstall", kBinaryPath, std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig
