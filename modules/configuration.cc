@@ -23,7 +23,7 @@ void Configuration::WriteConfig(ConfigWriter& writer) {
   BinaryPathMap binary_paths_with_priority;
 
   for (auto& section : sections_) {
-    section->CollectBinaryPaths(binary_paths_with_priority);
+    section.CollectBinaryPaths(binary_paths_with_priority);
   }
 
   for (auto& binary_path : binary_paths_with_priority) {
@@ -31,14 +31,14 @@ void Configuration::WriteConfig(ConfigWriter& writer) {
   }
 
   for (auto& section : sections_) {
-    section->WriteConfig(writer);
+    section.WriteConfig(writer);
   }
 }
 
-std::shared_ptr<Section> Configuration::GetSection(const std::string& name) {
+Section* Configuration::GetSection(const std::string& name) {
   for (auto& section : sections_) {
-    if (section->GetName() == name) {
-      return section;
+    if (section.GetName() == name) {
+      return &section;
     }
   }
 

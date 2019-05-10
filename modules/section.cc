@@ -28,12 +28,12 @@ void Section::WriteConfig(ConfigWriter& writer) {
 
   bool is_first = true;
   for (auto& ns : namespaces_) {
-    if (ns->GetName() != "default") {
+    if (ns.GetName() != "default") {
       if (!is_first) {
         additional_namespaces += ",";
       }
 
-      additional_namespaces += ns->GetName();
+      additional_namespaces += ns.GetName();
       is_first = false;
     }
   }
@@ -43,7 +43,7 @@ void Section::WriteConfig(ConfigWriter& writer) {
   }
 
   for (auto& ns : namespaces_) {
-    ns->WriteConfig(writer);
+    ns.WriteConfig(writer);
   }
 }
 
@@ -55,11 +55,10 @@ void Section::CollectBinaryPaths(BinaryPathMap& binary_paths) {
   }
 }
 
-std::shared_ptr<Namespace> Section::GetNamespace(
-    const std::string& namespace_name) {
+Namespace* Section::GetNamespace(const std::string& namespace_name) {
   for (auto& ns : namespaces_) {
-    if (ns->GetName() == namespace_name) {
-      return ns;
+    if (ns.GetName() == namespace_name) {
+      return &ns;
     }
   }
 

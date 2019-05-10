@@ -33,6 +33,9 @@ class Link {
         target_namespace_(target_namespace),
         allow_all_shared_libs_(allow_all_shared_libs) {
   }
+  Link(const Link&) = delete;
+  Link(Link&&) = default;
+
   template <typename T, typename... Args>
   void AddSharedLib(T&& lib_name, Args&&... lib_names);
   void AddSharedLib(std::vector<std::string> lib_names);

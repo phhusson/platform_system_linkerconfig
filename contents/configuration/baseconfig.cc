@@ -24,17 +24,15 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 android::linkerconfig::modules::Configuration CreateBaseConfiguration() {
-  std::vector<std::shared_ptr<Section>> sections;
+  std::vector<Section> sections;
   Context current_context;
 
-  sections.push_back(BuildSystemSection(current_context));
-  sections.push_back(BuildVendorSection(current_context));
-  sections.push_back(BuildUnrestrictedSection(current_context));
-  sections.push_back(BuildPostInstallSection(current_context));
+  sections.emplace_back(BuildSystemSection(current_context));
+  sections.emplace_back(BuildVendorSection(current_context));
+  sections.emplace_back(BuildUnrestrictedSection(current_context));
+  sections.emplace_back(BuildPostInstallSection(current_context));
 
-  android::linkerconfig::modules::Configuration config(sections);
-
-  return config;
+  return android::linkerconfig::modules::Configuration(std::move(sections));
 }
 }  // namespace contents
 }  // namespace linkerconfig

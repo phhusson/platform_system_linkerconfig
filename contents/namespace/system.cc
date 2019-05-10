@@ -16,20 +16,21 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildSystemNamespace([
-    [maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("system", false, false);
-  ns->AddSearchPath("/system/${LIB}", true, true);
-  ns->AddSearchPath("/@{PRODUCT:product}/${LIB}", true, true);
-  ns->AddSearchPath("/@{PRODUCT_SERVICES}/${LIB}", true, true);
+Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("system", /*is_isolated=*/false, /*is_visible=*/false);
+  ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/@{PRODUCT_SERVICES}/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
 
-  ns->CreateLink("runtime")->AddSharedLib(
+  ns.CreateLink("runtime").AddSharedLib(
       {"libdexfile_external.so", "libnativebridge.so", "libnativehelper.so",
        "libnativeloader.so", "libandroidicu.so"});
 

@@ -16,30 +16,37 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildRsNamespace([[maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("rs", true, true);
+Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("rs", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns->AddSearchPath("/odm/${LIB}/vndk-sp", true, true);
-  ns->AddSearchPath("/vendor/${LIB}/vndk-sp", true, true);
-  ns->AddSearchPath("/system/${LIB}/vndk-sp@{VNDK_VER}", true, true);
-  ns->AddSearchPath("/odm/${LIB}", true, true);
-  ns->AddSearchPath("/vendor/${LIB}", true, true);
+  ns.AddSearchPath("/odm/${LIB}/vndk-sp", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/vendor/${LIB}/vndk-sp", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/system/${LIB}/vndk-sp@{VNDK_VER}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
 
-  ns->AddPermittedPath("/odm/${LIB}", true, true);
-  ns->AddPermittedPath("/vendor/${LIB}", true, true);
-  ns->AddPermittedPath("/system/vendor/${LIB}", false, false);
-  ns->AddPermittedPath("/data", true, false);
+  ns.AddPermittedPath("/odm/${LIB}", /*also_in_asan=*/true,
+                      /*with_data_asan=*/true);
+  ns.AddPermittedPath("/vendor/${LIB}", /*also_in_asan=*/true,
+                      /*with_data_asan=*/true);
+  ns.AddPermittedPath("/system/vendor/${LIB}", /*also_in_asan=*/false,
+                      /*with_data_asan=*/false);
+  ns.AddPermittedPath("/data", /*also_in_asan=*/true, /*with_data_asan=*/false);
 
-  ns->CreateLink("default")->AddSharedLib({"@{LLNDK_LIBRARIES}",
-                                           "@{SANITIZER_RUNTIME_LIBRARIES}",
-                                           "@{PRIVATE_LLNDK_LIBRARIES}"});
-  ns->CreateLink("vndk")->AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES}");
+  ns.CreateLink("default").AddSharedLib({"@{LLNDK_LIBRARIES}",
+                                         "@{SANITIZER_RUNTIME_LIBRARIES}",
+                                         "@{PRIVATE_LLNDK_LIBRARIES}"});
+  ns.CreateLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES}");
 
   return ns;
 }

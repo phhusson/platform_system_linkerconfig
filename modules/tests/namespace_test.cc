@@ -78,7 +78,7 @@ namespace.test_namespace.whitelisted += whitelisted_path2
 TEST(linkerconfig_namespace, simple_namespace) {
   android::linkerconfig::modules::ConfigWriter writer;
   auto ns = CreateNamespaceWithPaths("test_namespace", false, false);
-  ns->WriteConfig(writer);
+  ns.WriteConfig(writer);
   auto config = writer.ToString();
 
   ASSERT_EQ(config, kExpectedSimpleNamespaceConfig);
@@ -89,7 +89,7 @@ TEST(linkerconfig_namespace, namespace_with_links) {
 
   auto ns = CreateNamespaceWithLinks("test_namespace", true, true,
                                      "target_namespace1", "target_namespace2");
-  ns->WriteConfig(writer);
+  ns.WriteConfig(writer);
   auto config = writer.ToString();
 
   ASSERT_EQ(config, kExpectedNamespaceWithLinkConfig);
@@ -98,9 +98,9 @@ TEST(linkerconfig_namespace, namespace_with_links) {
 TEST(linkerconfig_namespace, namespace_with_whitelisted) {
   android::linkerconfig::modules::ConfigWriter writer;
   auto ns = CreateNamespaceWithPaths("test_namespace", false, false);
-  ns->AddWhitelisted("whitelisted_path1");
-  ns->AddWhitelisted("whitelisted_path2");
-  ns->WriteConfig(writer);
+  ns.AddWhitelisted("whitelisted_path1");
+  ns.AddWhitelisted("whitelisted_path2");
+  ns.WriteConfig(writer);
 
   auto config = writer.ToString();
 
