@@ -15,14 +15,11 @@
  */
 #pragma once
 
-#include <memory>
-#include <string>
-
 #include "linkerconfig/context.h"
 #include "linkerconfig/namespace.h"
 
-typedef std::shared_ptr<android::linkerconfig::modules::Namespace>
-NamespaceBuilder(const android::linkerconfig::contents::Context& ctx);
+typedef android::linkerconfig::modules::Namespace NamespaceBuilder(
+    const android::linkerconfig::contents::Context& ctx);
 
 namespace android {
 namespace linkerconfig {

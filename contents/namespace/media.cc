@@ -21,7 +21,6 @@
 
 #include "linkerconfig/environment.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 const std::vector<std::string> kLibsFromDefaultLegacy = {
@@ -48,15 +47,15 @@ const std::vector<std::string> kLibsFromDefault = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildMediaNamespace([
-    [maybe_unused]] const Context& ctx) {
+Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
   bool is_legacy = android::linkerconfig::modules::IsLegacyDevice();
-  auto ns = CreateNamespace("media", true, true);
-  ns->AddSearchPath("/apex/com.android.media/${LIB}", true, false);
-  ns->AddPermittedPath("/apex/com.android.media/${LIB}/extractors", false,
-                       false);
-  ns->CreateLink("default")->AddSharedLib(is_legacy ? kLibsFromDefaultLegacy
-                                                    : kLibsFromDefault);
+  Namespace ns("media", /*is_isolated=*/true, /*is_visible=*/true);
+  ns.AddSearchPath("/apex/com.android.media/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/false);
+  ns.AddPermittedPath("/apex/com.android.media/${LIB}/extractors",
+                      /*also_in_asan=*/false, /*with_data_asan=*/false);
+  ns.CreateLink("default").AddSharedLib(is_legacy ? kLibsFromDefaultLegacy
+                                                  : kLibsFromDefault);
 
   return ns;
 }

@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 const std::vector<std::string> kLibsFromDefault = {"libc.so", "libm.so",
@@ -28,13 +27,13 @@ const std::vector<std::string> kLibsFromDefault = {"libc.so", "libm.so",
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildConscryptNamespace([
-    [maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("conscrypt", true, true);
+Namespace BuildConscryptNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("conscrypt", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns->AddSearchPath("/apex/com.android.conscrypt/${LIB}", true, false);
-  ns->CreateLink("runtime")->AddSharedLib("libandroidio.so");
-  ns->CreateLink("default")->AddSharedLib(kLibsFromDefault);
+  ns.AddSearchPath("/apex/com.android.conscrypt/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/false);
+  ns.CreateLink("runtime").AddSharedLib("libandroidio.so");
+  ns.CreateLink("default").AddSharedLib(kLibsFromDefault);
 
   return ns;
 }
