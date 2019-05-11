@@ -50,18 +50,17 @@ void Namespace::WritePathString(ConfigWriter& writer,
   }
 }
 
-std::shared_ptr<Link> Namespace::CreateLink(const std::string& target_namespace,
-                                            bool allow_all_shared_libs) {
-  auto new_link =
-      std::make_shared<Link>(name_, target_namespace, allow_all_shared_libs);
+Link& Namespace::CreateLink(const std::string& target_namespace,
+                            bool allow_all_shared_libs) {
+  Link new_link(name_, target_namespace, allow_all_shared_libs);
 
   if (links_.find(target_namespace) != links_.end()) {
     LOG(INFO) << "Link to " << target_namespace
               << " already exists. Overwriting link.";
   }
 
-  links_[target_namespace] = new_link;
-  return new_link;
+  links_.emplace(target_namespace, std::move(new_link));
+  return links_.find(target_namespace)->second;
 }
 
 void Namespace::WriteConfig(ConfigWriter& writer) {
@@ -100,7 +99,7 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
     writer.WriteLine("links = " + link_list);
 
     for (auto& link : links_) {
-      link.second->WriteConfig(writer);
+      link.second.WriteConfig(writer);
     }
   }
 
@@ -152,11 +151,6 @@ bool Namespace::ContainsPermittedPath(const std::string& path,
          (!also_in_asan || FindFromPathList(asan_permitted_paths_, path)) &&
          (!also_in_asan || !with_data_asan ||
           FindFromPathList(asan_permitted_paths_, kDataAsanPath + path));
-}
-
-std::shared_ptr<Namespace> CreateNamespace(const std::string& name,
-                                           bool is_isolated, bool is_visible) {
-  return std::make_shared<Namespace>(name, is_isolated, is_visible);
 }
 }  // namespace modules
 }  // namespace linkerconfig

@@ -19,7 +19,6 @@
 #include <cstdarg>
 #include <cstdio>
 #include <iostream>
-#include <memory>
 #include <regex>
 
 #include "linkerconfig/log.h"

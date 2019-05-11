@@ -91,34 +91,37 @@ namespace.default.asan.permitted.paths += /permitted_path2
 )";
 
 TEST(linkerconfig_configuration, generate_configuration) {
-  std::vector<std::shared_ptr<Section>> sections;
+  std::vector<Section> sections;
 
-  std::vector<std::shared_ptr<Namespace>> system_namespaces;
+  std::vector<Namespace> system_namespaces;
   BinaryPathList system_binary_path = {{"/system/bin", kDefaultPriority},
                                        {"/system/xbin", kDefaultPriority},
                                        {"/product/bin", kLowPriority + 10}};
 
-  system_namespaces.push_back(CreateNamespaceWithLinks(
+  system_namespaces.emplace_back(CreateNamespaceWithLinks(
       "default", false, false, "namespace1", "namespace2"));
-  system_namespaces.push_back(
+  system_namespaces.emplace_back(
       CreateNamespaceWithPaths("namespace1", false, false));
-  system_namespaces.push_back(
+  system_namespaces.emplace_back(
       CreateNamespaceWithPaths("namespace2", false, false));
 
-  sections.push_back(std::make_shared<Section>("system", system_binary_path,
-                                               system_namespaces));
+  Section system_section("system", system_binary_path,
+                         std::move(system_namespaces));
+  sections.emplace_back(std::move(system_section));
 
-  std::vector<std::shared_ptr<Namespace>> vendor_namespaces;
+  std::vector<Namespace> vendor_namespaces;
   BinaryPathList vendor_binary_path = {{"/odm/bin", kLowPriority},
                                        {"/vendor/bin", kLowPriority},
                                        {"/data/nativetest/odm", kLowPriority}};
 
-  vendor_namespaces.push_back(CreateNamespaceWithPaths("default", false, false));
+  vendor_namespaces.emplace_back(
+      CreateNamespaceWithPaths("default", false, false));
 
-  sections.push_back(std::make_shared<Section>("vendor", vendor_binary_path,
-                                               vendor_namespaces));
+  Section vendor_section("vendor", vendor_binary_path,
+                         std::move(vendor_namespaces));
+  sections.emplace_back(std::move(vendor_section));
 
-  Configuration conf(sections);
+  Configuration conf(std::move(sections));
 
   android::linkerconfig::modules::ConfigWriter writer;
   conf.WriteConfig(writer);

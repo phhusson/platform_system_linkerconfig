@@ -16,27 +16,31 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
-using android::linkerconfig::modules::CreateNamespace;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-std::shared_ptr<Namespace> BuildSphalNamespace([
-    [maybe_unused]] const Context& ctx) {
-  auto ns = CreateNamespace("sphal", true, true);
-  ns->AddSearchPath("/odm/${LIB}", true, true);
-  ns->AddSearchPath("/vendor/${LIB}", true, true);
-  ns->AddSearchPath("/vendor/${LIB}/hw", false, false);
+Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("sphal", /*is_isolated=*/true, /*is_visible=*/true);
+  ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
+                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/vendor/${LIB}/hw", /*also_in_asan=*/false,
+                   /*with_data_asan=*/false);
 
-  ns->AddPermittedPath("/odm/${LIB}", true, true);
-  ns->AddPermittedPath("/vendor/${LIB}", true, true);
-  ns->AddPermittedPath("/system/vendor/${LIB}", false, false);
+  ns.AddPermittedPath("/odm/${LIB}", /*also_in_asan=*/true,
+                      /*with_data_asan=*/true);
+  ns.AddPermittedPath("/vendor/${LIB}", /*also_in_asan=*/true,
+                      /*with_data_asan=*/true);
+  ns.AddPermittedPath("/system/vendor/${LIB}", /*also_in_asan=*/false,
+                      /*with_data_asan=*/false);
 
-  ns->CreateLink("rs")->AddSharedLib("libRS_internal.so");
-  ns->CreateLink("default")->AddSharedLib(
+  ns.CreateLink("rs").AddSharedLib("libRS_internal.so");
+  ns.CreateLink("default").AddSharedLib(
       {"@{LLNDK_LIBRARIES:}", "@{SANITIZER_RUNTIME_LIBRARIES:}"});
-  ns->CreateLink("vndk")->AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES:}");
+  ns.CreateLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES:}");
 
   return ns;
 }
