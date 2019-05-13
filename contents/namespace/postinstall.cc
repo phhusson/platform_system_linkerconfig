@@ -22,7 +22,8 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildPostInstallNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("default", /*is_isolated=*/false, /*is_visible=*/false);
+  Namespace ns("default", /*is_isolated=*/false,
+               /*is_visible=*/false);
   ns.AddSearchPath("/system/${LIB}");
   ns.AddSearchPath("/@{PRODUCT:product}/${LIB}");
 

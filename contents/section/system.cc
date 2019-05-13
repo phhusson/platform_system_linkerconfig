@@ -21,16 +21,17 @@
 #include "linkerconfig/section.h"
 
 using android::linkerconfig::contents::SectionType;
-using android::linkerconfig::modules::kDefaultPriority;
-using android::linkerconfig::modules::kLowPriority;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
-const android::linkerconfig::modules::BinaryPathList kBinaryPath = {
-    {"/system/bin/", kDefaultPriority},
-    {"/system/xbin/", kDefaultPriority},
-    {"/@{PRODUCT:product}/bin/", kDefaultPriority},
-    {"/data", kLowPriority}};
+namespace {
+const std::vector<std::string> kBinaryPath = {
+    "/system/bin/",
+    "/system/xbin/",
+    "/@{PRODUCT:product}/bin/",
+    "/data",
+};
+}  // namespace
 
 namespace android {
 namespace linkerconfig {

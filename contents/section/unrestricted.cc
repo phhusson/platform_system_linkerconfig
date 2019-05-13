@@ -21,14 +21,16 @@
 #include "linkerconfig/section.h"
 
 using android::linkerconfig::contents::SectionType;
-using android::linkerconfig::modules::kDefaultPriority;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
-const android::linkerconfig::modules::BinaryPathList kBinaryPath = {
-    {"/data/nativetest/unrestricted", kDefaultPriority},
-    {"/data/nativetest64/unrestricted", kDefaultPriority},
-    {"/data/local/tmp", kDefaultPriority}};
+namespace {
+const std::vector<std::string> kBinaryPath = {
+    "/data/nativetest/unrestricted",
+    "/data/nativetest64/unrestricted",
+    "/data/local/tmp",
+};
+}  // namespace
 
 namespace android {
 namespace linkerconfig {

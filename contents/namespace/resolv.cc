@@ -21,12 +21,14 @@
 
 using android::linkerconfig::modules::Namespace;
 
+namespace {
 const std::vector<std::string> kLibsFromDefault = {
     "libc.so",          "libcgrouprc.so", "libm.so",          "libdl.so",
     "libbinder_ndk.so", "liblog.so",      "libvndksupport.so"};
 
 const std::vector<std::string> kLibsFromUnrestrictedDefault = {
     "libc.so", "libm.so", "libdl.so", "libbinder_ndk.so", "liblog.so"};
+}  // namespace
 
 namespace android {
 namespace linkerconfig {
