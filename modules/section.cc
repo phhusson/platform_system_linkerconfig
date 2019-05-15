@@ -47,11 +47,16 @@ void Section::WriteConfig(ConfigWriter& writer) {
   }
 }
 
-void Section::CollectBinaryPaths(BinaryPathMap& binary_paths) {
-  std::string prefix = "dir." + name_ + " = ";
-  for (auto& item : binary_paths_) {
-    std::string path_config = prefix + item.first;
-    binary_paths.insert(std::make_pair(item.second, path_config));
+void Section::CollectBinaryPaths(BinaryPathMap& all_binary_paths) {
+  for (auto& path : binary_paths_) {
+    auto it = all_binary_paths.find(path);
+    if (it != all_binary_paths.end()) {
+      LOG(WARNING) << "Binary path " << path << " already found from "
+                   << it->second << ". Path from " << name_
+                   << " will be ignored.";
+    } else {
+      all_binary_paths.emplace(std::make_pair(path, name_));
+    }
   }
 }
 

@@ -21,6 +21,7 @@
 
 using android::linkerconfig::modules::Namespace;
 
+namespace {
 const std::vector<std::string> kLibsFromRuntimeLegacy = {
     "libart.so:libartd.so", "libdexfile_external.so", "libnativebridge.so",
     "libnativehelper.so", "libnativeloader.so", "libandroidicu.so",
@@ -46,8 +47,6 @@ const std::vector<std::string> kPermittedPaths = {
     "/@{PRODUCT_SERVICES:product_services}/priv-app", "/data", "/mnt/expand",
     "/apex/com.android.runtime/${LIB}/bionic", "/system/${LIB}/bootstrap"};
 
-namespace {
-using android::linkerconfig::modules::Namespace;
 void BuildPermittedPath(Namespace& ns) {
   for (const auto& path : kPermittedPaths) {
     ns.AddPermittedPath(path, true, false);
@@ -60,7 +59,8 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
   bool is_legacy = android::linkerconfig::modules::IsLegacyDevice();
-  Namespace ns("default", /*is_isolated=*/!is_legacy, /*is_visible=*/true);
+  Namespace ns("default", /*is_isolated=*/!is_legacy,
+               /*is_visible=*/true);
 
   ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);

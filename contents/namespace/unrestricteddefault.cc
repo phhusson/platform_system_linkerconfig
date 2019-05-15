@@ -21,9 +21,11 @@
 
 using android::linkerconfig::modules::Namespace;
 
+namespace {
 const std::vector<std::string> kLibsFromRuntime = {
     "libdexfile_external.so", "libnativebridge.so", "libnativehelper.so",
     "libnativeloader.so",     "libandroidicu.so",   "libpac.so"};
+}  // namespace
 
 namespace android {
 namespace linkerconfig {

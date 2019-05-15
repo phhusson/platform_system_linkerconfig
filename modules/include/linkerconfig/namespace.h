@@ -29,9 +29,11 @@ namespace linkerconfig {
 namespace modules {
 class Namespace {
  public:
-  Namespace(const std::string& name, bool is_isolated = false,
-            bool is_visible = false)
-      : is_isolated_(is_isolated), is_visible_(is_visible), name_(name) {
+  explicit Namespace(std::string name, bool is_isolated = false,
+                     bool is_visible = false)
+      : is_isolated_(is_isolated),
+        is_visible_(is_visible),
+        name_(std::move(name)) {
   }
 
   Namespace(const Namespace& ns) = delete;
