@@ -19,12 +19,12 @@
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::contents::SectionType;
-using android::linkerconfig::modules::kDefaultPriority;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
-const android::linkerconfig::modules::BinaryPathList kBinaryPath = {
-    {"/postinstall", kDefaultPriority}};
+namespace {
+const std::vector<std::string> kBinaryPath = {"/postinstall"};
+}  // namespace
 
 namespace android {
 namespace linkerconfig {

@@ -22,12 +22,13 @@
 using namespace android::linkerconfig::modules;
 
 constexpr const char* kExpectedConfiguration =
-    R"(dir.system = /system/bin
+    R"(dir.vendor = /vendor/bin
 dir.system = /system/xbin
-dir.vendor = /odm/bin
-dir.vendor = /vendor/bin
-dir.vendor = /data/nativetest/odm
+dir.vendor = /system/bin/vendor
+dir.system = /system/bin
+dir.vendor = /product/bin/vendor
 dir.system = /product/bin
+dir.vendor = /odm/bin
 [system]
 additional.namespaces = namespace1,namespace2
 namespace.default.isolated = false
@@ -94,9 +95,11 @@ TEST(linkerconfig_configuration, generate_configuration) {
   std::vector<Section> sections;
 
   std::vector<Namespace> system_namespaces;
-  BinaryPathList system_binary_path = {{"/system/bin", kDefaultPriority},
-                                       {"/system/xbin", kDefaultPriority},
-                                       {"/product/bin", kLowPriority + 10}};
+  std::vector<std::string> system_binary_path = {
+      "/system/bin",
+      "/system/xbin",
+      "/product/bin",
+  };
 
   system_namespaces.emplace_back(CreateNamespaceWithLinks(
       "default", false, false, "namespace1", "namespace2"));
@@ -110,9 +113,8 @@ TEST(linkerconfig_configuration, generate_configuration) {
   sections.emplace_back(std::move(system_section));
 
   std::vector<Namespace> vendor_namespaces;
-  BinaryPathList vendor_binary_path = {{"/odm/bin", kLowPriority},
-                                       {"/vendor/bin", kLowPriority},
-                                       {"/data/nativetest/odm", kLowPriority}};
+  std::vector<std::string> vendor_binary_path = {
+      "/odm/bin", "/vendor/bin", "/system/bin/vendor", "/product/bin/vendor"};
 
   vendor_namespaces.emplace_back(
       CreateNamespaceWithPaths("default", false, false));

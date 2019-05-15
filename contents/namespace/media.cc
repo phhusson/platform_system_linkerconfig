@@ -23,6 +23,7 @@
 
 using android::linkerconfig::modules::Namespace;
 
+namespace {
 const std::vector<std::string> kLibsFromDefaultLegacy = {
     "libandroid.so",
     "libbinder_ndk.so",
@@ -43,6 +44,7 @@ const std::vector<std::string> kLibsFromDefaultLegacy = {
 const std::vector<std::string> kLibsFromDefault = {
     "@{LLNDK_LIBRARIES}", "libandroid.so", "libbinder_ndk.so",
     "libmediametrics.so", "@{SANITIZER_RUNTIME_LIBRARIES}"};
+}  // namespace
 
 namespace android {
 namespace linkerconfig {

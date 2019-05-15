@@ -22,7 +22,8 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("vndk_in_system", /*is_isolated=*/true, /*is_visible=*/true);
+  Namespace ns("vndk_in_system", /*is_isolated=*/true,
+               /*is_visible=*/true);
 
   ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
