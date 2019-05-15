@@ -21,21 +21,23 @@
 #include "linkerconfig/section.h"
 
 using android::linkerconfig::contents::SectionType;
-using android::linkerconfig::modules::kDefaultPriority;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
-const android::linkerconfig::modules::BinaryPathList kBinaryPath = {
-    {"/odm/bin/", kDefaultPriority},
-    {"/vendor/bin/", kDefaultPriority},
-    {"/data/nativetest/odm", kDefaultPriority},
-    {"/data/nativetest64/odm", kDefaultPriority},
-    {"/data/benchmarktest/odm", kDefaultPriority},
-    {"/data/benchmarktest64/odm", kDefaultPriority},
-    {"/data/nativetest/vendor", kDefaultPriority},
-    {"/data/nativetest64/vendor", kDefaultPriority},
-    {"/data/benchmarktest/vendor", kDefaultPriority},
-    {"/data/benchmarktest64/vendor", kDefaultPriority}};
+namespace {
+const std::vector<std::string> kBinaryPath = {
+    "/odm/bin/",
+    "/vendor/bin/",
+    "/data/nativetest/odm",
+    "/data/nativetest64/odm",
+    "/data/benchmarktest/odm",
+    "/data/benchmarktest64/odm",
+    "/data/nativetest/vendor",
+    "/data/nativetest64/vendor",
+    "/data/benchmarktest/vendor",
+    "/data/benchmarktest64/vendor",
+};
+}  // namespace
 
 namespace android {
 namespace linkerconfig {
