@@ -20,14 +20,15 @@ namespace android {
 namespace linkerconfig {
 namespace modules {
 void Configuration::WriteConfig(ConfigWriter& writer) {
-  BinaryPathMap binary_paths_with_priority;
+  BinaryPathMap binary_paths;
 
   for (auto& section : sections_) {
-    section.CollectBinaryPaths(binary_paths_with_priority);
+    section.CollectBinaryPaths(binary_paths);
   }
 
-  for (auto& binary_path : binary_paths_with_priority) {
-    writer.WriteLine(binary_path.second);
+  // Navigate in reverse order to keep sub directories on top of parent directory
+  for (auto it = binary_paths.rbegin(); it != binary_paths.rend(); it++) {
+    writer.WriteLine("dir.%s = %s", it->second.c_str(), it->first.c_str());
   }
 
   for (auto& section : sections_) {

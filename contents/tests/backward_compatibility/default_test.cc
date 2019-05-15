@@ -18,7 +18,6 @@
 
 #include "linkerconfig/baseconfig.h"
 
-#include "linkerconfig/configwriter.h"
 #include "linkerconfig/variables.h"
 #include "testbase.h"
 

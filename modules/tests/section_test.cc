@@ -95,9 +95,9 @@ namespace.default.asan.permitted.paths += /permitted_path2
 )";
 
 constexpr const char* kSectionBinaryPathExpectedResult =
-    R"(dir.test_section = binary_path1
-dir.test_section = binary_path2
-dir.test_section = binary_path3
+    R"(/root/a
+/root/a/b
+/root/b
 )";
 
 TEST(linkerconfig_section, section_with_namespaces) {
@@ -111,7 +111,7 @@ TEST(linkerconfig_section, section_with_namespaces) {
                                                    "default", "namespace2"));
   namespaces.emplace_back(CreateNamespaceWithPaths("namespace2", false, false));
 
-  BinaryPathList empty_list;
+  std::vector<std::string> empty_list;
 
   Section section("test_section", empty_list, std::move(namespaces));
 
@@ -126,7 +126,7 @@ TEST(linkerconfig_section, section_with_one_namespace) {
   std::vector<Namespace> namespaces;
   namespaces.emplace_back(CreateNamespaceWithPaths("default", false, false));
 
-  BinaryPathList empty_list;
+  std::vector<std::string> empty_list;
 
   Section section("test_section", empty_list, std::move(namespaces));
   section.WriteConfig(writer);
@@ -135,19 +135,35 @@ TEST(linkerconfig_section, section_with_one_namespace) {
 }
 
 TEST(linkerconfig_section, binary_paths) {
-  BinaryPathList binary_paths = {{"binary_path2", kLowPriority},
-                                 {"binary_path3", kLowPriority + 10},
-                                 {"binary_path1", kDefaultPriority}};
+  std::vector<std::string> binary_paths = {"/root/a", "/root/a/b", "/root/b"};
   std::vector<Namespace> empty_namespace;
   Section section("test_section", binary_paths, std::move(empty_namespace));
 
-  android::linkerconfig::modules::BinaryPathMap paths;
+  BinaryPathMap paths;
   section.CollectBinaryPaths(paths);
 
   std::string binary_path_output = "";
   for (auto& item : paths) {
-    binary_path_output += item.second + "\n";
+    binary_path_output += item.first + "\n";
   }
 
   ASSERT_EQ(binary_path_output, kSectionBinaryPathExpectedResult);
+}
+
+TEST(linkerconfig_section, same_binary_paths) {
+  std::vector<std::string> binary_paths_a = {"/root/a", "/root/b"};
+  std::vector<Namespace> empty_namespace_a;
+  Section section_a("test_section_a", binary_paths_a,
+                    std::move(empty_namespace_a));
+
+  std::vector<std::string> binary_paths_b = {"/root/b", "/root/c"};
+  std::vector<Namespace> empty_namespace_b;
+  Section section_b("test_section_b", binary_paths_b,
+                    std::move(empty_namespace_b));
+
+  BinaryPathMap paths;
+  section_a.CollectBinaryPaths(paths);
+  section_b.CollectBinaryPaths(paths);
+
+  ASSERT_EQ(paths["/root/b"], "test_section_a");
 }

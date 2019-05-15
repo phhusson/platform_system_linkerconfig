@@ -27,20 +27,14 @@ namespace android {
 namespace linkerconfig {
 namespace modules {
 
-using BinaryPathPriority = unsigned int;
-using BinaryPathMap = std::multimap<BinaryPathPriority, std::string>;
-using BinaryPathList = std::vector<std::pair<std::string, BinaryPathPriority>>;
-
-constexpr const static BinaryPathPriority kHighPriority = 20;
-constexpr const static BinaryPathPriority kDefaultPriority = 50;
-constexpr const static BinaryPathPriority kLowPriority = 80;
+using BinaryPathMap = std::map<std::string, std::string>;
 
 class Section {
  public:
-  Section(const std::string& name, BinaryPathList binary_paths,
+  Section(std::string name, std::vector<std::string> binary_paths,
           std::vector<Namespace> namespaces)
-      : name_(name),
-        binary_paths_(binary_paths),
+      : name_(std::move(name)),
+        binary_paths_(std::move(binary_paths)),
         namespaces_(std::move(namespaces)) {
   }
 
@@ -56,7 +50,7 @@ class Section {
 
  private:
   const std::string name_;
-  BinaryPathList binary_paths_;
+  std::vector<std::string> binary_paths_;
   std::vector<Namespace> namespaces_;
 };
 }  // namespace modules
