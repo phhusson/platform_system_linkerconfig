@@ -27,10 +27,10 @@ namespace linkerconfig {
 namespace modules {
 class Link {
  public:
-  Link(const std::string& origin_namespace, const std::string& target_namespace,
+  Link(std::string origin_namespace, std::string target_namespace,
        bool allow_all_shared_libs = false)
-      : origin_namespace_(origin_namespace),
-        target_namespace_(target_namespace),
+      : origin_namespace_(std::move(origin_namespace)),
+        target_namespace_(std::move(target_namespace)),
         allow_all_shared_libs_(allow_all_shared_libs) {
   }
   Link(const Link&) = delete;

@@ -21,14 +21,17 @@
 
 using android::linkerconfig::modules::Namespace;
 
+namespace {
 const std::vector<std::string> kLibsFromDefault = {"libc.so", "libm.so",
                                                    "libdl.so", "liblog.so"};
+}  // namespace
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildConscryptNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("conscrypt", /*is_isolated=*/true, /*is_visible=*/true);
+  Namespace ns("conscrypt", /*is_isolated=*/true,
+               /*is_visible=*/true);
 
   ns.AddSearchPath("/apex/com.android.conscrypt/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/false);
