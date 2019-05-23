@@ -46,6 +46,10 @@ std::optional<std::string> Variables::GetValue(const std::string& variable) {
 void Variables::AddValue(const std::string& key, const std::string& value) {
   variables_[key] = value;
 }
+
+void Variables::Load(std::map<std::string, std::string> predefined_variables) {
+  variables_.merge(predefined_variables);
+}
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
