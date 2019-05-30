@@ -14,28 +14,14 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/environment.h"
-
-#include "linkerconfig/variables.h"
+#pragma once
 
 namespace android {
 namespace linkerconfig {
-namespace modules {
-bool IsLegacyDevice() {
-  // TODO : Implement
-  auto legacy_device = Variables::GetValue("is_legacy").value_or("false");
+namespace generator {
 
-  return legacy_device == "true";
-}
+void LoadVariable();
 
-bool IsVndkInSystemNamespace() {
-  // TODO : Implement
-  return Variables::GetValue("VNDK_USING_CORE_VARIANT_LIBRARIES").has_value();
-}
-
-std::string GetVendorVndkVersion() {
-  return Variables::GetValue("ro.vndk.version").value_or("");
-}
-}  // namespace modules
+}  // namespace generator
 }  // namespace linkerconfig
 }  // namespace android
