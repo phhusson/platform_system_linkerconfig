@@ -25,9 +25,9 @@ Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("system", /*is_isolated=*/false, /*is_visible=*/false);
   ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", /*also_in_asan=*/true,
+  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
-  ns.AddSearchPath("/@{PRODUCT_SERVICES}/${LIB}", /*also_in_asan=*/true,
+  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
 
   ns.CreateLink("runtime").AddSharedLib(
