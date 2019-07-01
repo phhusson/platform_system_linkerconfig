@@ -22,7 +22,7 @@
 
 inline const std::map<std::string, std::string> kPredefinedConfigs = {
     {"PRODUCT", "product"},
-    {"PRODUCT_SERVICES", "product_services"},
+    {"SYSTEM_EXT", "system_ext"},
     {"LLNDK_LIBRARIES",
      "libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libRS.so:libandroid_"
      "net.so:libc.so:libcgrouprc.so:libclang_rt.asan-aarch64-android.so:"
