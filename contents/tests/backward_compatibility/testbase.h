@@ -20,8 +20,8 @@
 inline void MockVariables(std::string vndk_ver = "Q") {
   android::linkerconfig::modules::Variables::AddValue("VNDK_VER", vndk_ver);
   android::linkerconfig::modules::Variables::AddValue("PRODUCT", "product");
-  android::linkerconfig::modules::Variables::AddValue("PRODUCT_SERVICES",
-                                                      "product_services");
+  android::linkerconfig::modules::Variables::AddValue("SYSTEM_EXT",
+                                                      "system_ext");
   android::linkerconfig::modules::Variables::AddValue("LLNDK_LIBRARIES",
                                                       "llndk_libraries");
   android::linkerconfig::modules::Variables::AddValue(

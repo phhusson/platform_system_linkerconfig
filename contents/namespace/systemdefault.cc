@@ -34,17 +34,16 @@ const std::vector<std::string> kLibsFromRuntime = {
 
 const std::vector<std::string> kPermittedPaths = {
     "/system/${LIB}/drm", "/system/${LIB}/extractors", "/system/${LIB}/hw",
-    "/@{PRODUCT:product}/${LIB}", "/@{PRODUCT_SERVICES:product_services}/${LIB}",
+    "/@{SYSTEM_EXT:system_ext}/${LIB}", "/@{PRODUCT:product}/${LIB}",
     // These are where odex files are located. libart has to be able to
     // dlopen the files
-    "/system/framework", "/system/app", "/system/priv-app", "/vendor/framework",
-    "/vendor/app", "/vendor/priv-app", "/system/vendor/framework",
-    "/system/vendor/app", "/system/vendor/priv-app", "/odm/framework",
-    "/odm/app", "/odm/priv-app", "/oem/app", "/@{PRODUCT:product}/framework",
-    "/@{PRODUCT:product}/app", "/@{PRODUCT:product}/priv-app",
-    "/@{PRODUCT_SERVICES:product_services}/framework",
-    "/@{PRODUCT_SERVICES:product_services}/app",
-    "/@{PRODUCT_SERVICES:product_services}/priv-app", "/data", "/mnt/expand",
+    "/system/framework", "/system/app", "/system/priv-app",
+    "/@{SYSTEM_EXT:system_ext}/framework", "/@{SYSTEM_EXT:system_ext}/app",
+    "/@{SYSTEM_EXT:system_ext}/priv-app", "/vendor/framework", "/vendor/app",
+    "/vendor/priv-app", "/system/vendor/framework", "/system/vendor/app",
+    "/system/vendor/priv-app", "/odm/framework", "/odm/app", "/odm/priv-app",
+    "/oem/app", "/@{PRODUCT:product}/framework", "/@{PRODUCT:product}/app",
+    "/@{PRODUCT:product}/priv-app", "/data", "/mnt/expand",
     "/apex/com.android.runtime/${LIB}/bionic", "/system/${LIB}/bootstrap"};
 
 void BuildPermittedPath(Namespace& ns) {
@@ -64,6 +63,8 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
+  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}",
+                   /*also_in_asan=*/true, /*with_data_asan=*/true);
   ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
   if (is_legacy) {
@@ -71,9 +72,6 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
                      /*with_data_asan=*/true);
     ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
                      /*with_data_asan=*/true);
-  } else {
-    ns.AddSearchPath("/@{PRODUCT_SERVICES:product_services}/${LIB}",
-                     /*also_in_asan=*/true, /*with_data_asan=*/true);
   }
 
   if (!is_legacy) {
