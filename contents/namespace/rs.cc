@@ -28,7 +28,7 @@ Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
                    /*with_data_asan=*/true);
   ns.AddSearchPath("/vendor/${LIB}/vndk-sp", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
-  ns.AddSearchPath("/system/${LIB}/vndk-sp@{VNDK_VER}", /*also_in_asan=*/true,
+  ns.AddSearchPath("/system/${LIB}/vndk-sp-@{VNDK_VER}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
   ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
