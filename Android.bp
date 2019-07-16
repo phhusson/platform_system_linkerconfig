@@ -61,7 +61,8 @@ cc_binary {
     ],
     srcs: [
         "generator/*.cc",
-    ]
+    ],
+    static_executable: true,
 }
 
 cc_test {
