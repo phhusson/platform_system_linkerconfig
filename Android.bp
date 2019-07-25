@@ -27,6 +27,16 @@ cc_defaults {
     ],
 }
 
+cc_defaults {
+    name: "linkerconfig_test_defaults",
+    defaults: ["linkerconfig_defaults"],
+    cflags: [
+        "-g",
+        "-Wunused",
+    ],
+    test_suites: ["general-tests"],
+}
+
 cc_library_static {
     name: "linkerconfig_modules",
     defaults: [ "linkerconfig_defaults" ],
@@ -51,39 +61,48 @@ cc_library_static {
     ],
 }
 
-cc_binary {
-    name: "linkerconfig",
-    defaults: [ "linkerconfig_defaults" ],
-    local_include_dirs: [ "generator/include" ],
+cc_library_static {
+    name: "linkerconfig_generator",
+    defaults : [ "linkerconfig_defaults" ],
+    export_include_dirs: [ "generator/include" ],
     static_libs: [
         "linkerconfig_modules",
         "linkerconfig_contents",
+        "libc++fs",
     ],
     srcs: [
         "generator/*.cc",
+    ],
+}
+
+cc_binary {
+    name: "linkerconfig",
+    defaults: [ "linkerconfig_defaults" ],
+    static_libs: [
+        "linkerconfig_modules",
+        "linkerconfig_contents",
+        "linkerconfig_generator",
+    ],
+    srcs: [
+        "main.cc",
     ],
     static_executable: true,
 }
 
 cc_test {
     name: "linkerconfig_modules_unittest",
-    defaults: [ "linkerconfig_defaults" ],
+    defaults: [ "linkerconfig_test_defaults" ],
     srcs: [
         "modules/tests/*_test.cc",
     ],
     static_libs: [
         "linkerconfig_modules",
     ],
-    cflags: [
-        "-g",
-        "-Wunused",
-    ],
-    test_suites: ["general-tests"],
 }
 
 cc_test {
     name: "linkerconfig_backward_compatibility_test",
-    defaults: [ "linkerconfig_defaults" ],
+    defaults: [ "linkerconfig_test_defaults" ],
     srcs: [
         "contents/tests/backward_compatibility/*_test.cc",
     ],
@@ -91,9 +110,20 @@ cc_test {
         "linkerconfig_modules",
         "linkerconfig_contents",
     ],
-    cflags: [
-        "-g",
-        "-Wunused",
+}
+
+cc_test {
+    name: "linkerconfig_generator_unittest",
+    defaults: [ "linkerconfig_test_defaults" ],
+    srcs: [
+        "generator/tests/*_test.cc",
     ],
-    test_suites: ["general-tests"],
+    static_libs: [
+        "linkerconfig_modules",
+        "linkerconfig_contents",
+        "linkerconfig_generator",
+    ],
+    data: [
+        "generator/tests/data/*.txt",
+    ],
 }

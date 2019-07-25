@@ -20,7 +20,7 @@ namespace android {
 namespace linkerconfig {
 namespace generator {
 
-void LoadVariable();
+void LoadVariables();
 
 }  // namespace generator
 }  // namespace linkerconfig
