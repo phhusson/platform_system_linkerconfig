@@ -46,7 +46,7 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.CreateLink("system").AddSharedLib("@{LLNDK_LIBRARIES}");
   ns.CreateLink("vndk").AddSharedLib(
-      {"@{VNDK_SAMEPROCESS_LIBRARIES", "@{VNDK_CORE_LIBRARIES}"});
+      {"@{VNDK_SAMEPROCESS_LIBRARIES}", "@{VNDK_CORE_LIBRARIES}"});
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
     ns.CreateLink("vndk_in_system")
         .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
