@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #pragma once
 
-#include <map>
-#include <optional>
 #include <string>
 
 namespace android {
 namespace linkerconfig {
-namespace modules {
-class Variables {
- public:
-  static std::optional<std::string> GetValue(const std::string& key);
-  static void AddValue(const std::string& key, const std::string& value);
-
- private:
-  static std::map<std::string, std::string> variables_;
-};
-}  // namespace modules
+namespace generator {
+std::string GetLibrariesString(std::string library_file_path);
+std::string GetPublicLibrariesString(std::string library_file_path,
+                                     std::string private_library_file_path);
+std::string GetPrivateLibrariesString(std::string library_file_path,
+                                      std::string private_library_file_path);
+}  // namespace generator
 }  // namespace linkerconfig
 }  // namespace android
