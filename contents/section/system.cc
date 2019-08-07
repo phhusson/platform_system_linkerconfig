@@ -28,6 +28,7 @@ namespace {
 const std::vector<std::string> kBinaryPath = {
     "/system/bin/",
     "/system/xbin/",
+    "/@{SYSTEM_EXT:system_ext}/bin/",
     "/@{PRODUCT:product}/bin/",
     "/data",
 };
@@ -48,6 +49,7 @@ Section BuildSystemSection(Context& ctx) {
   namespaces.emplace_back(BuildSphalNamespace(ctx));
   namespaces.emplace_back(BuildRsNamespace(ctx));
   namespaces.emplace_back(BuildVndkNamespace(ctx));
+  namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
 
   return Section("system", kBinaryPath, std::move(namespaces));
 }
