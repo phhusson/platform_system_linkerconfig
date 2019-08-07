@@ -27,8 +27,6 @@ namespace android {
 namespace linkerconfig {
 namespace modules {
 
-using BinaryPathMap = std::map<std::string, std::string>;
-
 class Section {
  public:
   Section(std::string name, std::vector<std::string> binary_paths,
@@ -42,11 +40,11 @@ class Section {
   Section(Section&&) = default;
 
   void WriteConfig(ConfigWriter& writer);
-  void CollectBinaryPaths(BinaryPathMap& binary_paths);
+  std::vector<std::string> GetBinaryPaths();
+  std::string GetName();
 
   // For test usage
   Namespace* GetNamespace(const std::string& namespace_name);
-  std::string GetName();
 
  private:
   const std::string name_;
