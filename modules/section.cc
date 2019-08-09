@@ -16,8 +16,6 @@
 
 #include "linkerconfig/section.h"
 
-#include "linkerconfig/log.h"
-
 namespace android {
 namespace linkerconfig {
 namespace modules {
@@ -47,17 +45,8 @@ void Section::WriteConfig(ConfigWriter& writer) {
   }
 }
 
-void Section::CollectBinaryPaths(BinaryPathMap& all_binary_paths) {
-  for (auto& path : binary_paths_) {
-    auto it = all_binary_paths.find(path);
-    if (it != all_binary_paths.end()) {
-      LOG(WARNING) << "Binary path " << path << " already found from "
-                   << it->second << ". Path from " << name_
-                   << " will be ignored.";
-    } else {
-      all_binary_paths.emplace(std::make_pair(path, name_));
-    }
-  }
+std::vector<std::string> Section::GetBinaryPaths() {
+  return binary_paths_;
 }
 
 Namespace* Section::GetNamespace(const std::string& namespace_name) {
