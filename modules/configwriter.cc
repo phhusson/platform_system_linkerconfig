@@ -18,14 +18,9 @@
 
 #include <cstdarg>
 #include <cstdio>
-#include <iostream>
-#include <regex>
 
 #include "linkerconfig/log.h"
 #include "linkerconfig/variables.h"
-
-constexpr const char* kVariableRegex =
-    "@\\{([^@\\{\\}:]+)(:([^@\\{\\}:]*))?\\}";
 
 namespace android {
 namespace linkerconfig {
@@ -68,41 +63,13 @@ void ConfigWriter::WriteLine(const char* format, ...) {
 }
 
 void ConfigWriter::WriteLine(const std::string& line) {
-  auto resolved_line = ResolveVariables(prefix_ + line);
+  auto resolved_line = Variables::ResolveVariables(prefix_ + line);
   content_ << resolved_line << std::endl;
 }
 
 std::string ConfigWriter::ToString() {
   return content_.str();
 }
-
-std::string ConfigWriter::ResolveVariables(const std::string& str) {
-  std::string result = str;
-  std::regex variable_regex(kVariableRegex);
-  std::smatch sm;
-
-  while (std::regex_search(result, sm, variable_regex)) {
-    std::stringstream ss;
-    ss << sm.prefix();
-    auto resolved_value = Variables::GetValue(sm[1]);
-    if (resolved_value.has_value()) {
-      ss << resolved_value.value();
-    } else {
-      LOG(WARNING) << "Unable to find value for " << sm[1];
-      bool contains_default = sm[2].length() > 0;
-      if (contains_default) {
-        ss << sm[3];
-      } else {
-        LOG(FATAL) << "There is no default value defined for " << sm[1];
-      }
-    }
-    ss << ResolveVariables(sm.suffix());
-    result = ss.str();
-  }
-
-  return result;
-}
-
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android

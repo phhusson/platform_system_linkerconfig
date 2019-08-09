@@ -94,12 +94,6 @@ namespace.default.asan.permitted.paths += /data/asan/permitted_path1
 namespace.default.asan.permitted.paths += /permitted_path2
 )";
 
-constexpr const char* kSectionBinaryPathExpectedResult =
-    R"(/root/a
-/root/a/b
-/root/b
-)";
-
 TEST(linkerconfig_section, section_with_namespaces) {
   ConfigWriter writer;
 
@@ -139,31 +133,7 @@ TEST(linkerconfig_section, binary_paths) {
   std::vector<Namespace> empty_namespace;
   Section section("test_section", binary_paths, std::move(empty_namespace));
 
-  BinaryPathMap paths;
-  section.CollectBinaryPaths(paths);
+  auto section_binary_paths = section.GetBinaryPaths();
 
-  std::string binary_path_output = "";
-  for (auto& item : paths) {
-    binary_path_output += item.first + "\n";
-  }
-
-  ASSERT_EQ(binary_path_output, kSectionBinaryPathExpectedResult);
-}
-
-TEST(linkerconfig_section, same_binary_paths) {
-  std::vector<std::string> binary_paths_a = {"/root/a", "/root/b"};
-  std::vector<Namespace> empty_namespace_a;
-  Section section_a("test_section_a", binary_paths_a,
-                    std::move(empty_namespace_a));
-
-  std::vector<std::string> binary_paths_b = {"/root/b", "/root/c"};
-  std::vector<Namespace> empty_namespace_b;
-  Section section_b("test_section_b", binary_paths_b,
-                    std::move(empty_namespace_b));
-
-  BinaryPathMap paths;
-  section_a.CollectBinaryPaths(paths);
-  section_b.CollectBinaryPaths(paths);
-
-  ASSERT_EQ(paths["/root/b"], "test_section_a");
+  ASSERT_EQ(section_binary_paths, binary_paths);
 }
