@@ -33,8 +33,6 @@ class ConfigWriter {
  private:
   std::stringstream content_;
   std::string prefix_;
-
-  std::string ResolveVariables(const std::string& str);
 };
 
 }  // namespace modules

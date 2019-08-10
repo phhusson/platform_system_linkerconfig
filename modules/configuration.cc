@@ -16,18 +16,35 @@
 
 #include "linkerconfig/configuration.h"
 
+#include "linkerconfig/log.h"
+#include "linkerconfig/variables.h"
+
 namespace android {
 namespace linkerconfig {
 namespace modules {
 void Configuration::WriteConfig(ConfigWriter& writer) {
-  BinaryPathMap binary_paths;
+  std::map<std::string, std::string> resolved_binary_paths;
 
   for (auto& section : sections_) {
-    section.CollectBinaryPaths(binary_paths);
+    auto binary_paths = section.GetBinaryPaths();
+    auto section_name = section.GetName();
+    for (auto& path : binary_paths) {
+      auto resolved_path = Variables::ResolveVariables(path);
+      auto it = resolved_binary_paths.find(resolved_path);
+      if (it != resolved_binary_paths.end()) {
+        LOG(WARNING) << "Binary path " << path << " already found from "
+                     << it->second << ". Path from " << section_name
+                     << " will be ignored.";
+      } else {
+        resolved_binary_paths[resolved_path] = section_name;
+      }
+    }
   }
 
   // Navigate in reverse order to keep sub directories on top of parent directory
-  for (auto it = binary_paths.rbegin(); it != binary_paths.rend(); it++) {
+  for (auto it = resolved_binary_paths.rbegin();
+       it != resolved_binary_paths.rend();
+       it++) {
     writer.WriteLine("dir.%s = %s", it->second.c_str(), it->first.c_str());
   }
 
