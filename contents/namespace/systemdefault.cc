@@ -23,28 +23,60 @@ using android::linkerconfig::modules::Namespace;
 
 namespace {
 const std::vector<std::string> kLibsFromRuntimeLegacy = {
-    "libart.so:libartd.so", "libdexfile_external.so", "libnativebridge.so",
-    "libnativehelper.so", "libnativeloader.so", "libandroidicu.so",
+    "libart.so:libartd.so",
+    "libdexfile_external.so",
+    "libnativebridge.so",
+    "libnativehelper.so",
+    "libnativeloader.so",
+    "libandroidicu.so",
     // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
     "libpac.so"};
 
 const std::vector<std::string> kLibsFromRuntime = {
-    "libdexfile_external.so", "libnativebridge.so", "libnativehelper.so",
-    "libnativeloader.so", "libandroidicu.so"};
+    "libdexfile_external.so",
+    "libdexfiled_external.so",
+    "libnativebridge.so",
+    "libnativehelper.so",
+    "libnativeloader.so",
+    "libandroidicu.so",
+    "libpac.so",
+    "@{SANITIZER_RUNTIME_LIBRARIES}",
+    // TODO(b/120786417 or b/134659294): libicuuc.so and libicui18n.so are kept
+    // for app compat.
+    "libicui18n.so",
+    "libicuuc.so"};
 
 const std::vector<std::string> kPermittedPaths = {
-    "/system/${LIB}/drm", "/system/${LIB}/extractors", "/system/${LIB}/hw",
-    "/@{SYSTEM_EXT:system_ext}/${LIB}", "/@{PRODUCT:product}/${LIB}",
+    "/system/${LIB}/drm",
+    "/system/${LIB}/extractors",
+    "/system/${LIB}/hw",
+    "/@{SYSTEM_EXT:system_ext}/${LIB}",
+    "/@{PRODUCT:product}/${LIB}",
     // These are where odex files are located. libart has to be able to
     // dlopen the files
-    "/system/framework", "/system/app", "/system/priv-app",
-    "/@{SYSTEM_EXT:system_ext}/framework", "/@{SYSTEM_EXT:system_ext}/app",
-    "/@{SYSTEM_EXT:system_ext}/priv-app", "/vendor/framework", "/vendor/app",
-    "/vendor/priv-app", "/system/vendor/framework", "/system/vendor/app",
-    "/system/vendor/priv-app", "/odm/framework", "/odm/app", "/odm/priv-app",
-    "/oem/app", "/@{PRODUCT:product}/framework", "/@{PRODUCT:product}/app",
-    "/@{PRODUCT:product}/priv-app", "/data", "/mnt/expand",
-    "/apex/com.android.runtime/${LIB}/bionic", "/system/${LIB}/bootstrap"};
+    "/system/framework",
+    "/system/app",
+    "/system/priv-app",
+    "/@{SYSTEM_EXT:system_ext}/framework",
+    "/@{SYSTEM_EXT:system_ext}/app",
+    "/@{SYSTEM_EXT:system_ext}/priv-app",
+    "/vendor/framework",
+    "/vendor/app",
+    "/vendor/priv-app",
+    "/system/vendor/framework",
+    "/system/vendor/app",
+    "/system/vendor/priv-app",
+    "/odm/framework",
+    "/odm/app",
+    "/odm/priv-app",
+    "/oem/app",
+    "/@{PRODUCT:product}/framework",
+    "/@{PRODUCT:product}/app",
+    "/@{PRODUCT:product}/priv-app",
+    "/data",
+    "/mnt/expand",
+    "/apex/com.android.runtime/${LIB}/bionic",
+    "/system/${LIB}/bootstrap"};
 
 void BuildPermittedPath(Namespace& ns) {
   for (const auto& path : kPermittedPaths) {
@@ -81,6 +113,7 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
   ns.CreateLink("runtime").AddSharedLib(is_legacy ? kLibsFromRuntimeLegacy
                                                   : kLibsFromRuntime);
   ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
+  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

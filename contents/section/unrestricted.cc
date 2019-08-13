@@ -44,6 +44,7 @@ Section BuildUnrestrictedSection(Context& ctx) {
   namespaces.emplace_back(BuildMediaNamespace(ctx));
   namespaces.emplace_back(BuildConscryptNamespace(ctx));
   namespaces.emplace_back(BuildResolvNamespace(ctx));
+  namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
 
   return Section("unrestricted", kBinaryPath, std::move(namespaces));
 }

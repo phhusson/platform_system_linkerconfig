@@ -25,7 +25,11 @@ using android::linkerconfig::modules::Section;
 
 namespace {
 const std::vector<std::string> kLegacyBinaryPath = {
-    "/system", "/product", "/vendor", "/odm", "/sbin",
+    "/system",
+    "/product",
+    "/vendor",
+    "/odm",
+    "/sbin",
 };
 }  // namespace
 
@@ -41,6 +45,7 @@ Section BuildLegacySection(Context& ctx) {
   namespaces.emplace_back(BuildMediaNamespace(ctx));
   namespaces.emplace_back(BuildConscryptNamespace(ctx));
   namespaces.emplace_back(BuildResolvNamespace(ctx));
+  namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
 
   return Section("legacy", kLegacyBinaryPath, std::move(namespaces));
 }
