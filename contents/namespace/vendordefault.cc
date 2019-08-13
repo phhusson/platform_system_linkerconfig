@@ -44,13 +44,16 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/system/vendor", /*also_in_asan=*/false,
                       /*with_data_asan=*/false);
 
-  ns.CreateLink("system").AddSharedLib("@{LLNDK_LIBRARIES}");
+  ns.CreateLink("runtime").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
+  ns.CreateLink("system").AddSharedLib(
+      {"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
   ns.CreateLink("vndk").AddSharedLib(
       {"@{VNDK_SAMEPROCESS_LIBRARIES}", "@{VNDK_CORE_LIBRARIES}"});
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
     ns.CreateLink("vndk_in_system")
         .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
   }
+  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

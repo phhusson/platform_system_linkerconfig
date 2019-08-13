@@ -23,8 +23,18 @@ using android::linkerconfig::modules::Namespace;
 
 namespace {
 const std::vector<std::string> kLibsFromRuntime = {
-    "libdexfile_external.so", "libnativebridge.so", "libnativehelper.so",
-    "libnativeloader.so",     "libandroidicu.so",   "libpac.so"};
+    "libdexfile_external.so",
+    "libdexfiled_external.so",
+    "libnativebridge.so",
+    "libnativehelper.so",
+    "libnativeloader.so",
+    "libandroidicu.so",
+    "libpac.so",
+    // TODO(b/120786417 or b/134659294): libicuuc.so and libicui18n.so are kept
+    // for app compat.
+    "libicui18n.so",
+    "libicuuc.so",
+    "@{SANITIZER_RUNTIME_LIBRARIES}"};
 }  // namespace
 
 namespace android {
@@ -42,6 +52,7 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
 
   ns.CreateLink("runtime").AddSharedLib(kLibsFromRuntime);
   ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
+  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }
