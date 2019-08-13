@@ -41,6 +41,8 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
   ns.CreateLink("system").AddSharedLib(
       {"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
   ns.CreateLink("vndk", true);
+  ns.CreateLink("runtime").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
+  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

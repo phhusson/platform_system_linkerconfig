@@ -16,23 +16,28 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+#include "linkerconfig/environment.h"
+#include "linkerconfig/namespace.h"
+
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Namespace BuildPostInstallNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("default", /*is_isolated=*/false,
-               /*is_visible=*/false);
-  ns.AddSearchPath("/system/${LIB}",
-                   /*also_in_asan=*/false,
+Namespace BuildNeuralNetworksNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("neuralnetworks", /*is_isolated=*/true, /*is_visible=*/true);
+  ns.AddSearchPath("/apex/com.android.neuralnetworks/${LIB}",
+                   /*also_in_asan=*/true,
                    /*with_data_asan=*/false);
-  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}",
-                   /*also_in_asan=*/false,
-                   /*with_data_asan=*/false);
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}",
-                   /*also_in_asan=*/false,
-                   /*with_data_asan=*/false);
+
+  ns.CreateLink("default").AddSharedLib({"libc.so",
+                                         "libcgrouprc.so",
+                                         "libdl.so",
+                                         "liblog.so",
+                                         "libm.so",
+                                         "libnativewindow.so",
+                                         "libsync.so",
+                                         "libvndksupport.so"});
 
   return ns;
 }
