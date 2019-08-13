@@ -25,7 +25,9 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
   bool is_system_section = ctx.IsSystemSection();
-  Namespace ns("vndk", /*is_isolated=*/true, /*is_visible=*/true);
+  Namespace ns("vndk",
+               /*is_isolated=*/is_system_section,
+               /*is_visible=*/is_system_section);
 
   ns.AddSearchPath("/odm/${LIB}/vndk-sp", /*also_in_asan=*/true,
                    /*with_data_asan=*/true);
@@ -62,6 +64,8 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.CreateLink(is_system_section ? "default" : "system")
       .AddSharedLib({"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
+  ns.CreateLink("runtime").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
+
   if (is_system_section) {
     ns.CreateLink("sphal", true);
   } else {
@@ -72,6 +76,8 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
           .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES");
     }
   }
+
+  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

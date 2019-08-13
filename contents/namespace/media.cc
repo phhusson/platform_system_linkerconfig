@@ -42,8 +42,12 @@ const std::vector<std::string> kLibsFromDefaultLegacy = {
     "libclang_rt.hwasan-aarch64-android.so"};
 
 const std::vector<std::string> kLibsFromDefault = {
-    "@{LLNDK_LIBRARIES}", "libandroid.so", "libbinder_ndk.so",
-    "libmediametrics.so", "@{SANITIZER_RUNTIME_LIBRARIES}"};
+    "@{LLNDK_LIBRARIES}",
+    "libbinder_ndk.so",
+    "libmediametrics.so",
+    "@{SANITIZER_RUNTIME_LIBRARIES}"};
+
+const std::vector<std::string> kLibsFromDefaultSystem = {"libcgrouprc.so"};
 }  // namespace
 
 namespace android {
@@ -51,13 +55,26 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
   bool is_legacy = android::linkerconfig::modules::IsLegacyDevice();
+  bool is_system_section = ctx.IsSystemSection();
+
   Namespace ns("media", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.media/${LIB}", /*also_in_asan=*/true,
                    /*with_data_asan=*/false);
   ns.AddPermittedPath("/apex/com.android.media/${LIB}/extractors",
-                      /*also_in_asan=*/false, /*with_data_asan=*/false);
-  ns.CreateLink("default").AddSharedLib(is_legacy ? kLibsFromDefaultLegacy
-                                                  : kLibsFromDefault);
+                      /*also_in_asan=*/true,
+                      /*with_data_asan=*/false);
+
+  auto& link_to_default = ns.CreateLink("default");
+  if (is_legacy) {
+    link_to_default.AddSharedLib(kLibsFromDefaultLegacy);
+  } else {
+    link_to_default.AddSharedLib(kLibsFromDefault);
+    if (is_system_section) {
+      link_to_default.AddSharedLib(kLibsFromDefaultSystem);
+    }
+  }
+
+  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }
