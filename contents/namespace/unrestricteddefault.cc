@@ -19,6 +19,7 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
@@ -43,12 +44,9 @@ namespace contents {
 Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/false, /*is_visible=*/true);
 
-  ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
 
   ns.CreateLink("runtime").AddSharedLib(kLibsFromRuntime);
   ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
