@@ -17,9 +17,10 @@
 #include <gtest/gtest.h>
 
 #include "linkerconfig/baseconfig.h"
-
 #include "linkerconfig/variables.h"
 #include "testbase.h"
+
+using android::linkerconfig::modules::AsanPath;
 
 TEST(linkerconfig_default_backward_compatibility, common_system_section) {
   MockVariables();
@@ -33,68 +34,76 @@ TEST(linkerconfig_default_backward_compatibility, common_system_section) {
   ASSERT_TRUE(default_namespace);
 
   ASSERT_TRUE(default_namespace->ContainsPermittedPath("/vendor/framework",
-                                                       true, false));
-  ASSERT_TRUE(
-      default_namespace->ContainsPermittedPath("/vendor/app", true, false));
-  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/vendor/priv-app", true,
-                                                       false));
+                                                       AsanPath::SAME_PATH));
+  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/vendor/app",
+                                                       AsanPath::SAME_PATH));
+  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/vendor/priv-app",
+                                                       AsanPath::SAME_PATH));
   ASSERT_TRUE(default_namespace->ContainsPermittedPath(
-      "/system/vendor/framework", true, false));
+      "/system/vendor/framework", AsanPath::SAME_PATH));
   ASSERT_TRUE(default_namespace->ContainsPermittedPath("/system/vendor/app",
-                                                       true, false));
+                                                       AsanPath::SAME_PATH));
   ASSERT_TRUE(default_namespace->ContainsPermittedPath(
-      "/system/vendor/priv-app", true, false));
-  ASSERT_TRUE(
-      default_namespace->ContainsPermittedPath("/odm/framework", true, false));
-  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/odm/app", true, false));
-  ASSERT_TRUE(
-      default_namespace->ContainsPermittedPath("/odm/priv-app", true, false));
+      "/system/vendor/priv-app", AsanPath::SAME_PATH));
+  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/odm/framework",
+                                                       AsanPath::SAME_PATH));
+  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/odm/app",
+                                                       AsanPath::SAME_PATH));
+  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/odm/priv-app",
+                                                       AsanPath::SAME_PATH));
 
   auto sphal_namespace = system_section->GetNamespace("sphal");
   ASSERT_TRUE(sphal_namespace);
 
-  ASSERT_TRUE(sphal_namespace->ContainsSearchPath("/odm/${LIB}", true, true));
-  ASSERT_TRUE(sphal_namespace->ContainsSearchPath("/vendor/${LIB}", true, true));
+  ASSERT_TRUE(sphal_namespace->ContainsSearchPath("/odm/${LIB}",
+                                                  AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(sphal_namespace->ContainsSearchPath("/vendor/${LIB}",
+                                                  AsanPath::WITH_DATA_ASAN));
   ASSERT_TRUE(
-      sphal_namespace->ContainsSearchPath("/vendor/${LIB}/hw", false, false));
+      sphal_namespace->ContainsSearchPath("/vendor/${LIB}/hw", AsanPath::NONE));
 
-  ASSERT_TRUE(sphal_namespace->ContainsPermittedPath("/odm/${LIB}", true, true));
-  ASSERT_TRUE(
-      sphal_namespace->ContainsPermittedPath("/vendor/${LIB}", true, true));
+  ASSERT_TRUE(sphal_namespace->ContainsPermittedPath("/odm/${LIB}",
+                                                     AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(sphal_namespace->ContainsPermittedPath("/vendor/${LIB}",
+                                                     AsanPath::WITH_DATA_ASAN));
   ASSERT_TRUE(sphal_namespace->ContainsPermittedPath("/system/vendor/${LIB}",
-                                                     false, false));
+                                                     AsanPath::NONE));
 
   auto rs_namespace = system_section->GetNamespace("rs");
   ASSERT_TRUE(rs_namespace);
 
-  ASSERT_TRUE(
-      rs_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp", true, true));
-  ASSERT_TRUE(
-      rs_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp", true, true));
-  ASSERT_TRUE(rs_namespace->ContainsSearchPath("/odm/${LIB}", true, true));
-  ASSERT_TRUE(rs_namespace->ContainsSearchPath("/vendor/${LIB}", true, true));
+  ASSERT_TRUE(rs_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp",
+                                               AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(rs_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp",
+                                               AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(rs_namespace->ContainsSearchPath("/odm/${LIB}",
+                                               AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(rs_namespace->ContainsSearchPath("/vendor/${LIB}",
+                                               AsanPath::WITH_DATA_ASAN));
 
-  ASSERT_TRUE(rs_namespace->ContainsPermittedPath("/odm/${LIB}", true, true));
-  ASSERT_TRUE(rs_namespace->ContainsPermittedPath("/vendor/${LIB}", true, true));
+  ASSERT_TRUE(rs_namespace->ContainsPermittedPath("/odm/${LIB}",
+                                                  AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(rs_namespace->ContainsPermittedPath("/vendor/${LIB}",
+                                                  AsanPath::WITH_DATA_ASAN));
   ASSERT_TRUE(rs_namespace->ContainsPermittedPath("/system/vendor/${LIB}",
-                                                  false, false));
+                                                  AsanPath::NONE));
 
   auto vndk_namespace = system_section->GetNamespace("vndk");
   ASSERT_TRUE(vndk_namespace);
 
-  ASSERT_TRUE(
-      vndk_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp", true, true));
-  ASSERT_TRUE(
-      vndk_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp", true, true));
+  ASSERT_TRUE(vndk_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp",
+                                                 AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(vndk_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp",
+                                                 AsanPath::WITH_DATA_ASAN));
 
-  ASSERT_TRUE(
-      vndk_namespace->ContainsPermittedPath("/odm/${LIB}/hw", true, true));
-  ASSERT_TRUE(
-      vndk_namespace->ContainsPermittedPath("/odm/${LIB}/egl", true, true));
-  ASSERT_TRUE(
-      vndk_namespace->ContainsPermittedPath("/vendor/${LIB}/hw", true, true));
-  ASSERT_TRUE(
-      vndk_namespace->ContainsPermittedPath("/vendor/${LIB}/egl", true, true));
+  ASSERT_TRUE(vndk_namespace->ContainsPermittedPath("/odm/${LIB}/hw",
+                                                    AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(vndk_namespace->ContainsPermittedPath("/odm/${LIB}/egl",
+                                                    AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(vndk_namespace->ContainsPermittedPath("/vendor/${LIB}/hw",
+                                                    AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(vndk_namespace->ContainsPermittedPath("/vendor/${LIB}/egl",
+                                                    AsanPath::WITH_DATA_ASAN));
 }
 
 TEST(linkerconfig_default_backward_compatibility, common_vendor_section) {
@@ -108,25 +117,28 @@ TEST(linkerconfig_default_backward_compatibility, common_vendor_section) {
   auto default_namespace = vendor_section->GetNamespace("default");
   ASSERT_TRUE(default_namespace);
 
-  ASSERT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}", true, true));
-  ASSERT_TRUE(
-      default_namespace->ContainsSearchPath("/vendor/${LIB}", true, true));
-  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/odm", true, true));
-  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/vendor", true, true));
-  ASSERT_TRUE(
-      default_namespace->ContainsPermittedPath("/system/vendor", false, false));
+  ASSERT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}",
+                                                    AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}",
+                                                    AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(default_namespace->ContainsPermittedPath(
+      "/odm", AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(default_namespace->ContainsPermittedPath(
+      "/vendor", AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(default_namespace->ContainsPermittedPath("/system/vendor",
+                                                       AsanPath::NONE));
 
   auto vndk_namespace = vendor_section->GetNamespace("vndk");
   ASSERT_TRUE(vndk_namespace);
 
-  ASSERT_TRUE(
-      vndk_namespace->ContainsSearchPath("/odm/${LIB}/vndk", true, true));
-  ASSERT_TRUE(
-      vndk_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp", true, true));
-  ASSERT_TRUE(
-      vndk_namespace->ContainsSearchPath("/vendor/${LIB}/vndk", true, true));
-  ASSERT_TRUE(
-      vndk_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp", true, true));
+  ASSERT_TRUE(vndk_namespace->ContainsSearchPath("/odm/${LIB}/vndk",
+                                                 AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(vndk_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp",
+                                                 AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(vndk_namespace->ContainsSearchPath("/vendor/${LIB}/vndk",
+                                                 AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(vndk_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp",
+                                                 AsanPath::WITH_DATA_ASAN));
 }
 
 TEST(linkerconfig_default_backward_compatibility, common_unrestricted_section) {
@@ -140,9 +152,10 @@ TEST(linkerconfig_default_backward_compatibility, common_unrestricted_section) {
   auto default_namespace = unrestricted_section->GetNamespace("default");
   ASSERT_TRUE(default_namespace);
 
-  ASSERT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}", true, true));
-  ASSERT_TRUE(
-      default_namespace->ContainsSearchPath("/vendor/${LIB}", true, true));
+  ASSERT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}",
+                                                    AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}",
+                                                    AsanPath::WITH_DATA_ASAN));
 }
 
 TEST(linkerconfig_default_backward_compatibility, vndk_27) {
@@ -157,8 +170,8 @@ TEST(linkerconfig_default_backward_compatibility, vndk_27) {
   auto default_namespace = vendor_section->GetNamespace("default");
   ASSERT_TRUE(default_namespace);
 
-  ASSERT_TRUE(
-      default_namespace->ContainsSearchPath("/vendor/${LIB}/hw", true, true));
-  ASSERT_TRUE(
-      default_namespace->ContainsSearchPath("/vendor/${LIB}/egl", true, true));
+  ASSERT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}/hw",
+                                                    AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}/egl",
+                                                    AsanPath::WITH_DATA_ASAN));
 }

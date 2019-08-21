@@ -19,6 +19,7 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
@@ -80,7 +81,7 @@ const std::vector<std::string> kPermittedPaths = {
 
 void BuildPermittedPath(Namespace& ns) {
   for (const auto& path : kPermittedPaths) {
-    ns.AddPermittedPath(path, true, false);
+    ns.AddPermittedPath(path, AsanPath::SAME_PATH);
   }
 }
 }  // namespace
@@ -93,17 +94,12 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/!is_legacy,
                /*is_visible=*/true);
 
-  ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}",
-                   /*also_in_asan=*/true, /*with_data_asan=*/true);
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
   if (is_legacy) {
-    ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
-                     /*with_data_asan=*/true);
-    ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
-                     /*with_data_asan=*/true);
+    ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
   }
 
   if (!is_legacy) {

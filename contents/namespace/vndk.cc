@@ -18,6 +18,7 @@
 
 #include "linkerconfig/environment.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -29,37 +30,27 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
                /*is_isolated=*/is_system_section,
                /*is_visible=*/is_system_section);
 
-  ns.AddSearchPath("/odm/${LIB}/vndk-sp", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/vendor/${LIB}/vndk-sp", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/system/${LIB}/vndk-sp-@{VNDK_VER}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/system/${LIB}/vndk-sp-@{VNDK_VER}",
+                   AsanPath::WITH_DATA_ASAN);
 
   if (!is_system_section) {
-    ns.AddSearchPath("/odm/${LIB}/vndk", /*also_in_asan=*/true,
-                     /*with_data_asan=*/true);
-    ns.AddSearchPath("/vendor/${LIB}/vndk", /*also_in_asan=*/true,
-                     /*with_data_asan=*/true);
-    ns.AddSearchPath("/system/${LIB}/vndk-@{VNDK_VER}", /*also_in_asan=*/true,
-                     /*with_data_asan=*/true);
+    ns.AddSearchPath("/odm/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/vendor/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/system/${LIB}/vndk-@{VNDK_VER}",
+                     AsanPath::WITH_DATA_ASAN);
   }
 
   if (is_system_section) {
-    ns.AddPermittedPath("/odm/${LIB}/hw", /*also_in_asan=*/true,
-                        /*with_data_asan=*/true);
-    ns.AddPermittedPath("/odm/${LIB}/egl", /*also_in_asan=*/true,
-                        /*with_data_asan=*/true);
-    ns.AddPermittedPath("/vendor/${LIB}/hw", /*also_in_asan=*/true,
-                        /*with_data_asan=*/true);
-    ns.AddPermittedPath("/vendor/${LIB}/egl", /*also_in_asan=*/true,
-                        /*with_data_asan=*/true);
-    ns.AddPermittedPath("/system/vendor/${LIB}/hw", /*also_in_asan=*/false,
-                        /*with_data_asan=*/false);
-    ns.AddPermittedPath("/system/vendor/${LIB}/egl", /*also_in_asan=*/false,
-                        /*with_data_asan=*/false);
+    ns.AddPermittedPath("/odm/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
+    ns.AddPermittedPath("/odm/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
+    ns.AddPermittedPath("/vendor/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
+    ns.AddPermittedPath("/vendor/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
+    ns.AddPermittedPath("/system/vendor/${LIB}/hw", AsanPath::NONE);
+    ns.AddPermittedPath("/system/vendor/${LIB}/egl", AsanPath::NONE);
     ns.AddPermittedPath("/system/${LIB}/vndk-sp-@{VNDK_VER}/hw",
-                        /*also_in_asan=*/true, /*with_data_asan=*/true);
+                        AsanPath::WITH_DATA_ASAN);
   }
 
   ns.CreateLink(is_system_section ? "default" : "system")
