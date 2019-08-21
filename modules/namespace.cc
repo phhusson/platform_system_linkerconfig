@@ -79,8 +79,8 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
 
   bool is_first = true;
   for (const auto& whitelisted : whitelisted_) {
-    writer.WriteLine("whitelisted %s %s",
-                     is_first ? "=" : "+=", whitelisted.c_str());
+    writer.WriteLine(
+        "whitelisted %s %s", is_first ? "=" : "+=", whitelisted.c_str());
     is_first = false;
   }
 
@@ -106,27 +106,36 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
   writer.ResetPrefix();
 }
 
-void Namespace::AddSearchPath(const std::string& path, bool in_asan,
-                              bool with_data_asan) {
+void Namespace::AddSearchPath(const std::string& path, AsanPath path_from_asan) {
   search_paths_.push_back(path);
 
-  if (in_asan) {
-    asan_search_paths_.push_back(path);
-    if (with_data_asan) {
+  switch (path_from_asan) {
+    case AsanPath::NONE:
+      break;
+    case AsanPath::SAME_PATH:
+      asan_search_paths_.push_back(path);
+      break;
+    case AsanPath::WITH_DATA_ASAN:
       asan_search_paths_.push_back(kDataAsanPath + path);
-    }
+      asan_search_paths_.push_back(path);
+      break;
   }
 }
 
-void Namespace::AddPermittedPath(const std::string& path, bool in_asan,
-                                 bool with_data_asan) {
+void Namespace::AddPermittedPath(const std::string& path,
+                                 AsanPath path_from_asan) {
   permitted_paths_.push_back(path);
 
-  if (in_asan) {
-    asan_permitted_paths_.push_back(path);
-    if (with_data_asan) {
+  switch (path_from_asan) {
+    case AsanPath::NONE:
+      break;
+    case AsanPath::SAME_PATH:
+      asan_permitted_paths_.push_back(path);
+      break;
+    case AsanPath::WITH_DATA_ASAN:
       asan_permitted_paths_.push_back(kDataAsanPath + path);
-    }
+      asan_permitted_paths_.push_back(path);
+      break;
   }
 }
 
@@ -138,18 +147,20 @@ std::string Namespace::GetName() {
   return name_;
 }
 
-bool Namespace::ContainsSearchPath(const std::string& path, bool also_in_asan,
-                                   bool with_data_asan) {
+bool Namespace::ContainsSearchPath(const std::string& path,
+                                   AsanPath path_from_asan) {
   return FindFromPathList(search_paths_, path) &&
-         (!also_in_asan || FindFromPathList(asan_search_paths_, path)) &&
-         (!also_in_asan || !with_data_asan ||
+         (path_from_asan == AsanPath::NONE ||
+          FindFromPathList(asan_search_paths_, path)) &&
+         (path_from_asan != AsanPath::WITH_DATA_ASAN ||
           FindFromPathList(asan_search_paths_, kDataAsanPath + path));
 }
 bool Namespace::ContainsPermittedPath(const std::string& path,
-                                      bool also_in_asan, bool with_data_asan) {
+                                      AsanPath path_from_asan) {
   return FindFromPathList(permitted_paths_, path) &&
-         (!also_in_asan || FindFromPathList(asan_permitted_paths_, path)) &&
-         (!also_in_asan || !with_data_asan ||
+         (path_from_asan == AsanPath::NONE ||
+          FindFromPathList(asan_permitted_paths_, path)) &&
+         (path_from_asan != AsanPath::WITH_DATA_ASAN ||
           FindFromPathList(asan_permitted_paths_, kDataAsanPath + path));
 }
 }  // namespace modules
