@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
@@ -39,8 +40,7 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildResolvNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("resolv", /*is_isolated=*/true, /*is_visible=*/true);
-  ns.AddSearchPath("/apex/com.android.resolv/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/false);
+  ns.AddSearchPath("/apex/com.android.resolv/${LIB}", AsanPath::SAME_PATH);
   ns.CreateLink("default").AddSharedLib(
       ctx.IsSystemSection() ? kLibsFromDefault : kLibsFromUnrestrictedDefault);
 

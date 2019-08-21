@@ -21,6 +21,7 @@
 
 #include "linkerconfig/environment.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
@@ -58,11 +59,9 @@ Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
   bool is_system_section = ctx.IsSystemSection();
 
   Namespace ns("media", /*is_isolated=*/true, /*is_visible=*/true);
-  ns.AddSearchPath("/apex/com.android.media/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/false);
+  ns.AddSearchPath("/apex/com.android.media/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/apex/com.android.media/${LIB}/extractors",
-                      /*also_in_asan=*/true,
-                      /*with_data_asan=*/false);
+                      AsanPath::SAME_PATH);
 
   auto& link_to_default = ns.CreateLink("default");
   if (is_legacy) {

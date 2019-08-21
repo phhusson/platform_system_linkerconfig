@@ -16,6 +16,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -24,24 +25,17 @@ namespace contents {
 Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("rs", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns.AddSearchPath("/odm/${LIB}/vndk-sp", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/vendor/${LIB}/vndk-sp", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/system/${LIB}/vndk-sp-@{VNDK_VER}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/system/${LIB}/vndk-sp-@{VNDK_VER}",
+                   AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
 
-  ns.AddPermittedPath("/odm/${LIB}", /*also_in_asan=*/true,
-                      /*with_data_asan=*/true);
-  ns.AddPermittedPath("/vendor/${LIB}", /*also_in_asan=*/true,
-                      /*with_data_asan=*/true);
-  ns.AddPermittedPath("/system/vendor/${LIB}", /*also_in_asan=*/false,
-                      /*with_data_asan=*/false);
-  ns.AddPermittedPath("/data", /*also_in_asan=*/true, /*with_data_asan=*/false);
+  ns.AddPermittedPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddPermittedPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddPermittedPath("/system/vendor/${LIB}", AsanPath::NONE);
+  ns.AddPermittedPath("/data", AsanPath::SAME_PATH);
 
   ns.CreateLink("default").AddSharedLib({"@{LLNDK_LIBRARIES}",
                                          "@{SANITIZER_RUNTIME_LIBRARIES}",
