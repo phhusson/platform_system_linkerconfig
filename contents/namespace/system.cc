@@ -16,6 +16,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -23,12 +24,9 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("system", /*is_isolated=*/false, /*is_visible=*/false);
-  ns.AddSearchPath("/system/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
 
   ns.CreateLink("runtime").AddSharedLib(
       {"libdexfile_external.so",

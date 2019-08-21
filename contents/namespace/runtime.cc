@@ -16,6 +16,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -24,8 +25,7 @@ namespace contents {
 Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("runtime", /*is_isolated=*/true,
                /*is_visible=*/!ctx.IsVendorSection());
-  ns.AddSearchPath("/apex/com.android.runtime/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/false);
+  ns.AddSearchPath("/apex/com.android.runtime/${LIB}", AsanPath::SAME_PATH);
   // TODO(b/119867084): Restrict to Bionic dlopen dependencies and PALette
   // library when it exists.
   ns.CreateLink(ctx.IsVendorSection() ? "system" : "default", true);

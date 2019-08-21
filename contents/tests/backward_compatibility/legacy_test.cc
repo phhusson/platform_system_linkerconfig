@@ -17,8 +17,9 @@
 #include <gtest/gtest.h>
 
 #include "linkerconfig/legacy.h"
-
 #include "linkerconfig/variables.h"
+
+using android::linkerconfig::modules::AsanPath;
 
 TEST(linkerconfig_legacy, backward_compatibility) {
   android::linkerconfig::modules::Variables::AddValue("is_legacy", "true");
@@ -30,7 +31,8 @@ TEST(linkerconfig_legacy, backward_compatibility) {
   auto default_namespace = legacy_section->GetNamespace("default");
   ASSERT_TRUE(default_namespace);
 
-  ASSERT_TRUE(
-      default_namespace->ContainsSearchPath("/vendor/${LIB}", true, true));
-  ASSERT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}", true, true));
+  ASSERT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}",
+                                                    AsanPath::WITH_DATA_ASAN));
+  ASSERT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}",
+                                                    AsanPath::WITH_DATA_ASAN));
 }
