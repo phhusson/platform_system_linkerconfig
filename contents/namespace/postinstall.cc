@@ -16,6 +16,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -24,15 +25,9 @@ namespace contents {
 Namespace BuildPostInstallNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/false,
                /*is_visible=*/false);
-  ns.AddSearchPath("/system/${LIB}",
-                   /*also_in_asan=*/false,
-                   /*with_data_asan=*/false);
-  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}",
-                   /*also_in_asan=*/false,
-                   /*with_data_asan=*/false);
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}",
-                   /*also_in_asan=*/false,
-                   /*with_data_asan=*/false);
+  ns.AddSearchPath("/system/${LIB}", AsanPath::NONE);
+  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::NONE);
+  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::NONE);
 
   return ns;
 }
