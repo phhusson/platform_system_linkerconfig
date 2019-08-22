@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "linkerconfig/namespacebuilder.h"
 
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -27,8 +27,7 @@ namespace contents {
 Namespace BuildNeuralNetworksNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("neuralnetworks", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.neuralnetworks/${LIB}",
-                   /*also_in_asan=*/true,
-                   /*with_data_asan=*/false);
+                   AsanPath::SAME_PATH);
 
   ns.CreateLink("default").AddSharedLib({"libc.so",
                                          "libcgrouprc.so",

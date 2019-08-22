@@ -18,6 +18,7 @@
 
 #include "linkerconfig/environment.h"
 
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::GetVendorVndkVersion;
 using android::linkerconfig::modules::Namespace;
 
@@ -27,22 +28,17 @@ namespace contents {
 Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns.AddSearchPath("/odm/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
-  ns.AddSearchPath("/vendor/${LIB}", /*also_in_asan=*/true,
-                   /*with_data_asan=*/true);
+  ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
 
   if (GetVendorVndkVersion() == "27") {
-    ns.AddSearchPath("/vendor/${LIB}/hw", /*also_in_asan=*/true,
-                     /*with_data_asan=*/true);
-    ns.AddSearchPath("/vendor/${LIB}/egl", /*also_in_asan=*/true,
-                     /*with_data_asan=*/true);
+    ns.AddSearchPath("/vendor/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/vendor/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
   }
 
-  ns.AddPermittedPath("/odm", /*also_in_asan=*/true, /*with_data_asan=*/true);
-  ns.AddPermittedPath("/vendor", /*also_in_asan=*/true, /*with_data_asan=*/true);
-  ns.AddPermittedPath("/system/vendor", /*also_in_asan=*/false,
-                      /*with_data_asan=*/false);
+  ns.AddPermittedPath("/odm", AsanPath::WITH_DATA_ASAN);
+  ns.AddPermittedPath("/vendor", AsanPath::WITH_DATA_ASAN);
+  ns.AddPermittedPath("/system/vendor", AsanPath::NONE);
 
   ns.CreateLink("runtime").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
   ns.CreateLink("system").AddSharedLib(
