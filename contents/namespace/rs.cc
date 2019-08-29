@@ -40,7 +40,6 @@ Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
   ns.CreateLink("default").AddSharedLib({"@{LLNDK_LIBRARIES}",
                                          "@{SANITIZER_RUNTIME_LIBRARIES}",
                                          "@{PRIVATE_LLNDK_LIBRARIES:}"});
-  ns.CreateLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES}");
   ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
