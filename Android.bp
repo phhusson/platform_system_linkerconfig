@@ -127,3 +127,18 @@ cc_test {
         "generator/tests/data/*.txt",
     ],
 }
+
+cc_test {
+    name: "linkerconfig_contents_fulltest",
+    defaults: [ "linkerconfig_test_defaults" ],
+    local_include_dirs: [
+        "contents/tests/configuration/include",
+    ],
+    srcs: [
+        "contents/tests/configuration/*_test.cc",
+    ],
+    static_libs: [
+        "linkerconfig_modules",
+        "linkerconfig_contents",
+    ],
+}
