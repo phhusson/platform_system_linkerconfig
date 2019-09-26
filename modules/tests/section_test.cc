@@ -105,13 +105,11 @@ TEST(linkerconfig_section, section_with_namespaces) {
                                                    "default", "namespace2"));
   namespaces.emplace_back(CreateNamespaceWithPaths("namespace2", false, false));
 
-  std::vector<std::string> empty_list;
-
-  Section section("test_section", empty_list, std::move(namespaces));
+  Section section("test_section", std::move(namespaces));
 
   section.WriteConfig(writer);
   auto config = writer.ToString();
-  ASSERT_EQ(config, kSectionWithNamespacesExpectedResult);
+  ASSERT_EQ(kSectionWithNamespacesExpectedResult, config);
 }
 
 TEST(linkerconfig_section, section_with_one_namespace) {
@@ -120,20 +118,8 @@ TEST(linkerconfig_section, section_with_one_namespace) {
   std::vector<Namespace> namespaces;
   namespaces.emplace_back(CreateNamespaceWithPaths("default", false, false));
 
-  std::vector<std::string> empty_list;
-
-  Section section("test_section", empty_list, std::move(namespaces));
+  Section section("test_section", std::move(namespaces));
   section.WriteConfig(writer);
   auto config = writer.ToString();
-  ASSERT_EQ(config, kSectionWithOneNamespaceExpectedResult);
-}
-
-TEST(linkerconfig_section, binary_paths) {
-  std::vector<std::string> binary_paths = {"/root/a", "/root/a/b", "/root/b"};
-  std::vector<Namespace> empty_namespace;
-  Section section("test_section", binary_paths, std::move(empty_namespace));
-
-  auto section_binary_paths = section.GetBinaryPaths();
-
-  ASSERT_EQ(section_binary_paths, binary_paths);
+  ASSERT_EQ(kSectionWithOneNamespaceExpectedResult, config);
 }

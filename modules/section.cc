@@ -45,10 +45,6 @@ void Section::WriteConfig(ConfigWriter& writer) {
   }
 }
 
-std::vector<std::string> Section::GetBinaryPaths() {
-  return binary_paths_;
-}
-
 Namespace* Section::GetNamespace(const std::string& namespace_name) {
   for (auto& ns : namespaces_) {
     if (ns.GetName() == namespace_name) {

@@ -16,6 +16,8 @@
 
 #include "linkerconfig/configuration.h"
 
+#include <unordered_map>
+
 #include "linkerconfig/log.h"
 #include "linkerconfig/variables.h"
 
@@ -23,29 +25,22 @@ namespace android {
 namespace linkerconfig {
 namespace modules {
 void Configuration::WriteConfig(ConfigWriter& writer) {
-  std::map<std::string, std::string> resolved_binary_paths;
+  std::unordered_map<std::string, std::string> resolved_dirs;
 
-  for (auto& section : sections_) {
-    auto binary_paths = section.GetBinaryPaths();
-    auto section_name = section.GetName();
-    for (auto& path : binary_paths) {
-      auto resolved_path = Variables::ResolveVariables(path);
-      auto it = resolved_binary_paths.find(resolved_path);
-      if (it != resolved_binary_paths.end()) {
-        LOG(WARNING) << "Binary path " << path << " already found from "
-                     << it->second << ". Path from " << section_name
-                     << " will be ignored.";
-      } else {
-        resolved_binary_paths[resolved_path] = section_name;
-      }
+  for (auto& dir_to_section : dir_to_section_list_) {
+    auto resolved_dir = Variables::ResolveVariables(dir_to_section.first);
+
+    auto it = resolved_dirs.find(resolved_dir);
+
+    if (it != resolved_dirs.end()) {
+      LOG(WARNING) << "Binary path " << resolved_dir << " already found from "
+                   << it->second << ". Path from " << dir_to_section.second
+                   << " will be ignored.";
+    } else {
+      resolved_dirs[resolved_dir] = dir_to_section.second;
+      writer.WriteLine(
+          "dir.%s = %s", dir_to_section.second.c_str(), resolved_dir.c_str());
     }
-  }
-
-  // Navigate in reverse order to keep sub directories on top of parent directory
-  for (auto it = resolved_binary_paths.rbegin();
-       it != resolved_binary_paths.rend();
-       it++) {
-    writer.WriteLine("dir.%s = %s", it->second.c_str(), it->first.c_str());
   }
 
   for (auto& section : sections_) {
