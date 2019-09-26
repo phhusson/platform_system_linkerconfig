@@ -16,6 +16,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "linkerconfig/configwriter.h"
@@ -24,10 +25,14 @@
 namespace android {
 namespace linkerconfig {
 namespace modules {
+using DirToSection = std::pair<std::string, std::string>;
+
 class Configuration {
  public:
-  explicit Configuration(std::vector<Section> sections)
-      : sections_(std::move(sections)) {
+  explicit Configuration(std::vector<Section> sections,
+                         std::vector<DirToSection> dir_to_sections)
+      : sections_(std::move(sections)),
+        dir_to_section_list_(std::move(dir_to_sections)) {
   }
   Configuration(const Configuration&) = delete;
   Configuration(Configuration&&) = default;
@@ -39,6 +44,7 @@ class Configuration {
 
  private:
   std::vector<Section> sections_;
+  std::vector<DirToSection> dir_to_section_list_;
 };
 }  // namespace modules
 }  // namespace linkerconfig

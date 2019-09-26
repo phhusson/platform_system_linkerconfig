@@ -22,10 +22,6 @@ using android::linkerconfig::contents::SectionType;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
-namespace {
-const std::vector<std::string> kBinaryPath = {"/postinstall"};
-}  // namespace
-
 namespace android {
 namespace linkerconfig {
 namespace contents {
@@ -35,7 +31,7 @@ Section BuildPostInstallSection(Context& ctx) {
 
   namespaces.emplace_back(BuildPostInstallNamespace(ctx));
 
-  return Section("postinstall", kBinaryPath, std::move(namespaces));
+  return Section("postinstall", std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig
