@@ -24,16 +24,6 @@ using android::linkerconfig::contents::SectionType;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
-namespace {
-const std::vector<std::string> kBinaryPath = {
-    "/system/bin/",
-    "/system/xbin/",
-    "/@{SYSTEM_EXT:system_ext}/bin/",
-    "/@{PRODUCT:product}/bin/",
-    "/data",
-};
-}  // namespace
-
 namespace android {
 namespace linkerconfig {
 namespace contents {
@@ -51,7 +41,7 @@ Section BuildSystemSection(Context& ctx) {
   namespaces.emplace_back(BuildVndkNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
 
-  return Section("system", kBinaryPath, std::move(namespaces));
+  return Section("system", std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig

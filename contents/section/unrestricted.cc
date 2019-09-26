@@ -24,14 +24,6 @@ using android::linkerconfig::contents::SectionType;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
-namespace {
-const std::vector<std::string> kBinaryPath = {
-    "/data/nativetest/unrestricted",
-    "/data/nativetest64/unrestricted",
-    "/data/local/tmp",
-};
-}  // namespace
-
 namespace android {
 namespace linkerconfig {
 namespace contents {
@@ -46,7 +38,7 @@ Section BuildUnrestrictedSection(Context& ctx) {
   namespaces.emplace_back(BuildResolvNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
 
-  return Section("unrestricted", kBinaryPath, std::move(namespaces));
+  return Section("unrestricted", std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig
