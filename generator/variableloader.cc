@@ -61,21 +61,22 @@ void LoadVariableFromPartitionPath(std::string variable_name, std::string path) 
   }
 }
 
-void LoadPartitionPathVariables() {
-  LoadVariableFromPartitionPath("PRODUCT", "/product");
-  LoadVariableFromPartitionPath("SYSTEM_EXT", "/system_ext");
+void LoadPartitionPathVariables(const std::string& root) {
+  // TODO(b/141714913): generalize path handling
+  LoadVariableFromPartitionPath("PRODUCT", root + "/product");
+  LoadVariableFromPartitionPath("SYSTEM_EXT", root + "/system_ext");
 }
 
-void LoadLibraryListVariables() {
-  auto private_library_path =
-      "/system/etc/vndkprivate.libraries." + GetVendorVndkVersion() + ".txt";
+void LoadLibraryListVariables(const std::string& root) {
+  auto private_library_path = root + "/system/etc/vndkprivate.libraries." +
+                              GetVendorVndkVersion() + ".txt";
   auto llndk_library_path =
-      "/system/etc/llndk.libraries." + GetVendorVndkVersion() + ".txt";
+      root + "/system/etc/llndk.libraries." + GetVendorVndkVersion() + ".txt";
   auto vndksp_library_path =
-      "/system/etc/vndksp.libraries." + GetVendorVndkVersion() + ".txt";
-  auto vndkcore_library_path =
-      "/system/etc/vndkcore.libraries." + GetVendorVndkVersion() + ".txt";
-  auto sanitizer_library_path = "/system/etc/sanitizer.libraries.txt";
+      root + "/system/etc/vndksp.libraries." + GetVendorVndkVersion() + ".txt";
+  auto vndkcore_library_path = root + "/system/etc/vndkcore.libraries." +
+                               GetVendorVndkVersion() + ".txt";
+  auto sanitizer_library_path = root + "/system/etc/sanitizer.libraries.txt";
 
   Variables::AddValue(
       "LLNDK_LIBRARIES",
@@ -101,11 +102,13 @@ void LoadLibraryListVariables() {
 namespace android {
 namespace linkerconfig {
 namespace generator {
-void LoadVariables() {
+
+void LoadVariables(const std::string& root) {
   LoadVndkVersionVariable();
-  LoadPartitionPathVariables();
-  LoadLibraryListVariables();
+  LoadPartitionPathVariables(root);
+  LoadLibraryListVariables(root);
 }
+
 }  // namespace generator
 }  // namespace linkerconfig
 }  // namespace android
