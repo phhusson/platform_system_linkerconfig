@@ -16,11 +16,13 @@
 
 #pragma once
 
+#include <string>
+
 namespace android {
 namespace linkerconfig {
 namespace generator {
 
-void LoadVariables();
+void LoadVariables(const std::string& root);
 
 }  // namespace generator
 }  // namespace linkerconfig
