@@ -24,21 +24,6 @@ using android::linkerconfig::contents::SectionType;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
-namespace {
-const std::vector<std::string> kBinaryPath = {
-    "/odm/bin/",
-    "/vendor/bin/",
-    "/data/nativetest/odm",
-    "/data/nativetest64/odm",
-    "/data/benchmarktest/odm",
-    "/data/benchmarktest64/odm",
-    "/data/nativetest/vendor",
-    "/data/nativetest64/vendor",
-    "/data/benchmarktest/vendor",
-    "/data/benchmarktest64/vendor",
-};
-}  // namespace
-
 namespace android {
 namespace linkerconfig {
 namespace contents {
@@ -56,7 +41,7 @@ Section BuildVendorSection(Context& ctx) {
     namespaces.emplace_back(BuildVndkInSystemNamespace(ctx));
   }
 
-  return Section("vendor", kBinaryPath, std::move(namespaces));
+  return Section("vendor", std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig
