@@ -29,7 +29,6 @@ bool IsLegacyDevice() {
 }
 
 bool IsVndkInSystemNamespace() {
-  // TODO : Implement
   return Variables::GetValue("VNDK_USING_CORE_VARIANT_LIBRARIES").has_value();
 }
 
