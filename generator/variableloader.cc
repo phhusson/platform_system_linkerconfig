@@ -76,6 +76,9 @@ void LoadLibraryListVariables(const std::string& root) {
       root + "/system/etc/vndksp.libraries." + GetVendorVndkVersion() + ".txt";
   auto vndkcore_library_path = root + "/system/etc/vndkcore.libraries." +
                                GetVendorVndkVersion() + ".txt";
+  auto vndkcorevariant_library_path = root +
+                                      "/system/etc/vndkcorevariant.libraries." +
+                                      GetVendorVndkVersion() + ".txt";
   auto sanitizer_library_path = root + "/system/etc/sanitizer.libraries.txt";
 
   Variables::AddValue(
@@ -93,6 +96,10 @@ void LoadLibraryListVariables(const std::string& root) {
   Variables::AddValue(
       "VNDK_CORE_LIBRARIES",
       GetPublicLibrariesString(vndkcore_library_path, private_library_path));
+
+  Variables::AddValue("VNDK_USING_CORE_VARIANT_LIBRARIES",
+                      GetPublicLibrariesString(vndkcorevariant_library_path,
+                                               private_library_path));
 
   Variables::AddValue("SANITIZER_RUNTIME_LIBRARIES",
                       GetLibrariesString(sanitizer_library_path));
