@@ -18,11 +18,13 @@
 
 #include "linkerconfig/legacy.h"
 #include "linkerconfig/variables.h"
+#include "testbase.h"
 
 using android::linkerconfig::modules::AsanPath;
 
-TEST(linkerconfig_legacy, backward_compatibility) {
-  android::linkerconfig::modules::Variables::AddValue("is_legacy", "true");
+TEST(linkerconfig_legacy_backward_compatibility, default_namespace) {
+  MockVariables();
+
   auto config = android::linkerconfig::contents::CreateLegacyConfiguration();
 
   auto legacy_section = config.GetSection("legacy");

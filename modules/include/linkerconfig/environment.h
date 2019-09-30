@@ -20,6 +20,7 @@ namespace android {
 namespace linkerconfig {
 namespace modules {
 bool IsLegacyDevice();
+bool IsVndkLiteDevice();
 bool IsVndkInSystemNamespace();
 std::string GetVendorVndkVersion();
 }  // namespace modules

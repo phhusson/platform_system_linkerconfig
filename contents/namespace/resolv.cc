@@ -27,10 +27,6 @@ const std::vector<std::string> kLibsFromDefault = {"libcgrouprc.so",
                                                    "libbinder_ndk.so",
                                                    "liblog.so",
                                                    "libvndksupport.so"};
-
-const std::vector<std::string> kLibsFromUnrestrictedDefault = {
-    "libbinder_ndk.so",
-    "liblog.so"};
 }  // namespace
 
 namespace android {
@@ -39,9 +35,8 @@ namespace contents {
 Namespace BuildResolvNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("resolv", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.resolv/${LIB}", AsanPath::SAME_PATH);
-  ns.GetLink(ctx.GetSystemNamespaceName())
-      .AddSharedLib(ctx.IsSystemSection() ? kLibsFromDefault
-                                          : kLibsFromUnrestrictedDefault);
+
+  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib(kLibsFromDefault);
 
   return ns;
 }
