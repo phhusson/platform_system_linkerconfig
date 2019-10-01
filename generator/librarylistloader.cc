@@ -49,6 +49,7 @@ Result<LibraryList> GetLibrariesFromFile(std::string file_path) {
   }
 
   while (std::getline(library_file, library_name)) {
+    library_name = android::base::Trim(library_name);
     if (!library_name.empty()) {
       library_list.insert(library_name);
     }
@@ -94,7 +95,9 @@ std::string GetPublicLibrariesString(std::string library_file_path,
   LibraryList public_library_list;
 
   std::set_difference(
-      library_list->begin(), library_list->end(), private_library_list->begin(),
+      library_list->begin(),
+      library_list->end(),
+      private_library_list->begin(),
       private_library_list->end(),
       std::inserter(public_library_list, public_library_list.begin()));
 
@@ -120,7 +123,8 @@ std::string GetPrivateLibrariesString(std::string library_file_path,
 
   LibraryList private_only_library_list;
 
-  std::set_intersection(library_list->begin(), library_list->end(),
+  std::set_intersection(library_list->begin(),
+                        library_list->end(),
                         private_library_list->begin(),
                         private_library_list->end(),
                         std::inserter(private_only_library_list,

@@ -24,22 +24,27 @@ const std::string kLibraryListA = android::base::GetExecutableDirectory() +
                                   "/generator/tests/data/library_list_a.txt";
 const std::string kLibraryListB = android::base::GetExecutableDirectory() +
                                   "/generator/tests/data/library_list_b.txt";
+const std::string kLibraryListC = android::base::GetExecutableDirectory() +
+                                  "/generator/tests/data/library_list_c.txt";
 const std::string kLibraryListInvalid =
     android::base::GetExecutableDirectory() +
     "/generator/tests/data/library_list_invalid.txt";
 
 TEST(linkerconfig_librarylistloader, get_libraries) {
   const auto& library_list = GetLibrariesString(kLibraryListA);
-  ASSERT_EQ(library_list, "a.so:b.so:c.so:d.so:e.so:f.so");
+  ASSERT_EQ("a.so:b.so:c.so:d.so:e.so:f.so", library_list);
 
   const auto& library_list_invalid = GetLibrariesString(kLibraryListInvalid);
   ASSERT_TRUE(library_list_invalid.empty());
+
+  const auto& library_list_empty = GetLibrariesString(kLibraryListC);
+  ASSERT_EQ("", library_list_empty);
 }
 
 TEST(linkerconfig_librarylistloader, get_public_libraries) {
   const auto& public_library_list =
       GetPublicLibrariesString(kLibraryListA, kLibraryListB);
-  ASSERT_EQ(public_library_list, "a.so:b.so:c.so:d.so");
+  ASSERT_EQ("a.so:b.so:c.so:d.so", public_library_list);
 
   const auto& all_private_library_list =
       GetPublicLibrariesString(kLibraryListA, kLibraryListA);
@@ -51,17 +56,21 @@ TEST(linkerconfig_librarylistloader, get_public_libraries) {
 
   const auto& private_library_invalid_list =
       GetPublicLibrariesString(kLibraryListA, kLibraryListInvalid);
-  ASSERT_EQ(private_library_invalid_list, "a.so:b.so:c.so:d.so:e.so:f.so");
+  ASSERT_EQ("a.so:b.so:c.so:d.so:e.so:f.so", private_library_invalid_list);
+
+  const auto& empty_library_list =
+      GetPublicLibrariesString(kLibraryListC, kLibraryListA);
+  ASSERT_EQ("", empty_library_list);
 }
 
 TEST(linkerconfig_librarylistloader, get_private_libraries) {
   const auto& private_library_list =
       GetPrivateLibrariesString(kLibraryListA, kLibraryListB);
-  ASSERT_EQ(private_library_list, "e.so:f.so");
+  ASSERT_EQ("e.so:f.so", private_library_list);
 
   const auto& all_private_library_list =
       GetPrivateLibrariesString(kLibraryListA, kLibraryListA);
-  ASSERT_EQ(all_private_library_list, "a.so:b.so:c.so:d.so:e.so:f.so");
+  ASSERT_EQ("a.so:b.so:c.so:d.so:e.so:f.so", all_private_library_list);
 
   const auto& invalid_library_list =
       GetPrivateLibrariesString(kLibraryListInvalid, kLibraryListB);
