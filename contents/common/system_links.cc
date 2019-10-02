@@ -13,35 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+
+#include "linkerconfig/common.h"
 
 #include <string>
+
+#include "linkerconfig/context.h"
+#include "linkerconfig/section.h"
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
 
-enum class SectionType {
-  System,
-  Vendor,
-  Other,
-};
+using android::linkerconfig::modules::Namespace;
+using android::linkerconfig::modules::Section;
 
-class Context {
- public:
-  Context() : current_section(SectionType::System) {
+void AddStandardSystemLinks(const Context& ctx, Section* section) {
+  std::string system_ns_name = ctx.GetSystemNamespaceName();
+  Namespace* system_ns = section->GetNamespace(system_ns_name);
+  for (Namespace& ns : section->GetNamespaces()) {
+    if (&ns != system_ns) {
+      ns.GetLink(system_ns_name)
+          .AddSharedLib({"libc.so",
+                         "libm.so",
+                         "libdl.so",
+                         "@{SANITIZER_RUNTIME_LIBRARIES}"});
+    }
   }
-  bool IsSystemSection() const;
-  bool IsVendorSection() const;
+}
 
-  void SetCurrentSection(SectionType value);
-
-  // Returns the namespace that covers /system/${LIB}.
-  std::string GetSystemNamespaceName() const;
-
- private:
-  SectionType current_section;
-};
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

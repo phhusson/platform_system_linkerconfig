@@ -40,7 +40,11 @@ class Section {
   std::vector<std::string> GetBinaryPaths();
   std::string GetName();
 
-  // For test usage
+  // Use for iteration only.
+  std::vector<Namespace>& GetNamespaces() {
+    return namespaces_;
+  }
+
   Namespace* GetNamespace(const std::string& namespace_name);
 
  private:

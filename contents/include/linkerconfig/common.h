@@ -15,33 +15,20 @@
  */
 #pragma once
 
-#include <string>
+#include "linkerconfig/context.h"
+#include "linkerconfig/section.h"
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
 
-enum class SectionType {
-  System,
-  Vendor,
-  Other,
-};
+using android::linkerconfig::modules::Section;
 
-class Context {
- public:
-  Context() : current_section(SectionType::System) {
-  }
-  bool IsSystemSection() const;
-  bool IsVendorSection() const;
+// Adds links from all namespaces in the given section to the namespace for
+// /system/${LIB} for standard libraries like Bionic (libc.so, libm.so,
+// libdl.so) and applicable libclang_rt.*.
+void AddStandardSystemLinks(const Context& ctx, Section* section);
 
-  void SetCurrentSection(SectionType value);
-
-  // Returns the namespace that covers /system/${LIB}.
-  std::string GetSystemNamespaceName() const;
-
- private:
-  SectionType current_section;
-};
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
