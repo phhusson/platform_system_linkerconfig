@@ -55,7 +55,7 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.CreateLink(is_system_section ? "default" : "system")
       .AddSharedLib({"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
-  ns.CreateLink("runtime").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
+  ns.CreateLink("art").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
 
   if (is_system_section) {
     ns.CreateLink("sphal", true);
