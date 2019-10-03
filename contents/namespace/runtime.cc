@@ -31,6 +31,8 @@ Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
   // library when it exists.
   ns.CreateLink(ctx.IsVendorSection() ? "system" : "default", true);
 
+  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+
   return ns;
 }
 }  // namespace contents
