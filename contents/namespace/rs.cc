@@ -37,10 +37,10 @@ Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/system/vendor/${LIB}", AsanPath::NONE);
   ns.AddPermittedPath("/data", AsanPath::SAME_PATH);
 
-  ns.CreateLink("default").AddSharedLib({"@{LLNDK_LIBRARIES}",
-                                         "@{SANITIZER_RUNTIME_LIBRARIES}",
-                                         "@{PRIVATE_LLNDK_LIBRARIES:}"});
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("default").AddSharedLib({"@{LLNDK_LIBRARIES}",
+                                      "@{SANITIZER_RUNTIME_LIBRARIES}",
+                                      "@{PRIVATE_LLNDK_LIBRARIES:}"});
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }
