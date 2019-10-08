@@ -22,6 +22,7 @@
 #include "linkerconfig/environment.h"
 
 using android::linkerconfig::modules::AsanPath;
+using android::linkerconfig::modules::Link;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
@@ -63,7 +64,7 @@ Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/apex/com.android.media/${LIB}/extractors",
                       AsanPath::SAME_PATH);
 
-  auto& link_to_default = ns.CreateLink("default");
+  Link& link_to_default = ns.GetLink("default");
   if (is_legacy) {
     link_to_default.AddSharedLib(kLibsFromDefaultLegacy);
   } else {
@@ -73,7 +74,7 @@ Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
     }
   }
 
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }
