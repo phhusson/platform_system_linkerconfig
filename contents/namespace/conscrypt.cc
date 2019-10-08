@@ -22,13 +22,6 @@
 using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
-namespace {
-const std::vector<std::string> kLibsFromDefault = {"libc.so",
-                                                   "libm.so",
-                                                   "libdl.so",
-                                                   "liblog.so"};
-}  // namespace
-
 namespace android {
 namespace linkerconfig {
 namespace contents {
@@ -38,7 +31,7 @@ Namespace BuildConscryptNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.AddSearchPath("/apex/com.android.conscrypt/${LIB}", AsanPath::SAME_PATH);
   ns.GetLink("art").AddSharedLib("libandroidio.so");
-  ns.GetLink("default").AddSharedLib(kLibsFromDefault);
+  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("liblog.so");
 
   return ns;
 }

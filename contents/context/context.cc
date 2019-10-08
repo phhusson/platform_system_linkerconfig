@@ -30,6 +30,10 @@ bool Context::IsVendorSection() const {
 void Context::SetCurrentSection(SectionType section_type) {
   current_section = section_type;
 }
+
+std::string Context::GetSystemNamespaceName() const {
+  return IsVendorSection() ? "system" : "default";
+}
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

@@ -41,7 +41,6 @@ const std::vector<std::string> kLibsFromArt = {
     "libnativeloader.so",
     "libandroidicu.so",
     "libpac.so",
-    "@{SANITIZER_RUNTIME_LIBRARIES}",
     // TODO(b/120786417 or b/134659294): libicuuc.so and libicui18n.so are kept
     // for app compat.
     "libicui18n.so",

@@ -40,9 +40,7 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/vendor", AsanPath::WITH_DATA_ASAN);
   ns.AddPermittedPath("/system/vendor", AsanPath::NONE);
 
-  ns.GetLink("art").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
-  ns.GetLink("system").AddSharedLib(
-      {"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
+  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("@{LLNDK_LIBRARIES}");
   ns.GetLink("vndk").AddSharedLib(
       {"@{VNDK_SAMEPROCESS_LIBRARIES}", "@{VNDK_CORE_LIBRARIES}"});
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {

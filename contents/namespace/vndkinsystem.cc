@@ -36,10 +36,8 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
     ns.AddWhitelisted("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
   }
 
-  ns.GetLink("system").AddSharedLib(
-      {"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
+  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("@{LLNDK_LIBRARIES}");
   ns.GetLink("vndk").AllowAllSharedLibs();
-  ns.GetLink("art").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
   ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
