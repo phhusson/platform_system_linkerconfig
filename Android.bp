@@ -59,6 +59,7 @@ cc_library_static {
         "contents/section/*.cc",
         "contents/configuration/*.cc",
         "contents/context/*.cc",
+        "contents/common/*.cc",
     ],
 }
 

@@ -34,8 +34,7 @@ const std::vector<std::string> kLibsFromArt = {
     // TODO(b/120786417 or b/134659294): libicuuc.so and libicui18n.so are kept
     // for app compat.
     "libicui18n.so",
-    "libicuuc.so",
-    "@{SANITIZER_RUNTIME_LIBRARIES}"};
+    "libicuuc.so"};
 }  // namespace
 
 namespace android {
