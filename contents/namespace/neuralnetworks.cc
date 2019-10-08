@@ -30,7 +30,7 @@ Namespace BuildNeuralNetworksNamespace([[maybe_unused]] const Context& ctx) {
                    AsanPath::SAME_PATH);
 
   std::string link_target = ctx.IsVendorSection() ? "system" : "default";
-  ns.CreateLink(link_target)
+  ns.GetLink(link_target)
       .AddSharedLib({"libc.so",
                      "libcgrouprc.so",
                      "libdl.so",

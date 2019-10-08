@@ -37,10 +37,9 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
   // /system/framework and /data.
   // TODO(b/130340935): Use a dynamically created linker namespace similar to
   // classloader-namespace for oat files, and tighten this up.
-  ns.CreateLink(ctx.IsVendorSection() ? "system" : "default",
-                /*allow_all_shared_libs=*/true);
+  ns.GetLink(ctx.IsVendorSection() ? "system" : "default").AllowAllSharedLibs();
 
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

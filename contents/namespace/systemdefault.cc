@@ -106,10 +106,9 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
     BuildPermittedPath(ns);
   }
 
-  ns.CreateLink("art").AddSharedLib(is_legacy ? kLibsFromArtLegacy
-                                              : kLibsFromArt);
-  ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("art").AddSharedLib(is_legacy ? kLibsFromArtLegacy : kLibsFromArt);
+  ns.GetLink("resolv").AddSharedLib("libnetd_resolv.so");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }
