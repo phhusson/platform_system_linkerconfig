@@ -37,7 +37,7 @@ Namespace BuildConscryptNamespace([[maybe_unused]] const Context& ctx) {
                /*is_visible=*/true);
 
   ns.AddSearchPath("/apex/com.android.conscrypt/${LIB}", AsanPath::SAME_PATH);
-  ns.CreateLink("runtime").AddSharedLib("libandroidio.so");
+  ns.CreateLink("art").AddSharedLib("libandroidio.so");
   ns.CreateLink("default").AddSharedLib(kLibsFromDefault);
 
   return ns;

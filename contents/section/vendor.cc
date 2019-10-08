@@ -32,7 +32,7 @@ Section BuildVendorSection(Context& ctx) {
   std::vector<Namespace> namespaces;
 
   namespaces.emplace_back(BuildVendorDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
+  namespaces.emplace_back(BuildArtNamespace(ctx));
   namespaces.emplace_back(BuildVndkNamespace(ctx));
   namespaces.emplace_back(BuildSystemNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
