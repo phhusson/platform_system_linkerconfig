@@ -23,7 +23,7 @@ using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
-const std::vector<std::string> kLibsFromRuntime = {
+const std::vector<std::string> kLibsFromArt = {
     "libdexfile_external.so",
     "libdexfiled_external.so",
     "libnativebridge.so",
@@ -48,7 +48,7 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
   ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
 
-  ns.CreateLink("runtime").AddSharedLib(kLibsFromRuntime);
+  ns.CreateLink("art").AddSharedLib(kLibsFromArt);
   ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
   ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 

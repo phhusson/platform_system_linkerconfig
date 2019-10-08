@@ -23,7 +23,7 @@ using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
-const std::vector<std::string> kLibsFromRuntimeLegacy = {
+const std::vector<std::string> kLibsFromArtLegacy = {
     "libart.so:libartd.so",
     "libdexfile_external.so",
     "libnativebridge.so",
@@ -33,7 +33,7 @@ const std::vector<std::string> kLibsFromRuntimeLegacy = {
     // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
     "libpac.so"};
 
-const std::vector<std::string> kLibsFromRuntime = {
+const std::vector<std::string> kLibsFromArt = {
     "libdexfile_external.so",
     "libdexfiled_external.so",
     "libnativebridge.so",
@@ -106,8 +106,8 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
     BuildPermittedPath(ns);
   }
 
-  ns.CreateLink("runtime").AddSharedLib(is_legacy ? kLibsFromRuntimeLegacy
-                                                  : kLibsFromRuntime);
+  ns.CreateLink("art").AddSharedLib(is_legacy ? kLibsFromArtLegacy
+                                              : kLibsFromArt);
   ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
   ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 

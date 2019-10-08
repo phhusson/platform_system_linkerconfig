@@ -28,7 +28,7 @@ Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
 
-  ns.CreateLink("runtime").AddSharedLib(
+  ns.CreateLink("art").AddSharedLib(
       {"libdexfile_external.so",
        "libdexfile_external.so",
        "libnativebridge.so",
