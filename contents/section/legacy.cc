@@ -16,6 +16,7 @@
 
 #include "linkerconfig/sectionbuilder.h"
 
+#include "linkerconfig/common.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
 
@@ -37,7 +38,9 @@ Section BuildLegacySection(Context& ctx) {
   namespaces.emplace_back(BuildResolvNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
 
-  return Section("legacy", std::move(namespaces));
+  Section section("legacy", std::move(namespaces));
+  AddStandardSystemLinks(ctx, &section);
+  return section;
 }
 }  // namespace contents
 }  // namespace linkerconfig

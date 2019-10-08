@@ -53,9 +53,7 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
                         AsanPath::WITH_DATA_ASAN);
   }
 
-  ns.GetLink(is_system_section ? "default" : "system")
-      .AddSharedLib({"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
-  ns.GetLink("art").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
+  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib({"@{LLNDK_LIBRARIES}"});
 
   if (is_system_section) {
     ns.GetLink("sphal").AllowAllSharedLibs();
