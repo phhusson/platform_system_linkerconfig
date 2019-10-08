@@ -26,7 +26,7 @@ namespace linkerconfig {
 namespace contents {
 NamespaceBuilder BuildSystemDefaultNamespace;
 NamespaceBuilder BuildMediaNamespace;
-NamespaceBuilder BuildRuntimeNamespace;
+NamespaceBuilder BuildArtNamespace;
 NamespaceBuilder BuildConscryptNamespace;
 NamespaceBuilder BuildResolvNamespace;
 NamespaceBuilder BuildSphalNamespace;
