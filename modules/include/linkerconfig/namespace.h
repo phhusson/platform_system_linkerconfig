@@ -89,8 +89,11 @@ class Namespace {
   //    namespace.xxx.asan.permitted.paths += /system/${LIB}
   void AddPermittedPath(const std::string& path,
                         AsanPath path_from_asan = AsanPath::SAME_PATH);
-  Link& CreateLink(const std::string& target_namespace,
-                   bool allow_all_shared_libs = false);
+
+  // Returns a link from this namespace to the given one. If one already exists
+  // it is returned, otherwise one is created.
+  Link& GetLink(const std::string& target_namespace);
+
   void WriteConfig(ConfigWriter& writer);
   void AddWhitelisted(const std::string& path);
 

@@ -48,9 +48,9 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
   ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
 
-  ns.CreateLink("art").AddSharedLib(kLibsFromArt);
-  ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("art").AddSharedLib(kLibsFromArt);
+  ns.GetLink("resolv").AddSharedLib("libnetd_resolv.so");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

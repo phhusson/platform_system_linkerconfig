@@ -40,16 +40,16 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/vendor", AsanPath::WITH_DATA_ASAN);
   ns.AddPermittedPath("/system/vendor", AsanPath::NONE);
 
-  ns.CreateLink("art").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
-  ns.CreateLink("system").AddSharedLib(
+  ns.GetLink("art").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
+  ns.GetLink("system").AddSharedLib(
       {"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
-  ns.CreateLink("vndk").AddSharedLib(
+  ns.GetLink("vndk").AddSharedLib(
       {"@{VNDK_SAMEPROCESS_LIBRARIES}", "@{VNDK_CORE_LIBRARIES}"});
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
-    ns.CreateLink("vndk_in_system")
+    ns.GetLink("vndk_in_system")
         .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
   }
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

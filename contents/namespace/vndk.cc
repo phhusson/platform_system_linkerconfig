@@ -53,22 +53,22 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
                         AsanPath::WITH_DATA_ASAN);
   }
 
-  ns.CreateLink(is_system_section ? "default" : "system")
+  ns.GetLink(is_system_section ? "default" : "system")
       .AddSharedLib({"@{LLNDK_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}"});
-  ns.CreateLink("art").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
+  ns.GetLink("art").AddSharedLib("@{SANITIZER_RUNTIME_LIBRARIES}");
 
   if (is_system_section) {
-    ns.CreateLink("sphal", true);
+    ns.GetLink("sphal").AllowAllSharedLibs();
   } else {
-    ns.CreateLink("default", true);
+    ns.GetLink("default").AllowAllSharedLibs();
 
     if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
-      ns.CreateLink("vndk_in_system")
+      ns.GetLink("vndk_in_system")
           .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
     }
   }
 
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

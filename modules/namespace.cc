@@ -50,17 +50,10 @@ void Namespace::WritePathString(ConfigWriter& writer,
   }
 }
 
-Link& Namespace::CreateLink(const std::string& target_namespace,
-                            bool allow_all_shared_libs) {
-  Link new_link(name_, target_namespace, allow_all_shared_libs);
-
-  if (links_.find(target_namespace) != links_.end()) {
-    LOG(INFO) << "Link to " << target_namespace
-              << " already exists. Overwriting link.";
-  }
-
-  links_.emplace(target_namespace, std::move(new_link));
-  return links_.find(target_namespace)->second;
+Link& Namespace::GetLink(const std::string& target_namespace) {
+  auto iter =
+      links_.try_emplace(target_namespace, name_, target_namespace).first;
+  return iter->second;
 }
 
 void Namespace::WriteConfig(ConfigWriter& writer) {
