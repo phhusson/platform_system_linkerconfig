@@ -30,7 +30,7 @@ Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.GetLink("art").AddSharedLib(
       {"libdexfile_external.so",
-       "libdexfile_external.so",
+       "libdexfiled_external.so",
        "libnativebridge.so",
        "libnativehelper.so",
        "libnativeloader.so",
@@ -38,8 +38,7 @@ Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
        // TODO(b/120786417 or b/134659294): libicuuc.so
        // and libicui18n.so are kept for app compat.
        "libicui18n.so",
-       "libicuuc.so",
-       "@{SANITIZER_RUNTIME_LIBRARIES}"});
+       "libicuuc.so"});
 
   return ns;
 }

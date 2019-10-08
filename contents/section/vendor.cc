@@ -16,6 +16,7 @@
 
 #include "linkerconfig/sectionbuilder.h"
 
+#include "linkerconfig/common.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
@@ -41,7 +42,9 @@ Section BuildVendorSection(Context& ctx) {
     namespaces.emplace_back(BuildVndkInSystemNamespace(ctx));
   }
 
-  return Section("vendor", std::move(namespaces));
+  Section section("vendor", std::move(namespaces));
+  AddStandardSystemLinks(ctx, &section);
+  return section;
 }
 }  // namespace contents
 }  // namespace linkerconfig
