@@ -23,7 +23,7 @@ using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
-const std::vector<std::string> kLibsFromRuntimeLegacy = {
+const std::vector<std::string> kLibsFromArtLegacy = {
     "libart.so:libartd.so",
     "libdexfile_external.so",
     "libnativebridge.so",
@@ -33,7 +33,7 @@ const std::vector<std::string> kLibsFromRuntimeLegacy = {
     // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
     "libpac.so"};
 
-const std::vector<std::string> kLibsFromRuntime = {
+const std::vector<std::string> kLibsFromArt = {
     "libdexfile_external.so",
     "libdexfiled_external.so",
     "libnativebridge.so",
@@ -41,7 +41,6 @@ const std::vector<std::string> kLibsFromRuntime = {
     "libnativeloader.so",
     "libandroidicu.so",
     "libpac.so",
-    "@{SANITIZER_RUNTIME_LIBRARIES}",
     // TODO(b/120786417 or b/134659294): libicuuc.so and libicui18n.so are kept
     // for app compat.
     "libicui18n.so",
@@ -106,10 +105,9 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
     BuildPermittedPath(ns);
   }
 
-  ns.CreateLink("runtime").AddSharedLib(is_legacy ? kLibsFromRuntimeLegacy
-                                                  : kLibsFromRuntime);
-  ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("art").AddSharedLib(is_legacy ? kLibsFromArtLegacy : kLibsFromArt);
+  ns.GetLink("resolv").AddSharedLib("libnetd_resolv.so");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

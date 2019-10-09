@@ -22,19 +22,28 @@ using android::linkerconfig::modules::Namespace;
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("runtime", /*is_isolated=*/true,
-               /*is_visible=*/!ctx.IsVendorSection());
-  ns.AddSearchPath("/apex/com.android.art/${LIB}", AsanPath::SAME_PATH);
-  ns.AddSearchPath("/apex/com.android.runtime/${LIB}", AsanPath::SAME_PATH);
-  // TODO(b/119867084): Restrict to Bionic dlopen dependencies and PALette
-  // library when it exists.
-  ns.CreateLink(ctx.IsVendorSection() ? "system" : "default", true);
 
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
+  // Make the namespace visible to allow links to be created at runtime, e.g.
+  // through android_link_namespaces in libnativeloader. That is not applicable
+  // to the vendor section.
+  Namespace ns("art",
+               /*is_isolated=*/true,
+               /*is_visible=*/!ctx.IsVendorSection());
+
+  ns.AddSearchPath("/apex/com.android.art/${LIB}", AsanPath::SAME_PATH);
+
+  // Need allow_all_shared_libs to let libart.so dlopen oat files in
+  // /system/framework and /data.
+  // TODO(b/130340935): Use a dynamically created linker namespace similar to
+  // classloader-namespace for oat files, and tighten this up.
+  ns.GetLink(ctx.GetSystemNamespaceName()).AllowAllSharedLibs();
+
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }
+
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

@@ -32,11 +32,10 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddPermittedPath("/system/vendor/${LIB}", AsanPath::NONE);
 
-  ns.CreateLink("rs").AddSharedLib("libRS_internal.so");
-  ns.CreateLink("default").AddSharedLib(
-      {"@{LLNDK_LIBRARIES:}", "@{SANITIZER_RUNTIME_LIBRARIES:}"});
-  ns.CreateLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES:}");
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("rs").AddSharedLib("libRS_internal.so");
+  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("@{LLNDK_LIBRARIES:}");
+  ns.GetLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES:}");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

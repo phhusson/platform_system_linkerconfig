@@ -29,13 +29,9 @@ Namespace BuildNeuralNetworksNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddSearchPath("/apex/com.android.neuralnetworks/${LIB}",
                    AsanPath::SAME_PATH);
 
-  std::string link_target = ctx.IsVendorSection() ? "system" : "default";
-  ns.CreateLink(link_target)
-      .AddSharedLib({"libc.so",
-                     "libcgrouprc.so",
-                     "libdl.so",
+  ns.GetLink(ctx.GetSystemNamespaceName())
+      .AddSharedLib({"libcgrouprc.so",
                      "liblog.so",
-                     "libm.so",
                      "libnativewindow.so",
                      "libneuralnetworks_packageinfo.so",
                      "libsync.so",

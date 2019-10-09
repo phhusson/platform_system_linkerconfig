@@ -27,38 +27,34 @@ namespace linkerconfig {
 namespace modules {
 class Link {
  public:
-  Link(std::string origin_namespace, std::string target_namespace,
-       bool allow_all_shared_libs = false)
+  Link(std::string origin_namespace, std::string target_namespace)
       : origin_namespace_(std::move(origin_namespace)),
-        target_namespace_(std::move(target_namespace)),
-        allow_all_shared_libs_(allow_all_shared_libs) {
+        target_namespace_(std::move(target_namespace)) {
+    allow_all_shared_libs_ = false;
   }
   Link(const Link&) = delete;
   Link(Link&&) = default;
 
   template <typename T, typename... Args>
   void AddSharedLib(T&& lib_name, Args&&... lib_names);
-  void AddSharedLib(std::vector<std::string> lib_names);
+  void AddSharedLib(const std::vector<std::string>& lib_names);
+  void AllowAllSharedLibs();
   void WriteConfig(ConfigWriter& writer);
 
  private:
   const std::string origin_namespace_;
   const std::string target_namespace_;
-  const bool allow_all_shared_libs_;
   std::vector<std::string> shared_libs_;
+  bool allow_all_shared_libs_;
 };
 
 template <typename T, typename... Args>
 void Link::AddSharedLib(T&& lib_name, Args&&... lib_names) {
-  if (allow_all_shared_libs_) {
-    LOG(WARNING) << "Tried to add shared libraries to link from "
-                 << origin_namespace_ << " to " << target_namespace_
-                 << "while this link is allow_all_shared_libs";
-    return;
-  }
-  shared_libs_.push_back(std::forward<T>(lib_name));
-  if constexpr (sizeof...(Args) > 0) {
-    AddSharedLib(std::forward<Args>(lib_names)...);
+  if (!allow_all_shared_libs_) {
+    shared_libs_.push_back(std::forward<T>(lib_name));
+    if constexpr (sizeof...(Args) > 0) {
+      AddSharedLib(std::forward<Args>(lib_names)...);
+    }
   }
 }
 }  // namespace modules

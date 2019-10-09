@@ -16,6 +16,7 @@
 
 #include "linkerconfig/sectionbuilder.h"
 
+#include "linkerconfig/common.h"
 #include "linkerconfig/context.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
@@ -32,7 +33,7 @@ Section BuildSystemSection(Context& ctx) {
   std::vector<Namespace> namespaces;
 
   namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
+  namespaces.emplace_back(BuildArtNamespace(ctx));
   namespaces.emplace_back(BuildMediaNamespace(ctx));
   namespaces.emplace_back(BuildConscryptNamespace(ctx));
   namespaces.emplace_back(BuildResolvNamespace(ctx));
@@ -41,7 +42,9 @@ Section BuildSystemSection(Context& ctx) {
   namespaces.emplace_back(BuildVndkNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
 
-  return Section("system", std::move(namespaces));
+  Section section("system", std::move(namespaces));
+  AddStandardSystemLinks(ctx, &section);
+  return section;
 }
 }  // namespace contents
 }  // namespace linkerconfig

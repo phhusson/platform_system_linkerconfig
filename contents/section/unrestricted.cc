@@ -16,6 +16,7 @@
 
 #include "linkerconfig/sectionbuilder.h"
 
+#include "linkerconfig/common.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
@@ -32,13 +33,15 @@ Section BuildUnrestrictedSection(Context& ctx) {
   std::vector<Namespace> namespaces;
 
   namespaces.emplace_back(BuildUnrestrictedDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
+  namespaces.emplace_back(BuildArtNamespace(ctx));
   namespaces.emplace_back(BuildMediaNamespace(ctx));
   namespaces.emplace_back(BuildConscryptNamespace(ctx));
   namespaces.emplace_back(BuildResolvNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
 
-  return Section("unrestricted", std::move(namespaces));
+  Section section("unrestricted", std::move(namespaces));
+  AddStandardSystemLinks(ctx, &section);
+  return section;
 }
 }  // namespace contents
 }  // namespace linkerconfig

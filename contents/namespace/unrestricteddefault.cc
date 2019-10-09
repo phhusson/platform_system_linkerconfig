@@ -23,7 +23,7 @@ using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
-const std::vector<std::string> kLibsFromRuntime = {
+const std::vector<std::string> kLibsFromArt = {
     "libdexfile_external.so",
     "libdexfiled_external.so",
     "libnativebridge.so",
@@ -34,8 +34,7 @@ const std::vector<std::string> kLibsFromRuntime = {
     // TODO(b/120786417 or b/134659294): libicuuc.so and libicui18n.so are kept
     // for app compat.
     "libicui18n.so",
-    "libicuuc.so",
-    "@{SANITIZER_RUNTIME_LIBRARIES}"};
+    "libicuuc.so"};
 }  // namespace
 
 namespace android {
@@ -48,9 +47,9 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
   ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
 
-  ns.CreateLink("runtime").AddSharedLib(kLibsFromRuntime);
-  ns.CreateLink("resolv").AddSharedLib("libnetd_resolv.so");
-  ns.CreateLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.GetLink("art").AddSharedLib(kLibsFromArt);
+  ns.GetLink("resolv").AddSharedLib("libnetd_resolv.so");
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }
