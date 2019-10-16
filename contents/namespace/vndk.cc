@@ -32,14 +32,14 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/system/${LIB}/vndk-sp-@{VNDK_VER}",
-                   AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}",
+                   AsanPath::SAME_PATH);
 
   if (!is_system_section) {
     ns.AddSearchPath("/odm/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/vendor/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/system/${LIB}/vndk-@{VNDK_VER}",
-                     AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}",
+                     AsanPath::SAME_PATH);
   }
 
   if (is_system_section) {
@@ -49,8 +49,8 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
     ns.AddPermittedPath("/vendor/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
     ns.AddPermittedPath("/system/vendor/${LIB}/hw", AsanPath::NONE);
     ns.AddPermittedPath("/system/vendor/${LIB}/egl", AsanPath::NONE);
-    ns.AddPermittedPath("/system/${LIB}/vndk-sp-@{VNDK_VER}/hw",
-                        AsanPath::WITH_DATA_ASAN);
+    ns.AddPermittedPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}/hw",
+                        AsanPath::SAME_PATH);
   }
 
   ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib({"@{LLNDK_LIBRARIES}"});
