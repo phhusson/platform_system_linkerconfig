@@ -15,17 +15,18 @@
  */
 
 #include "linkerconfig/environment.h"
-
 #include "linkerconfig/variables.h"
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
 bool IsLegacyDevice() {
-  // TODO : Implement
-  auto legacy_device = Variables::GetValue("is_legacy").value_or("false");
+  return !Variables::GetValue("ro.vndk.version").has_value() &&
+         !Variables::GetValue("ro.vndk.lite").has_value();
+}
 
-  return legacy_device == "true";
+bool IsVndkLiteDevice() {
+  return Variables::GetValue("ro.vndk.lite").value_or("") == "true";
 }
 
 bool IsVndkInSystemNamespace() {
