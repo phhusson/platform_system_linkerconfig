@@ -45,20 +45,22 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
-  bool is_legacy = android::linkerconfig::modules::IsLegacyDevice();
+  bool is_legacy = ctx.IsLegacyConfig();
+  bool is_vndklite = ctx.IsVndkliteConfig();
   bool is_system_section = ctx.IsSystemSection();
 
   Namespace ns("media", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.media/${LIB}", AsanPath::SAME_PATH);
-  ns.AddPermittedPath("/apex/com.android.media/${LIB}/extractors",
-                      AsanPath::SAME_PATH);
+  ns.AddPermittedPath(
+      "/apex/com.android.media/${LIB}/extractors",
+      (is_legacy || is_vndklite) ? AsanPath::NONE : AsanPath::SAME_PATH);
 
   Link& system_link = ns.GetLink(ctx.GetSystemNamespaceName());
   if (is_legacy) {
     system_link.AddSharedLib(kLibsFromDefaultLegacy);
   } else {
     system_link.AddSharedLib(kLibsFromDefault);
-    if (is_system_section) {
+    if (is_system_section && !is_vndklite) {
       system_link.AddSharedLib(kLibsFromDefaultSystem);
     }
   }

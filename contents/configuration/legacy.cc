@@ -17,6 +17,7 @@
 #include "linkerconfig/legacy.h"
 #include "linkerconfig/sectionbuilder.h"
 
+using android::linkerconfig::contents::LinkerConfigType;
 using android::linkerconfig::modules::DirToSection;
 using android::linkerconfig::modules::Section;
 
@@ -24,7 +25,8 @@ namespace {
 const std::vector<DirToSection> kDirToSection = {
     // All binaries gets the same configuration 'legacy'
     {"/system", "legacy"},
-    {"/product", "legacy"},
+    {"/@{SYSTEM_EXT:system_ext}", "legacy"},
+    {"/@{PRODUCT:product}", "legacy"},
     {"/vendor", "legacy"},
     {"/odm", "legacy"},
     {"/sbin", "legacy"},
@@ -42,6 +44,7 @@ namespace contents {
 android::linkerconfig::modules::Configuration CreateLegacyConfiguration() {
   std::vector<Section> sections;
   Context current_context;
+  current_context.SetCurrentLinkerConfigType(LinkerConfigType::Legacy);
 
   sections.emplace_back(BuildLegacySection(current_context));
   sections.emplace_back(BuildPostInstallSection(current_context));
