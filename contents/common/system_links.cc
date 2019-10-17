@@ -30,18 +30,16 @@ using android::linkerconfig::modules::Section;
 
 void AddStandardSystemLinks(const Context& ctx, Section* section) {
   std::string system_ns_name = ctx.GetSystemNamespaceName();
-  Namespace* system_ns = section->GetNamespace(system_ns_name);
-  for (Namespace& ns : section->GetNamespaces()) {
-    if (&ns != system_ns) {
+  section->ForEachNamespaces([system_ns_name](Namespace& ns) {
+    if (ns.GetName() != system_ns_name) {
       ns.GetLink(system_ns_name)
           .AddSharedLib({"libc.so",
                          "libm.so",
                          "libdl.so",
                          "@{SANITIZER_RUNTIME_LIBRARIES}"});
     }
-  }
+  });
 }
-
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
