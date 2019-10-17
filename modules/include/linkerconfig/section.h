@@ -40,12 +40,14 @@ class Section {
   std::vector<std::string> GetBinaryPaths();
   std::string GetName();
 
-  // Use for iteration only.
-  std::vector<Namespace>& GetNamespaces() {
-    return namespaces_;
-  }
-
   Namespace* GetNamespace(const std::string& namespace_name);
+
+  template <class _Function>
+  void ForEachNamespaces(_Function f) {
+    for (auto& ns : namespaces_) {
+      f(ns);
+    }
+  }
 
  private:
   const std::string name_;
