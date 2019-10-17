@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#include "linkerconfig/environment.h"
+
 using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 

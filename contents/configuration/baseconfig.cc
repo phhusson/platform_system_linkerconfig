@@ -15,6 +15,7 @@
  */
 
 #include "linkerconfig/baseconfig.h"
+#include "linkerconfig/environment.h"
 #include "linkerconfig/sectionbuilder.h"
 
 using android::linkerconfig::modules::DirToSection;
@@ -57,7 +58,11 @@ namespace linkerconfig {
 namespace contents {
 android::linkerconfig::modules::Configuration CreateBaseConfiguration() {
   std::vector<Section> sections;
+
   Context current_context;
+  if (android::linkerconfig::modules::IsVndkLiteDevice()) {
+    current_context.SetCurrentLinkerConfigType(LinkerConfigType::Vndklite);
+  }
 
   sections.emplace_back(BuildSystemSection(current_context));
   sections.emplace_back(BuildVendorSection(current_context));

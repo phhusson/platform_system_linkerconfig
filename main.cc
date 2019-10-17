@@ -15,12 +15,15 @@
  */
 
 #include <getopt.h>
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <string>
 
 #include "linkerconfig/baseconfig.h"
+#include "linkerconfig/environment.h"
+#include "linkerconfig/legacy.h"
 #include "linkerconfig/log.h"
 #include "linkerconfig/variableloader.h"
 #include "linkerconfig/variables.h"
@@ -81,9 +84,9 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
 }
 
 android::linkerconfig::modules::Configuration GetConfiguration() {
-  // TODO : Use legacy if needed
-
-  // TODO : Use vndk lite if needed
+  if (android::linkerconfig::modules::IsLegacyDevice()) {
+    return android::linkerconfig::contents::CreateLegacyConfiguration();
+  }
 
   // TODO : Use recovery if needed
 

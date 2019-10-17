@@ -27,20 +27,36 @@ enum class SectionType {
   Other,
 };
 
+enum class LinkerConfigType {
+  Default,
+  Legacy,
+  Vndklite,
+  Recovery,
+};
+
 class Context {
  public:
-  Context() : current_section(SectionType::System) {
+  Context()
+      : current_section(SectionType::System),
+        current_linkerconfig_type(LinkerConfigType::Default) {
   }
   bool IsSystemSection() const;
   bool IsVendorSection() const;
 
+  bool IsDefaultConfig() const;
+  bool IsLegacyConfig() const;
+  bool IsVndkliteConfig() const;
+  bool IsRecoveryConfig() const;
+
   void SetCurrentSection(SectionType value);
+  void SetCurrentLinkerConfigType(LinkerConfigType value);
 
   // Returns the namespace that covers /system/${LIB}.
   std::string GetSystemNamespaceName() const;
 
  private:
   SectionType current_section;
+  LinkerConfigType current_linkerconfig_type;
 };
 }  // namespace contents
 }  // namespace linkerconfig
