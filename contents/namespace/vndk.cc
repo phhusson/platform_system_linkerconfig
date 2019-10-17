@@ -26,6 +26,7 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
   bool is_system_section = ctx.IsSystemSection();
+  bool is_vndklite = ctx.IsVndkliteConfig();
   Namespace ns("vndk",
                /*is_isolated=*/is_system_section,
                /*is_visible=*/is_system_section);
@@ -47,7 +48,9 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
     ns.AddPermittedPath("/odm/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
     ns.AddPermittedPath("/vendor/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
     ns.AddPermittedPath("/vendor/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
-    ns.AddPermittedPath("/system/vendor/${LIB}/hw", AsanPath::NONE);
+    if (!is_vndklite) {
+      ns.AddPermittedPath("/system/vendor/${LIB}/hw", AsanPath::NONE);
+    }
     ns.AddPermittedPath("/system/vendor/${LIB}/egl", AsanPath::NONE);
     ns.AddPermittedPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}/hw",
                         AsanPath::SAME_PATH);
@@ -55,14 +58,16 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib({"@{LLNDK_LIBRARIES}"});
 
-  if (is_system_section) {
-    ns.GetLink("sphal").AllowAllSharedLibs();
-  } else {
-    ns.GetLink("default").AllowAllSharedLibs();
+  if (!is_vndklite) {
+    if (is_system_section) {
+      ns.GetLink("sphal").AllowAllSharedLibs();
+    } else {
+      ns.GetLink("default").AllowAllSharedLibs();
 
-    if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
-      ns.GetLink("vndk_in_system")
-          .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
+      if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
+        ns.GetLink("vndk_in_system")
+            .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
+      }
     }
   }
 
