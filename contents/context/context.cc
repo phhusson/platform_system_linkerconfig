@@ -27,12 +27,32 @@ bool Context::IsVendorSection() const {
   return current_section == SectionType::Vendor;
 }
 
+bool Context::IsDefaultConfig() const {
+  return current_linkerconfig_type == LinkerConfigType::Default;
+}
+
+bool Context::IsLegacyConfig() const {
+  return current_linkerconfig_type == LinkerConfigType::Legacy;
+}
+
+bool Context::IsVndkliteConfig() const {
+  return current_linkerconfig_type == LinkerConfigType::Vndklite;
+}
+
+bool Context::IsRecoveryConfig() const {
+  return current_linkerconfig_type == LinkerConfigType::Recovery;
+}
+
 void Context::SetCurrentSection(SectionType section_type) {
   current_section = section_type;
 }
 
 std::string Context::GetSystemNamespaceName() const {
-  return IsVendorSection() ? "system" : "default";
+  return IsVendorSection() && !IsVndkliteConfig() ? "system" : "default";
+}
+
+void Context::SetCurrentLinkerConfigType(LinkerConfigType config_type) {
+  current_linkerconfig_type = config_type;
 }
 }  // namespace contents
 }  // namespace linkerconfig

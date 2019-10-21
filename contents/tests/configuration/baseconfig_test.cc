@@ -29,6 +29,19 @@ TEST(linkerconfig_configuration_fulltest, baseconfig_test) {
   VerifyConfiguration(config_writer.ToString());
 }
 
+TEST(linkerconfig_configuration_fulltest,
+     baseconfig_vndk_using_core_variant_test) {
+  MockGenericVariables();
+  MockVndkUsingCoreVariant();
+
+  auto base_config = android::linkerconfig::contents::CreateBaseConfiguration();
+  android::linkerconfig::modules::ConfigWriter config_writer;
+
+  base_config.WriteConfig(config_writer);
+
+  VerifyConfiguration(config_writer.ToString());
+}
+
 TEST(linkerconfig_configuration_fulltest, baseconfig_vndk_27_test) {
   MockGenericVariables();
   MockVndkVersion("27");
@@ -36,6 +49,19 @@ TEST(linkerconfig_configuration_fulltest, baseconfig_vndk_27_test) {
   android::linkerconfig::modules::ConfigWriter config_writer;
 
   base_config.WriteConfig(config_writer);
+
+  VerifyConfiguration(config_writer.ToString());
+}
+
+TEST(linkerconfig_configuration_fulltest, vndklite_test) {
+  MockGenericVariables();
+  MockVnkdLite();
+
+  auto vndklite_config =
+      android::linkerconfig::contents::CreateBaseConfiguration();
+  android::linkerconfig::modules::ConfigWriter config_writer;
+
+  vndklite_config.WriteConfig(config_writer);
 
   VerifyConfiguration(config_writer.ToString());
 }
