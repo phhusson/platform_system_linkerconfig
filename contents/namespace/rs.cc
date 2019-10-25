@@ -27,8 +27,8 @@ Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/system/${LIB}/vndk-sp-@{VNDK_VER}",
-                   AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}",
+                   AsanPath::SAME_PATH);
   ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
 
