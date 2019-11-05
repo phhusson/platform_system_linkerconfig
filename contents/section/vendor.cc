@@ -49,6 +49,8 @@ Section BuildVendorSection(Context& ctx) {
     namespaces.emplace_back(BuildVndkInSystemNamespace(ctx));
   }
 
+  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
+
   Section section("vendor", std::move(namespaces));
   AddStandardSystemLinks(ctx, &section);
   return section;

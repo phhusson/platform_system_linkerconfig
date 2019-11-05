@@ -38,6 +38,7 @@ NamespaceBuilder BuildVndkInSystemNamespace;
 NamespaceBuilder BuildUnrestrictedDefaultNamespace;
 NamespaceBuilder BuildPostInstallNamespace;
 NamespaceBuilder BuildNeuralNetworksNamespace;
+NamespaceBuilder BuildRuntimeNamespace;
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
