@@ -41,6 +41,7 @@ Section BuildSystemSection(Context& ctx) {
   namespaces.emplace_back(BuildRsNamespace(ctx));
   namespaces.emplace_back(BuildVndkNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
+  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
 
   Section section("system", std::move(namespaces));
   AddStandardSystemLinks(ctx, &section);
