@@ -23,6 +23,8 @@ using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
+
+// Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
 const std::vector<std::string> kLibsFromArt = {
     "libdexfile_external.so",
     "libdexfiled_external.so",
@@ -35,6 +37,7 @@ const std::vector<std::string> kLibsFromArt = {
     // for app compat.
     "libicui18n.so",
     "libicuuc.so"};
+
 }  // namespace
 
 namespace android {
