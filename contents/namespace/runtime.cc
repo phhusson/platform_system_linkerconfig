@@ -14,35 +14,30 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/sectionbuilder.h"
-
-#include "linkerconfig/common.h"
 #include "linkerconfig/namespacebuilder.h"
-#include "linkerconfig/section.h"
 
-using android::linkerconfig::contents::SectionType;
+using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
-using android::linkerconfig::modules::Section;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Section BuildLegacySection(Context& ctx) {
-  ctx.SetCurrentSection(SectionType::System);
-  std::vector<Namespace> namespaces;
 
-  namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildArtNamespace(ctx));
-  namespaces.emplace_back(BuildMediaNamespace(ctx));
-  namespaces.emplace_back(BuildConscryptNamespace(ctx));
-  namespaces.emplace_back(BuildResolvNamespace(ctx));
-  namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
-  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
+Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
+  // Currently, the runtime namespace is only to isolate
+  // libc_malloc_hooks/debug.so. libc/l/d are loaded in the default namespace.
+  Namespace ns("runtime",
+               /*is_isolated=*/true,
+               /*is_visible=*/true);
 
-  Section section("legacy", std::move(namespaces));
-  AddStandardSystemLinks(ctx, &section);
-  return section;
+  ns.AddSearchPath("/apex/com.android.runtime/${LIB}", AsanPath::SAME_PATH);
+
+  ns.GetLink(ctx.GetSystemNamespaceName())
+      .AddSharedLib("libc.so", "libdl.so", "libm.so", "liblog.so");
+
+  return ns;
 }
+
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
