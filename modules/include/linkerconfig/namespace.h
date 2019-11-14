@@ -97,9 +97,12 @@ class Namespace {
   void WriteConfig(ConfigWriter& writer);
   void AddWhitelisted(const std::string& path);
 
-  std::string GetName();
+  std::string GetName() const;
 
   // For test usage
+  std::vector<std::string> SearchPaths() const {
+    return search_paths_;
+  }
   bool ContainsSearchPath(const std::string& path, AsanPath path_from_asan);
   bool ContainsPermittedPath(const std::string& path, AsanPath path_from_asan);
 
