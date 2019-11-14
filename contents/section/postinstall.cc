@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+// Namespace config for binaries under /postinstall.
+// Only default namespace is defined and default has no directories
+// other than /system/lib in the search paths. This is because linker calls
+// realpath on the search paths and this causes selinux denial if the paths
+// (/vendor, /odm) are not allowed to the postinstall binaries. There is no
+// reason to allow the binaries to access the paths.
+
 #include "linkerconfig/sectionbuilder.h"
 
 #include "linkerconfig/namespacebuilder.h"

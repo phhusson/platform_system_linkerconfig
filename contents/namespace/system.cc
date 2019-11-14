@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// This namespace is where system libs (VNDK and LLNDK libs) are loaded for a
+// vendor process.
+
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::AsanPath;
