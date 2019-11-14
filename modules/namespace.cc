@@ -136,7 +136,7 @@ void Namespace::AddWhitelisted(const std::string& path) {
   whitelisted_.push_back(path);
 }
 
-std::string Namespace::GetName() {
+std::string Namespace::GetName() const {
   return name_;
 }
 
@@ -148,6 +148,7 @@ bool Namespace::ContainsSearchPath(const std::string& path,
          (path_from_asan != AsanPath::WITH_DATA_ASAN ||
           FindFromPathList(asan_search_paths_, kDataAsanPath + path));
 }
+
 bool Namespace::ContainsPermittedPath(const std::string& path,
                                       AsanPath path_from_asan) {
   return FindFromPathList(permitted_paths_, path) &&
@@ -156,6 +157,7 @@ bool Namespace::ContainsPermittedPath(const std::string& path,
          (path_from_asan != AsanPath::WITH_DATA_ASAN ||
           FindFromPathList(asan_permitted_paths_, kDataAsanPath + path));
 }
+
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
