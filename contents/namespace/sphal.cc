@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+// SP-HAL(Sameprocess-HAL)s are the only vendor libraries that are allowed to be
+// loaded inside system processes. libEGL_<chipset>.so, libGLESv2_<chipset>.so,
+// android.hardware.graphics.mapper@2.0-impl.so, etc are SP-HALs.
+//
+// This namespace is exclusivly for SP-HALs. When the framework tries to
+// dynamically load SP-HALs, android_dlopen_ext() is used to explicitly specify
+// that they should be searched and loaded from this namespace.
+//
+// Note that there is no link from the default namespace to this namespace.
+
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::AsanPath;
@@ -23,6 +33,8 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
+  // Visible to allow use with android_dlopen_ext, and with
+  // android_link_namespaces in libnativeloader.
   Namespace ns("sphal", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
@@ -32,6 +44,10 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddPermittedPath("/system/vendor/${LIB}", AsanPath::NONE);
 
+  // Once in this namespace, access to libraries in /system/lib is restricted.
+  // Only libs listed here can be used. Order is important here as the
+  // namespaces are tried in this order. rs should be before vndk because both
+  // are capable of loading libRS_internal.so
   ns.GetLink("rs").AddSharedLib("libRS_internal.so");
   ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("@{LLNDK_LIBRARIES:}");
   ns.GetLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES:}");

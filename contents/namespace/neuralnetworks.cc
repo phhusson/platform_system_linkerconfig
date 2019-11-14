@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// This namespace is for libraries within the NNAPI APEX.
+
 #include "linkerconfig/namespacebuilder.h"
 
 #include "linkerconfig/environment.h"

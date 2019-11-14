@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// Linker config for native tests that need access to both system and vendor
+// libraries. This replicates the default linker config (done by
+// init_default_namespace_no_config in bionic/linker/linker.cpp), except that it
+// includes the requisite namespace setup for APEXes.
+
 #include "linkerconfig/sectionbuilder.h"
 
 #include "linkerconfig/common.h"
