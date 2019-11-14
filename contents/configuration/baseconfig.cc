@@ -22,6 +22,9 @@ using android::linkerconfig::modules::DirToSection;
 using android::linkerconfig::modules::Section;
 
 namespace {
+
+// Don't change the order here. The first pattern that matches with the
+// absolute path of an executable is selected.
 const std::vector<DirToSection> kDirToSection = {
     {"/system/bin/", "system"},
     {"/system/xbin/", "system"},
@@ -51,6 +54,7 @@ const std::vector<DirToSection> kDirToSection = {
     // else. This must be last.
     {"/data", "system"},
 };
+
 }  // namespace
 
 namespace android {

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// Currently, the runtime namespace is only to isolate
+// libc_malloc_hooks/debug.so in the Runtime APEX. libc/l/d are loaded in the
+// default namespace.
+
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::AsanPath;
@@ -24,8 +28,6 @@ namespace linkerconfig {
 namespace contents {
 
 Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
-  // Currently, the runtime namespace is only to isolate
-  // libc_malloc_hooks/debug.so. libc/l/d are loaded in the default namespace.
   Namespace ns("runtime",
                /*is_isolated=*/true,
                /*is_visible=*/true);

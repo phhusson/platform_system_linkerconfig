@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// This namespace is exclusively for Renderscript internal libraries. This
+// namespace has slightly looser restriction than the vndk namespace because of
+// the genuine characteristics of Renderscript; /data is in the permitted path
+// to load the compiled *.so file and libmediandk.so can be used here.
+
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::AsanPath;
@@ -37,8 +42,11 @@ Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/system/vendor/${LIB}", AsanPath::NONE);
   ns.AddPermittedPath("/data", AsanPath::SAME_PATH);
 
+  // Private LLNDK libs (e.g. libft2.so) are exceptionally allowed to this
+  // namespace because RS framework libs are using them.
   ns.GetLink(ctx.GetSystemNamespaceName())
       .AddSharedLib({"@{LLNDK_LIBRARIES}", "@{PRIVATE_LLNDK_LIBRARIES:}"});
+
   ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;

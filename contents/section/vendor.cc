@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Namespace config for vendor processes.
+
 #include "linkerconfig/sectionbuilder.h"
 
 #include "linkerconfig/common.h"
