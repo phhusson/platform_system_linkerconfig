@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// This is the default linker namespace for a vendor process (a process started
+// from /vendor/bin/*).
+
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 
@@ -22,6 +25,8 @@ using android::linkerconfig::modules::GetVendorVndkVersion;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
+
+// Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
 const std::vector<std::string> kVndkLiteArtLibs = {
     "libdexfile_external.so",
     "libdexfiled_external.so",
@@ -33,6 +38,7 @@ const std::vector<std::string> kVndkLiteArtLibs = {
     "libicui18n.so",
     "libicuuc.so",
 };
+
 }  // namespace
 
 namespace android {

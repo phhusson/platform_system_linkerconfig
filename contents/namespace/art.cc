@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// This namespace exposes externally accessible libraries from the ART APEX.
+// Keep in sync with the "art" namespace in art/build/apex/ld.config.txt.
+
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::AsanPath;

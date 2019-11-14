@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+// This namespace is where no-vendor-variant VNDK libraries are loaded for a
+// vendor process.  Note that we do not simply export these libraries from the
+// "system" namespace, because in some cases both the core variant and the
+// vendor variant of a VNDK library may be loaded.  In such cases, we do not
+// want to eliminate double-loading because doing so means the global states
+// of the library would be shared.
+//
+// Only the no-vendor-variant VNDK libraries are whitelisted in this namespace.
+// This is to ensure that we do not load libraries needed by no-vendor-variant
+// VNDK libraries into vndk_in_system namespace.
+
 #include "linkerconfig/namespacebuilder.h"
 
 #include "linkerconfig/environment.h"
@@ -28,6 +39,7 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("vndk_in_system", /*is_isolated=*/true,
                /*is_visible=*/true);
 
+  // The search paths here should be kept the same as that of the 'system' namespace.
   ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
@@ -36,6 +48,11 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
     ns.AddWhitelisted("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
   }
 
+  // The links here should be identical to that of the 'vndk' namespace for the
+  // [vendor] section, with the following exceptions:
+  //   1. 'vndk_in_system' needs to be freely linked back to 'vndk'.
+  //   2. 'vndk_in_system' does not need to link to 'default', as any library that
+  //      requires anything vendor would not be a vndk_in_system library.
   ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("@{LLNDK_LIBRARIES}");
   ns.GetLink("vndk").AllowAllSharedLibs();
   ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");

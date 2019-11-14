@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// This namespace is for libraries within the media APEX.
+
 #include "linkerconfig/namespacebuilder.h"
 
 #include <string>

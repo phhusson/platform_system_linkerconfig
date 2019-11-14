@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// This namespace is for libraries within the conscrypt APEX.
+// Keep in sync with the "conscrypt" namespace in art/build/apex/ld.config.txt.
+
 #include "linkerconfig/namespacebuilder.h"
 
 #include <string>
