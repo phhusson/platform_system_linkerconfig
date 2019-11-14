@@ -36,13 +36,15 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
                /*is_isolated=*/is_system_section,
                /*is_visible=*/is_system_section);
 
-  ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}",
-                   AsanPath::SAME_PATH);
-
-  if (!is_system_section) {
+  if (is_system_section) {
+    ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}",
+                     AsanPath::SAME_PATH);
+  } else {
+    ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/odm/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/vendor/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}",
                      AsanPath::SAME_PATH);
