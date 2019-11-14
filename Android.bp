@@ -143,4 +143,5 @@ cc_test {
         "linkerconfig_modules",
         "linkerconfig_contents",
     ],
+    host_supported: true,
 }
