@@ -39,7 +39,11 @@ class Link {
   void AddSharedLib(T&& lib_name, Args&&... lib_names);
   void AddSharedLib(const std::vector<std::string>& lib_names);
   void AllowAllSharedLibs();
-  void WriteConfig(ConfigWriter& writer);
+  void WriteConfig(ConfigWriter& writer) const;
+
+  std::string To() const {
+    return target_namespace_;
+  }
 
  private:
   const std::string origin_namespace_;

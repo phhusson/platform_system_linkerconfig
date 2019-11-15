@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -91,7 +90,7 @@ class Namespace {
                         AsanPath path_from_asan = AsanPath::SAME_PATH);
 
   // Returns a link from this namespace to the given one. If one already exists
-  // it is returned, otherwise one is created.
+  // it is returned, otherwise one is created and pushed back to tail.
   Link& GetLink(const std::string& target_namespace);
 
   void WriteConfig(ConfigWriter& writer);
@@ -100,6 +99,9 @@ class Namespace {
   std::string GetName() const;
 
   // For test usage
+  const std::vector<Link>& Links() const {
+    return links_;
+  }
   std::vector<std::string> SearchPaths() const {
     return search_paths_;
   }
@@ -115,7 +117,7 @@ class Namespace {
   std::vector<std::string> asan_search_paths_;
   std::vector<std::string> asan_permitted_paths_;
   std::vector<std::string> whitelisted_;
-  std::map<std::string, Link> links_;
+  std::vector<Link> links_;
   void WritePathString(ConfigWriter& writer, const std::string& path_type,
                        const std::vector<std::string>& path_list);
 };
