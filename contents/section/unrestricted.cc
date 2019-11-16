@@ -43,6 +43,7 @@ Section BuildUnrestrictedSection(Context& ctx) {
   namespaces.emplace_back(BuildConscryptNamespace(ctx));
   namespaces.emplace_back(BuildResolvNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
+  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
 
   Section section("unrestricted", std::move(namespaces));
   AddStandardSystemLinks(ctx, &section);
