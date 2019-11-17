@@ -33,7 +33,7 @@ void Link::AllowAllSharedLibs() {
   }
 }
 
-void Link::WriteConfig(ConfigWriter& writer) {
+void Link::WriteConfig(ConfigWriter& writer) const {
   writer.SetPrefix("namespace." + origin_namespace_ + ".link." +
                    target_namespace_);
   if (allow_all_shared_libs_) {

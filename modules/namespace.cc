@@ -51,9 +51,12 @@ void Namespace::WritePathString(ConfigWriter& writer,
 }
 
 Link& Namespace::GetLink(const std::string& target_namespace) {
-  auto iter =
-      links_.try_emplace(target_namespace, name_, target_namespace).first;
-  return iter->second;
+  for (auto& link : links_) {
+    if (link.To() == target_namespace) {
+      return link;
+    }
+  }
+  return links_.emplace_back(name_, target_namespace);
 }
 
 void Namespace::WriteConfig(ConfigWriter& writer) {
@@ -78,21 +81,15 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
   }
 
   if (!links_.empty()) {
-    std::string link_list = "";
-
-    is_first = true;
-    for (auto& link : links_) {
-      if (!is_first) {
-        link_list += ",";
-      }
-      link_list += link.first;
-      is_first = false;
+    std::vector<std::string> link_list;
+    link_list.reserve(links_.size());
+    for (const auto& link : links_) {
+      link_list.push_back(link.To());
     }
+    writer.WriteLine("links = " + android::base::Join(link_list, ","));
 
-    writer.WriteLine("links = " + link_list);
-
-    for (auto& link : links_) {
-      link.second.WriteConfig(writer);
+    for (const auto& link : links_) {
+      link.WriteConfig(writer);
     }
   }
 
@@ -136,7 +133,7 @@ void Namespace::AddWhitelisted(const std::string& path) {
   whitelisted_.push_back(path);
 }
 
-std::string Namespace::GetName() {
+std::string Namespace::GetName() const {
   return name_;
 }
 
@@ -148,6 +145,7 @@ bool Namespace::ContainsSearchPath(const std::string& path,
          (path_from_asan != AsanPath::WITH_DATA_ASAN ||
           FindFromPathList(asan_search_paths_, kDataAsanPath + path));
 }
+
 bool Namespace::ContainsPermittedPath(const std::string& path,
                                       AsanPath path_from_asan) {
   return FindFromPathList(permitted_paths_, path) &&
@@ -156,6 +154,7 @@ bool Namespace::ContainsPermittedPath(const std::string& path,
          (path_from_asan != AsanPath::WITH_DATA_ASAN ||
           FindFromPathList(asan_permitted_paths_, kDataAsanPath + path));
 }
+
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
