@@ -100,6 +100,7 @@ cc_test {
     static_libs: [
         "linkerconfig_modules",
     ],
+    host_supported: true,
 }
 
 cc_test {
