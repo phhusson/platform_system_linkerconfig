@@ -35,6 +35,7 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
                /*is_visible=*/!ctx.IsVendorSection());
 
   ns.AddSearchPath("/apex/com.android.art/${LIB}", AsanPath::SAME_PATH);
+  ns.AddPermittedPath("/system/${LIB}");
 
   // Need allow_all_shared_libs to let libart.so dlopen oat files in
   // /system/framework and /data.
