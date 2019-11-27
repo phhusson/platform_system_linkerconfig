@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -108,6 +109,11 @@ class Namespace {
   bool ContainsSearchPath(const std::string& path, AsanPath path_from_asan);
   bool ContainsPermittedPath(const std::string& path, AsanPath path_from_asan);
 
+  void AddProvides(std::vector<std::string> list);
+  void AddRequires(std::vector<std::string> list);
+  const std::set<std::string>& GetProvides() const;
+  const std::set<std::string>& GetRequires() const;
+
  private:
   const bool is_isolated_;
   const bool is_visible_;
@@ -118,6 +124,9 @@ class Namespace {
   std::vector<std::string> asan_permitted_paths_;
   std::vector<std::string> whitelisted_;
   std::vector<Link> links_;
+  std::set<std::string> provides_;
+  std::set<std::string> requires_;
+
   void WritePathString(ConfigWriter& writer, const std::string& path_type,
                        const std::vector<std::string>& path_list);
 };
