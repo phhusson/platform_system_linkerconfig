@@ -16,10 +16,12 @@
 
 #include <gtest/gtest.h>
 
+#include "android-base/result.h"
 #include "linkerconfig/configwriter.h"
 #include "linkerconfig/section.h"
 #include "modules_testbase.h"
 
+using android::base::Errorf;
 using namespace android::linkerconfig::modules;
 
 constexpr const char* kSectionWithNamespacesExpectedResult =
@@ -99,10 +101,10 @@ TEST(linkerconfig_section, section_with_namespaces) {
 
   std::vector<Namespace> namespaces;
 
-  namespaces.emplace_back(CreateNamespaceWithLinks("default", true, true,
-                                                   "namespace1", "namespace2"));
-  namespaces.emplace_back(CreateNamespaceWithLinks("namespace1", false, false,
-                                                   "default", "namespace2"));
+  namespaces.emplace_back(CreateNamespaceWithLinks(
+      "default", true, true, "namespace1", "namespace2"));
+  namespaces.emplace_back(CreateNamespaceWithLinks(
+      "namespace1", false, false, "default", "namespace2"));
   namespaces.emplace_back(CreateNamespaceWithPaths("namespace2", false, false));
 
   Section section("test_section", std::move(namespaces));
@@ -122,4 +124,59 @@ TEST(linkerconfig_section, section_with_one_namespace) {
   section.WriteConfig(writer);
   auto config = writer.ToString();
   ASSERT_EQ(kSectionWithOneNamespaceExpectedResult, config);
+}
+
+TEST(linkerconfig_section, resolve_contraints) {
+  std::vector<Namespace> namespaces;
+  Namespace& foo = namespaces.emplace_back("foo");
+  foo.AddProvides({"libfoo.so"});
+  foo.AddRequires({"libbar.so"});
+  Namespace& bar = namespaces.emplace_back("bar");
+  bar.AddProvides({"libbar.so"});
+  Namespace& baz = namespaces.emplace_back("baz");
+  baz.AddRequires({"libfoo.so"});
+
+  Section section("section", std::move(namespaces));
+  section.Resolve();
+
+  ConfigWriter writer;
+  section.WriteConfig(writer);
+
+  ASSERT_EQ(
+      "[section]\n"
+      "additional.namespaces = foo,bar,baz\n"
+      "namespace.foo.isolated = false\n"
+      "namespace.foo.links = bar\n"
+      "namespace.foo.link.bar.shared_libs = libbar.so\n"
+      "namespace.bar.isolated = false\n"
+      "namespace.baz.isolated = false\n"
+      "namespace.baz.links = foo\n"
+      "namespace.baz.link.foo.shared_libs = libfoo.so\n",
+      writer.ToString());
+}
+
+TEST(linkerconfig_section, error_if_duplicate_providing) {
+  std::vector<Namespace> namespaces;
+  Namespace& foo1 = namespaces.emplace_back("foo1");
+  foo1.AddProvides({"libfoo.so"});
+  Namespace& foo2 = namespaces.emplace_back("foo2");
+  foo2.AddProvides({"libfoo.so"});
+  Namespace& bar = namespaces.emplace_back("bar");
+  bar.AddRequires({"libfoo.so"});
+
+  Section section("section", std::move(namespaces));
+  auto result = section.Resolve();
+  ASSERT_EQ("duplicate: libfoo.so is provided by foo1 and foo2 in [section]",
+            result.error().message());
+}
+
+TEST(linkerconfig_section, error_if_no_providers) {
+  std::vector<Namespace> namespaces;
+  Namespace& foo = namespaces.emplace_back("foo");
+  foo.AddRequires({"libfoo.so"});
+
+  Section section("section", std::move(namespaces));
+  auto result = section.Resolve();
+  ASSERT_EQ("not found: libfoo.so is required by foo in [section]",
+            result.error().message());
 }

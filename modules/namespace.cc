@@ -155,6 +155,21 @@ bool Namespace::ContainsPermittedPath(const std::string& path,
           FindFromPathList(asan_permitted_paths_, kDataAsanPath + path));
 }
 
+void Namespace::AddProvides(std::vector<std::string> list) {
+  provides_.insert(list.begin(), list.end());
+}
+
+void Namespace::AddRequires(std::vector<std::string> list) {
+  requires_.insert(list.begin(), list.end());
+}
+
+const std::set<std::string>& Namespace::GetProvides() const {
+  return provides_;
+}
+
+const std::set<std::string>& Namespace::GetRequires() const {
+  return requires_;
+}
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
