@@ -31,6 +31,7 @@ Namespace BuildNeuralNetworksNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("neuralnetworks", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.neuralnetworks/${LIB}",
                    AsanPath::SAME_PATH);
+  ns.AddPermittedPath("/system/${LIB}");
 
   ns.GetLink(ctx.GetSystemNamespaceName())
       .AddSharedLib({"libcgrouprc.so",
