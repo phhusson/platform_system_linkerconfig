@@ -37,6 +37,7 @@ namespace contents {
 Namespace BuildResolvNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("resolv", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.resolv/${LIB}", AsanPath::SAME_PATH);
+  ns.AddPermittedPath("/system/${LIB}");
 
   ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib(kLibsFromDefault);
 

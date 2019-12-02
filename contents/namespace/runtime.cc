@@ -33,6 +33,7 @@ Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
                /*is_visible=*/true);
 
   ns.AddSearchPath("/apex/com.android.runtime/${LIB}", AsanPath::SAME_PATH);
+  ns.AddPermittedPath("/system/${LIB}");
 
   ns.GetLink(ctx.GetSystemNamespaceName())
       .AddSharedLib("libc.so", "libdl.so", "libm.so", "liblog.so");
