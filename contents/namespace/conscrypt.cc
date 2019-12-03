@@ -35,6 +35,7 @@ Namespace BuildConscryptNamespace([[maybe_unused]] const Context& ctx) {
                /*is_visible=*/true);
 
   ns.AddSearchPath("/apex/com.android.conscrypt/${LIB}", AsanPath::SAME_PATH);
+  ns.AddPermittedPath("/system/${LIB}");
   ns.GetLink("art").AddSharedLib("libandroidio.so");
   ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("liblog.so");
 

@@ -53,6 +53,7 @@ Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
 
   Namespace ns("media", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.media/${LIB}", AsanPath::SAME_PATH);
+  ns.AddPermittedPath("/system/${LIB}");
   ns.AddPermittedPath(
       "/apex/com.android.media/${LIB}/extractors",
       (is_legacy || is_vndklite) ? AsanPath::NONE : AsanPath::SAME_PATH);
