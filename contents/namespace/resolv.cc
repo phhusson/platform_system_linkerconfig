@@ -24,13 +24,6 @@
 using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
-namespace {
-const std::vector<std::string> kLibsFromDefault = {"libcgrouprc.so",
-                                                   "libbinder_ndk.so",
-                                                   "liblog.so",
-                                                   "libvndksupport.so"};
-}  // namespace
-
 namespace android {
 namespace linkerconfig {
 namespace contents {
@@ -39,7 +32,7 @@ Namespace BuildResolvNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddSearchPath("/apex/com.android.resolv/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
 
-  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib(kLibsFromDefault);
+  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib({"libbinder_ndk.so"});
 
   return ns;
 }
