@@ -26,6 +26,7 @@ cc_defaults {
         "liblog",
     ],
     host_supported: true,
+    recovery_available: true,
 }
 
 cc_defaults {
@@ -36,6 +37,7 @@ cc_defaults {
         "-Wunused",
     ],
     test_suites: ["general-tests"],
+    recovery_available: false,
 }
 
 cc_library_static {
@@ -100,7 +102,6 @@ cc_test {
     static_libs: [
         "linkerconfig_modules",
     ],
-    host_supported: true,
 }
 
 cc_test {
