@@ -23,6 +23,7 @@ bool IsLegacyDevice();
 bool IsVndkLiteDevice();
 bool IsVndkInSystemNamespace();
 std::string GetVendorVndkVersion();
+bool IsRecoveryMode();
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
