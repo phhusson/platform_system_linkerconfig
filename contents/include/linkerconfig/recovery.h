@@ -15,21 +15,12 @@
  */
 #pragma once
 
-#include "linkerconfig/context.h"
-#include "linkerconfig/section.h"
-
-typedef android::linkerconfig::modules::Section SectionBuilder(
-    android::linkerconfig::contents::Context& ctx);
+#include "linkerconfig/configuration.h"
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-SectionBuilder BuildSystemSection;
-SectionBuilder BuildVendorSection;
-SectionBuilder BuildUnrestrictedSection;
-SectionBuilder BuildLegacySection;
-SectionBuilder BuildPostInstallSection;
-SectionBuilder BuildRecoverySection;
+android::linkerconfig::modules::Configuration CreateRecoveryConfiguration();
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

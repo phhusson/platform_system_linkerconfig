@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include "linkerconfig/context.h"
+#include "linkerconfig/sectionbuilder.h"
+
+#include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
 
-typedef android::linkerconfig::modules::Section SectionBuilder(
-    android::linkerconfig::contents::Context& ctx);
+using android::linkerconfig::modules::Namespace;
+using android::linkerconfig::modules::Section;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-SectionBuilder BuildSystemSection;
-SectionBuilder BuildVendorSection;
-SectionBuilder BuildUnrestrictedSection;
-SectionBuilder BuildLegacySection;
-SectionBuilder BuildPostInstallSection;
-SectionBuilder BuildRecoverySection;
+Section BuildRecoverySection(Context& ctx) {
+  std::vector<Namespace> namespaces;
+  namespaces.emplace_back(BuildRecoveryDefaultNamespace(ctx));
+  Section section("recovery", std::move(namespaces));
+
+  return section;
+}
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

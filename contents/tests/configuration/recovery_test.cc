@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include "linkerconfig/context.h"
-#include "linkerconfig/section.h"
+#include "linkerconfig/recovery.h"
+#include "configurationtest.h"
+#include "linkerconfig/configwriter.h"
+#include "mockenv.h"
 
-typedef android::linkerconfig::modules::Section SectionBuilder(
-    android::linkerconfig::contents::Context& ctx);
+TEST(linkerconfig_configuration_fulltest, recovery_test) {
+  MockGenericVariables();
+  auto legacy_config =
+      android::linkerconfig::contents::CreateRecoveryConfiguration();
+  android::linkerconfig::modules::ConfigWriter config_writer;
 
-namespace android {
-namespace linkerconfig {
-namespace contents {
-SectionBuilder BuildSystemSection;
-SectionBuilder BuildVendorSection;
-SectionBuilder BuildUnrestrictedSection;
-SectionBuilder BuildLegacySection;
-SectionBuilder BuildPostInstallSection;
-SectionBuilder BuildRecoverySection;
-}  // namespace contents
-}  // namespace linkerconfig
-}  // namespace android
+  legacy_config.WriteConfig(config_writer);
+
+  VerifyConfiguration(config_writer.ToString());
+}

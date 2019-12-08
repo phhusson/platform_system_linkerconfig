@@ -15,35 +15,22 @@
  */
 
 #include "linkerconfig/environment.h"
+#include "linkerconfig/namespace.h"
+#include "linkerconfig/namespacebuilder.h"
 
-#include <unistd.h>
-
-#include "linkerconfig/variables.h"
+using android::linkerconfig::modules::AsanPath;
+using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
-namespace modules {
-bool IsLegacyDevice() {
-  return (!Variables::GetValue("ro.vndk.version").has_value() &&
-          !Variables::GetValue("ro.vndk.lite").has_value()) ||
-         Variables::GetValue("ro.treble.enabled") == "false";
-}
+namespace contents {
+Namespace BuildRecoveryDefaultNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("default");
 
-bool IsVndkLiteDevice() {
-  return Variables::GetValue("ro.vndk.lite").value_or("") == "true";
-}
+  ns.AddSearchPath("/system/${LIB}", AsanPath::NONE);
 
-bool IsVndkInSystemNamespace() {
-  return Variables::GetValue("VNDK_USING_CORE_VARIANT_LIBRARIES").has_value();
+  return ns;
 }
-
-std::string GetVendorVndkVersion() {
-  return Variables::GetValue("ro.vndk.version").value_or("");
-}
-
-bool IsRecoveryMode() {
-  return access("/system/bin/recovery", F_OK) == 0;
-}
-}  // namespace modules
+}  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
