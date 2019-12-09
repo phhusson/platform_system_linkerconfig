@@ -39,6 +39,7 @@ NamespaceBuilder BuildUnrestrictedDefaultNamespace;
 NamespaceBuilder BuildPostInstallNamespace;
 NamespaceBuilder BuildNeuralNetworksNamespace;
 NamespaceBuilder BuildRuntimeNamespace;
+NamespaceBuilder BuildRecoveryDefaultNamespace;
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
