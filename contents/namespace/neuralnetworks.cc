@@ -38,7 +38,6 @@ Namespace BuildNeuralNetworksNamespace([[maybe_unused]] const Context& ctx) {
                      "liblog.so",
                      "libnativewindow.so",
                      "libneuralnetworks_packageinfo.so",
-                     "libsync.so",
                      "libvndksupport.so"});
 
   return ns;
