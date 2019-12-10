@@ -41,6 +41,10 @@ class Link {
   void AllowAllSharedLibs();
   void WriteConfig(ConfigWriter& writer) const;
 
+  // accessors
+  std::vector<std::string> GetSharedLibs() const {
+    return shared_libs_;
+  }
   std::string To() const {
     return target_namespace_;
   }

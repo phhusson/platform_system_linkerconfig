@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+#include "linkerconfig/section.h"
+
+#include <android-base/result.h>
 #include <gtest/gtest.h>
 
-#include "android-base/result.h"
 #include "linkerconfig/configwriter.h"
-#include "linkerconfig/section.h"
 #include "modules_testbase.h"
 
 using android::base::Errorf;
@@ -129,12 +130,12 @@ TEST(linkerconfig_section, section_with_one_namespace) {
 TEST(linkerconfig_section, resolve_contraints) {
   std::vector<Namespace> namespaces;
   Namespace& foo = namespaces.emplace_back("foo");
-  foo.AddProvides({"libfoo.so"});
-  foo.AddRequires({"libbar.so"});
+  foo.AddProvides(std::vector{"libfoo.so"});
+  foo.AddRequires(std::vector{"libbar.so"});
   Namespace& bar = namespaces.emplace_back("bar");
-  bar.AddProvides({"libbar.so"});
+  bar.AddProvides(std::vector{"libbar.so"});
   Namespace& baz = namespaces.emplace_back("baz");
-  baz.AddRequires({"libfoo.so"});
+  baz.AddRequires(std::vector{"libfoo.so"});
 
   Section section("section", std::move(namespaces));
   section.Resolve();
@@ -158,11 +159,11 @@ TEST(linkerconfig_section, resolve_contraints) {
 TEST(linkerconfig_section, error_if_duplicate_providing) {
   std::vector<Namespace> namespaces;
   Namespace& foo1 = namespaces.emplace_back("foo1");
-  foo1.AddProvides({"libfoo.so"});
+  foo1.AddProvides(std::vector{"libfoo.so"});
   Namespace& foo2 = namespaces.emplace_back("foo2");
-  foo2.AddProvides({"libfoo.so"});
+  foo2.AddProvides(std::vector{"libfoo.so"});
   Namespace& bar = namespaces.emplace_back("bar");
-  bar.AddRequires({"libfoo.so"});
+  bar.AddRequires(std::vector{"libfoo.so"});
 
   Section section("section", std::move(namespaces));
   auto result = section.Resolve();
@@ -173,7 +174,7 @@ TEST(linkerconfig_section, error_if_duplicate_providing) {
 TEST(linkerconfig_section, error_if_no_providers) {
   std::vector<Namespace> namespaces;
   Namespace& foo = namespaces.emplace_back("foo");
-  foo.AddRequires({"libfoo.so"});
+  foo.AddRequires(std::vector{"libfoo.so"});
 
   Section section("section", std::move(namespaces));
   auto result = section.Resolve();
