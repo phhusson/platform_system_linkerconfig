@@ -20,12 +20,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include <gtest/gtest.h>
+
 #include "linkerconfig/context.h"
 #include "linkerconfig/namespace.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/sectionbuilder.h"
-
-#include "gtest/gtest.h"
 
 using namespace android::linkerconfig::contents;
 using namespace android::linkerconfig::modules;
