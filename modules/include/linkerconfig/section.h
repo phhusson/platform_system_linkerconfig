@@ -20,7 +20,8 @@
 #include <utility>
 #include <vector>
 
-#include "android-base/result.h"
+#include <android-base/result.h>
+
 #include "linkerconfig/configwriter.h"
 #include "linkerconfig/namespace.h"
 
