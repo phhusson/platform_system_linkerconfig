@@ -32,7 +32,7 @@
 namespace {
 const static struct option program_options[] = {
     {"target", required_argument, 0, 't'},
-#ifndef __ANROID__
+#ifndef __ANDROID__
     {"root", required_argument, 0, 'r'},
     {"vndk", required_argument, 0, 'v'},
 #endif
