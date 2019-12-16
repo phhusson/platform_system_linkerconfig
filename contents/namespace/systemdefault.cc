@@ -22,6 +22,7 @@
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::AsanPath;
+using android::linkerconfig::modules::IsProductVndkVersionDefined;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
@@ -54,7 +55,6 @@ const std::vector<std::string> kPermittedPaths = {
     "/system/${LIB}/extractors",
     "/system/${LIB}/hw",
     "/@{SYSTEM_EXT:system_ext}/${LIB}",
-    "/@{PRODUCT:product}/${LIB}",
 
     // These are where odex files are located. libart has to be able to
     // dlopen the files
@@ -87,6 +87,10 @@ void BuildPermittedPath(Namespace& ns) {
   for (const auto& path : kPermittedPaths) {
     ns.AddPermittedPath(path, AsanPath::SAME_PATH);
   }
+  if (!IsProductVndkVersionDefined()) {
+    // System processes can use product libs only if product VNDK is not enforced.
+    ns.AddPermittedPath("/@{PRODUCT:product}/${LIB}", AsanPath::SAME_PATH);
+  }
 }
 }  // namespace
 
@@ -103,7 +107,11 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
+  if (!IsProductVndkVersionDefined() || !is_fully_treblelized) {
+    // System processes can search product libs only if product VNDK is not
+    // enforced.
+    ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
+  }
   if (!is_fully_treblelized) {
     ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
