@@ -28,6 +28,7 @@ NamespaceBuilder BuildSystemDefaultNamespace;
 NamespaceBuilder BuildMediaNamespace;
 NamespaceBuilder BuildArtNamespace;
 NamespaceBuilder BuildConscryptNamespace;
+NamespaceBuilder BuildCronetNamespace;
 NamespaceBuilder BuildResolvNamespace;
 NamespaceBuilder BuildSphalNamespace;
 NamespaceBuilder BuildRsNamespace;
