@@ -28,7 +28,6 @@ cc_defaults {
         "lib_apex_manifest_proto_lite",
     ],
     host_supported: true,
-    recovery_available: true,
 }
 
 cc_defaults {
@@ -39,7 +38,6 @@ cc_defaults {
         "-Wunused",
     ],
     test_suites: ["general-tests"],
-    recovery_available: false,
 }
 
 cc_library_static {
