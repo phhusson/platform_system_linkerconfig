@@ -146,5 +146,19 @@ cc_test {
         "linkerconfig_modules",
         "linkerconfig_contents",
     ],
-    host_supported: true,
+}
+
+prebuilt_etc {
+    name: "ld.config.recovery.txt",
+    recovery: true,
+    filename: "ld.config.txt",
+    src: ":generate_recovery_linker_config",
+}
+
+genrule {
+    name: "generate_recovery_linker_config",
+    recovery: true,
+    out: ["ld.config.recovery.txt"],
+    tools: ["linkerconfig"],
+    cmd: "$(location linkerconfig) --recovery --target $(out)",
 }
