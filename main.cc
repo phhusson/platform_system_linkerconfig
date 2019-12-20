@@ -35,6 +35,7 @@ const static struct option program_options[] = {
 #ifndef __ANDROID__
     {"root", required_argument, 0, 'r'},
     {"vndk", required_argument, 0, 'v'},
+    {"recovery", no_argument, 0, 'y'},
 #endif
     {"help", no_argument, 0, 'h'},
     {0, 0, 0, 0}};
@@ -43,6 +44,7 @@ struct ProgramArgs {
   std::string target_file;
   std::string root;
   std::string vndk_version;
+  bool is_recovery;
 };
 
 [[noreturn]] void PrintUsage(int status = EXIT_SUCCESS) {
@@ -50,6 +52,7 @@ struct ProgramArgs {
 #ifndef __ANDROID__
                " --root <root dir>"
                " --vndk <vndk version>"
+               " --recovery"
 #endif
                " [--recovery]"
                " [--help]"
@@ -60,7 +63,7 @@ struct ProgramArgs {
 bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
   int parse_result;
   while ((parse_result = getopt_long(
-              argc, argv, "t:r:v:h", program_options, NULL)) != -1) {
+              argc, argv, "t:r:v:hy", program_options, NULL)) != -1) {
     switch (parse_result) {
       case 't':
         args->target_file = optarg;
@@ -70,6 +73,9 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
         break;
       case 'v':
         args->vndk_version = optarg;
+        break;
+      case 'y':
+        args->is_recovery = true;
         break;
       case 'h':
         PrintUsage();
@@ -85,10 +91,21 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
   return true;
 }
 
-android::linkerconfig::modules::Configuration GetConfiguration() {
-  if (android::linkerconfig::modules::IsRecoveryMode()) {
+android::linkerconfig::modules::Configuration GetConfiguration(ProgramArgs args) {
+  // Recovery mode does not require environmental variables.
+  if (args.is_recovery || android::linkerconfig::modules::IsRecoveryMode()) {
     return android::linkerconfig::contents::CreateRecoveryConfiguration();
   }
+
+#ifndef __ANDROID__
+  if (args.root == "" || args.vndk_version == "") {
+    PrintUsage();
+  }
+  android::linkerconfig::modules::Variables::AddValue("ro.vndk.version",
+                                                      args.vndk_version);
+#endif
+
+  android::linkerconfig::generator::LoadVariables(args.root);
 
   if (android::linkerconfig::modules::IsLegacyDevice()) {
     return android::linkerconfig::contents::CreateLegacyConfiguration();
@@ -121,7 +138,7 @@ int main(int argc, char* argv[]) {
 #endif
   );
 
-  ProgramArgs args;
+  ProgramArgs args = {.is_recovery = false};
 
   if (!ParseArgs(argc, argv, &args)) {
     PrintUsage(EXIT_FAILURE);
@@ -139,16 +156,7 @@ int main(int argc, char* argv[]) {
     out = &file_out;
   }
 
-#ifndef __ANDROID__
-  if (args.root == "" || args.vndk_version == "") {
-    PrintUsage();
-  }
-  android::linkerconfig::modules::Variables::AddValue("ro.vndk.version",
-                                                      args.vndk_version);
-#endif
-
-  android::linkerconfig::generator::LoadVariables(args.root);
-  auto config = GetConfiguration();
+  auto config = GetConfiguration(args);
   android::linkerconfig::modules::ConfigWriter config_writer;
 
   config.WriteConfig(config_writer);
