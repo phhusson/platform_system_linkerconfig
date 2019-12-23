@@ -36,6 +36,7 @@ const static struct option program_options[] = {
     {"root", required_argument, 0, 'r'},
     {"vndk", required_argument, 0, 'v'},
     {"recovery", no_argument, 0, 'y'},
+    {"legacy", no_argument, 0, 'l'},
 #endif
     {"help", no_argument, 0, 'h'},
     {0, 0, 0, 0}};
@@ -45,6 +46,7 @@ struct ProgramArgs {
   std::string root;
   std::string vndk_version;
   bool is_recovery;
+  bool is_legacy;
 };
 
 [[noreturn]] void PrintUsage(int status = EXIT_SUCCESS) {
@@ -53,6 +55,7 @@ struct ProgramArgs {
                " --root <root dir>"
                " --vndk <vndk version>"
                " --recovery"
+               " --legacy"
 #endif
                " [--recovery]"
                " [--help]"
@@ -63,7 +66,7 @@ struct ProgramArgs {
 bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
   int parse_result;
   while ((parse_result = getopt_long(
-              argc, argv, "t:r:v:hy", program_options, NULL)) != -1) {
+              argc, argv, "t:r:v:hyl", program_options, NULL)) != -1) {
     switch (parse_result) {
       case 't':
         args->target_file = optarg;
@@ -76,6 +79,9 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
         break;
       case 'y':
         args->is_recovery = true;
+        break;
+      case 'l':
+        args->is_legacy = true;
         break;
       case 'h':
         PrintUsage();
@@ -107,7 +113,7 @@ android::linkerconfig::modules::Configuration GetConfiguration(ProgramArgs args)
 
   android::linkerconfig::generator::LoadVariables(args.root);
 
-  if (android::linkerconfig::modules::IsLegacyDevice()) {
+  if (args.is_legacy || android::linkerconfig::modules::IsLegacyDevice()) {
     return android::linkerconfig::contents::CreateLegacyConfiguration();
   }
 
@@ -138,7 +144,7 @@ int main(int argc, char* argv[]) {
 #endif
   );
 
-  ProgramArgs args = {.is_recovery = false};
+  ProgramArgs args = {};
 
   if (!ParseArgs(argc, argv, &args)) {
     PrintUsage(EXIT_FAILURE);
