@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include <android-base/result.h>
 #include <getopt.h>
 
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <string>
+
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include "linkerconfig/baseconfig.h"
 #include "linkerconfig/environment.h"
@@ -28,6 +31,11 @@
 #include "linkerconfig/recovery.h"
 #include "linkerconfig/variableloader.h"
 #include "linkerconfig/variables.h"
+
+using android::base::ErrnoError;
+using android::base::Error;
+using android::base::Result;
+using android::linkerconfig::modules::Configuration;
 
 namespace {
 const static struct option program_options[] = {
@@ -42,7 +50,7 @@ const static struct option program_options[] = {
     {0, 0, 0, 0}};
 
 struct ProgramArgs {
-  std::string target_file;
+  std::string target_directory;
   std::string root;
   std::string vndk_version;
   bool is_recovery;
@@ -50,14 +58,13 @@ struct ProgramArgs {
 };
 
 [[noreturn]] void PrintUsage(int status = EXIT_SUCCESS) {
-  std::cerr << "Usage : linkerconfig [--target <target_file>]"
+  std::cerr << "Usage : linkerconfig [--target <target_directory>]"
 #ifndef __ANDROID__
                " --root <root dir>"
                " --vndk <vndk version>"
                " --recovery"
                " --legacy"
 #endif
-               " [--recovery]"
                " [--help]"
             << std::endl;
   exit(status);
@@ -69,7 +76,7 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
               argc, argv, "t:r:v:hyl", program_options, NULL)) != -1) {
     switch (parse_result) {
       case 't':
-        args->target_file = optarg;
+        args->target_directory = optarg;
         break;
       case 'r':
         args->root = optarg;
@@ -97,28 +104,108 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
   return true;
 }
 
-android::linkerconfig::modules::Configuration GetConfiguration(ProgramArgs args) {
-  // Recovery mode does not require environmental variables.
-  if (args.is_recovery || android::linkerconfig::modules::IsRecoveryMode()) {
-    return android::linkerconfig::contents::CreateRecoveryConfiguration();
-  }
-
+void LoadVariables(ProgramArgs args) {
 #ifndef __ANDROID__
-  if (args.root == "" || args.vndk_version == "") {
+  if (!args.is_recovery && (args.root == "" || args.vndk_version == "")) {
     PrintUsage();
   }
   android::linkerconfig::modules::Variables::AddValue("ro.vndk.version",
                                                       args.vndk_version);
 #endif
 
-  android::linkerconfig::generator::LoadVariables(args.root);
+  if (!args.is_recovery) {
+    android::linkerconfig::generator::LoadVariables(args.root);
+  }
+}
 
-  if (args.is_legacy || android::linkerconfig::modules::IsLegacyDevice()) {
+Result<void> WriteConfigurationToFile(Configuration& conf,
+                                      std::string file_path) {
+  std::ostream* out = &std::cout;
+  std::ofstream file_out;
+
+  if (file_path != "") {
+    file_out.open(file_path);
+    if (file_out.fail()) {
+      return ErrnoError() << "Failed to open file " << file_path;
+    }
+    out = &file_out;
+  }
+
+  android::linkerconfig::modules::ConfigWriter config_writer;
+
+  conf.WriteConfig(config_writer);
+  *out << config_writer.ToString();
+  if (!out->good()) {
+    return ErrnoError() << "Failed to write content to " << file_path;
+  }
+
+  return {};
+}
+
+Result<void> UpdatePermission(std::string file_path) {
+  if (fchmodat(AT_FDCWD,
+               file_path.c_str(),
+               S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH,
+               AT_SYMLINK_NOFOLLOW) < 0) {
+    return ErrnoError() << "Failed to update permission of " << file_path;
+  }
+
+  return {};
+}
+
+Configuration GetConfiguration() {
+  if (android::linkerconfig::modules::IsRecoveryMode()) {
+    return android::linkerconfig::contents::CreateRecoveryConfiguration();
+  }
+
+  if (android::linkerconfig::modules::IsLegacyDevice()) {
     return android::linkerconfig::contents::CreateLegacyConfiguration();
   }
 
   // Use base configuration in default
   return android::linkerconfig::contents::CreateBaseConfiguration();
+}
+
+Result<void> GenerateConfiguration(Configuration config, std::string dir_path,
+                                   bool update_permission) {
+  std::string file_path = "";
+  if (dir_path != "") {
+    file_path = dir_path + "/ld.config.txt";
+  }
+
+  auto write_config = WriteConfigurationToFile(config, file_path);
+  if (!write_config) {
+    return write_config;
+  } else if (update_permission && file_path != "") {
+    return UpdatePermission(file_path);
+  }
+
+  return {};
+}
+
+Result<void> GenerateBaseLinkerConfiguration(std::string dir_path) {
+  return GenerateConfiguration(GetConfiguration(), dir_path, true);
+}
+
+Result<void> GenerateRecoveryLinkerConfiguration(std::string dir_path) {
+  return GenerateConfiguration(
+      android::linkerconfig::contents::CreateRecoveryConfiguration(),
+      dir_path,
+      false);
+}
+
+Result<void> GenerateLegacyLinkerConfiguration(std::string dir_path) {
+  return GenerateConfiguration(
+      android::linkerconfig::contents::CreateLegacyConfiguration(),
+      dir_path,
+      false);
+}
+
+void ExitOnFailure(Result<void> task) {
+  if (!task) {
+    LOG(FATAL) << task.error();
+    exit(EXIT_FAILURE);
+  }
 }
 
 #ifdef __ANDROID__
@@ -133,7 +220,6 @@ struct CombinedLogger {
   }
 };
 #endif
-
 }  // namespace
 
 int main(int argc, char* argv[]) {
@@ -150,26 +236,14 @@ int main(int argc, char* argv[]) {
     PrintUsage(EXIT_FAILURE);
   }
 
-  std::ostream* out = &std::cout;
-  std::ofstream file_out;
+  LoadVariables(args);
 
-  if (args.target_file != "") {
-    file_out.open(args.target_file);
-    if (file_out.fail()) {
-      PLOG(FATAL) << "Failed to open file " << args.target_file;
-      return EXIT_FAILURE;
-    }
-    out = &file_out;
-  }
-
-  auto config = GetConfiguration(args);
-  android::linkerconfig::modules::ConfigWriter config_writer;
-
-  config.WriteConfig(config_writer);
-  *out << config_writer.ToString();
-  if (!out->good()) {
-    PLOG(FATAL) << "Failed to write content to " << args.target_file;
-    return EXIT_FAILURE;
+  if (args.is_recovery) {
+    ExitOnFailure(GenerateRecoveryLinkerConfiguration(args.target_directory));
+  } else if (args.is_legacy) {
+    ExitOnFailure(GenerateLegacyLinkerConfiguration(args.target_directory));
+  } else {
+    ExitOnFailure(GenerateBaseLinkerConfiguration(args.target_directory));
   }
 
   return EXIT_SUCCESS;

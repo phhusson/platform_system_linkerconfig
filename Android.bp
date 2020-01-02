@@ -158,7 +158,7 @@ prebuilt_etc {
 genrule {
     name: "generate_recovery_linker_config",
     recovery: true,
-    out: ["ld.config.recovery.txt"],
+    out: ["ld.config.txt"],
     tools: ["linkerconfig"],
-    cmd: "$(location linkerconfig) --recovery --target $(out)",
+    cmd: "$(location linkerconfig) --recovery --target $(genDir)",
 }
