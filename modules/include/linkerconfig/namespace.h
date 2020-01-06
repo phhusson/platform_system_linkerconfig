@@ -19,8 +19,7 @@
 #include <string>
 #include <vector>
 
-#include <android-base/result.h>
-
+#include "linkerconfig/apex.h"
 #include "linkerconfig/configwriter.h"
 #include "linkerconfig/link.h"
 #include "linkerconfig/log.h"
@@ -143,9 +142,7 @@ class Namespace {
                        const std::vector<std::string>& path_list);
 };
 
-::android::base::Result<void> InitializeWithApex(Namespace& ns,
-                                                 const std::string& apex_path);
-
+void InitializeWithApex(Namespace& ns, const ApexInfo& apex_info);
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
