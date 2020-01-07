@@ -16,17 +16,10 @@
 
 #include "linkerconfig/namespace.h"
 
-#include <android-base/file.h>
 #include <android-base/strings.h>
-#include <apex_manifest.pb.h>
 
+#include "linkerconfig/apex.h"
 #include "linkerconfig/log.h"
-
-using ::android::base::Error;
-using ::android::base::ReadFileToString;
-using ::android::base::Result;
-using ::android::base::WriteStringToFile;
-using ::apex::proto::ApexManifest;
 
 namespace {
 
@@ -43,35 +36,17 @@ bool FindFromPathList(const std::vector<std::string>& list,
   return false;
 }
 
-Result<ApexManifest> ParseApexManifest(const std::string& manifest_path) {
-  std::string content;
-  if (!ReadFileToString(manifest_path, &content)) {
-    return Error() << "Failed to read manifest file: " << manifest_path;
-  }
-
-  ApexManifest manifest;
-  if (!manifest.ParseFromString(content)) {
-    return Error() << "Can't parse APEX manifest.";
-  }
-  return manifest;
-}
-
 }  // namespace
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
 
-Result<void> InitializeWithApex(Namespace& ns, const std::string& apex_path) {
-  auto apex_manifest = ParseApexManifest(apex_path + "/apex_manifest.pb");
-  if (!apex_manifest) {
-    return apex_manifest.error();
-  }
-  ns.AddSearchPath(apex_path + "/${LIB}");
+void InitializeWithApex(Namespace& ns, const ApexInfo& apex_info) {
+  ns.AddSearchPath(apex_info.path + "/${LIB}");
   ns.AddPermittedPath("/system/${LIB}");
-  ns.AddProvides(apex_manifest->providenativelibs());
-  ns.AddRequires(apex_manifest->requirenativelibs());
-  return {};
+  ns.AddProvides(apex_info.provide_libs);
+  ns.AddRequires(apex_info.require_libs);
 }
 
 void Namespace::WritePathString(ConfigWriter& writer,
