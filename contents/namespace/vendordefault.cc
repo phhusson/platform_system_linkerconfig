@@ -71,7 +71,7 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
                      AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
     // Put system vndk at the last search order in vndk_lite for GSI
-    ns.AddSearchPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}",
+    ns.AddSearchPath("/apex/com.android.vndk.v@{VENDOR_VNDK_VERSION}/${LIB}",
                      AsanPath::SAME_PATH);
   }
 
@@ -87,9 +87,10 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   if (is_vndklite) {
     ns.GetLink("art").AddSharedLib(kVndkLiteArtLibs);
   } else {
-    ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("@{LLNDK_LIBRARIES}");
-    ns.GetLink("vndk").AddSharedLib(
-        {"@{VNDK_SAMEPROCESS_LIBRARIES}", "@{VNDK_CORE_LIBRARIES}"});
+    ns.GetLink(ctx.GetSystemNamespaceName())
+        .AddSharedLib("@{LLNDK_LIBRARIES_VENDOR}");
+    ns.GetLink("vndk").AddSharedLib({"@{VNDK_SAMEPROCESS_LIBRARIES_VENDOR}",
+                                     "@{VNDK_CORE_LIBRARIES_VENDOR}"});
     if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
       ns.GetLink("vndk_in_system")
           .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");

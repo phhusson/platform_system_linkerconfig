@@ -59,7 +59,8 @@ TEST(vndk_namespace, vndk_ext) {
   auto vendor_lib_path = "/vendor/${LIB}";
   auto vendor_vndk_lib_path = "/vendor/${LIB}/vndk";
   auto vendor_vndksp_lib_path = "/vendor/${LIB}/vndk-sp";
-  auto apex_vndk_lib_path = "/apex/com.android.vndk.v@{VNDK_VER}/${LIB}";
+  auto apex_vndk_lib_path =
+      "/apex/com.android.vndk.v@{VENDOR_VNDK_VERSION}/${LIB}";
 
   auto fs = fsmap{
       {system_lib_path, {libvndk, libvndksp}},
