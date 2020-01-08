@@ -21,11 +21,11 @@ cc_defaults {
         "-Werror",
         "-Wextra",
     ],
+    defaults: ["libapexutil-deps"],
     static_libs: [
+        "libapexutil",
         "libbase",
         "liblog",
-        "libprotobuf-cpp-lite",
-        "lib_apex_manifest_proto_lite",
     ],
     host_supported: true,
 }
