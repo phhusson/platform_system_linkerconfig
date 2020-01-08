@@ -27,6 +27,10 @@ bool Context::IsVendorSection() const {
   return current_section == SectionType::Vendor;
 }
 
+bool Context::IsProductSection() const {
+  return current_section == SectionType::Product;
+}
+
 bool Context::IsDefaultConfig() const {
   return current_linkerconfig_type == LinkerConfigType::Default;
 }
@@ -48,7 +52,9 @@ void Context::SetCurrentSection(SectionType section_type) {
 }
 
 std::string Context::GetSystemNamespaceName() const {
-  return IsVendorSection() && !IsVndkliteConfig() ? "system" : "default";
+  return (IsVendorSection() || IsProductSection()) && !IsVndkliteConfig()
+             ? "system"
+             : "default";
 }
 
 void Context::SetCurrentLinkerConfigType(LinkerConfigType config_type) {

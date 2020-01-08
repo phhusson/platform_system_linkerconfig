@@ -32,7 +32,7 @@ Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/apex/com.android.vndk.v@{VNDK_VER}/${LIB}",
+  ns.AddSearchPath("/apex/com.android.vndk.v@{VENDOR_VNDK_VERSION}/${LIB}",
                    AsanPath::SAME_PATH);
   ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
@@ -45,7 +45,8 @@ Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
   // Private LLNDK libs (e.g. libft2.so) are exceptionally allowed to this
   // namespace because RS framework libs are using them.
   ns.GetLink(ctx.GetSystemNamespaceName())
-      .AddSharedLib({"@{LLNDK_LIBRARIES}", "@{PRIVATE_LLNDK_LIBRARIES:}"});
+      .AddSharedLib(
+          {"@{LLNDK_LIBRARIES_VENDOR}", "@{PRIVATE_LLNDK_LIBRARIES_VENDOR:}"});
 
   ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 

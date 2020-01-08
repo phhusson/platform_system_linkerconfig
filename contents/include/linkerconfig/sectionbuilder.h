@@ -26,6 +26,7 @@ namespace linkerconfig {
 namespace contents {
 SectionBuilder BuildSystemSection;
 SectionBuilder BuildVendorSection;
+SectionBuilder BuildProductSection;
 SectionBuilder BuildUnrestrictedSection;
 SectionBuilder BuildLegacySection;
 SectionBuilder BuildPostInstallSection;
