@@ -18,26 +18,40 @@
 #include "linkerconfig/variables.h"
 
 inline void MockGenericVariables() {
-  android::linkerconfig::modules::Variables::AddValue("VNDK_VER", "99");
+  android::linkerconfig::modules::Variables::AddValue("VENDOR_VNDK_VERSION",
+                                                      "99");
+  android::linkerconfig::modules::Variables::AddValue("PRODUCT_VNDK_VERSION",
+                                                      "99");
   android::linkerconfig::modules::Variables::AddValue("PRODUCT", "product");
   android::linkerconfig::modules::Variables::AddValue("SYSTEM_EXT",
                                                       "system_ext");
-  android::linkerconfig::modules::Variables::AddValue("LLNDK_LIBRARIES",
+  android::linkerconfig::modules::Variables::AddValue("LLNDK_LIBRARIES_VENDOR",
+                                                      "llndk_libraries");
+  android::linkerconfig::modules::Variables::AddValue("LLNDK_LIBRARIES_PRODUCT",
                                                       "llndk_libraries");
   android::linkerconfig::modules::Variables::AddValue(
       "SANITIZER_RUNTIME_LIBRARIES", "sanitizer_runtime_libraries");
   android::linkerconfig::modules::Variables::AddValue(
-      "PRIVATE_LLNDK_LIBRARIES", "private_llndk_libraries");
+      "PRIVATE_LLNDK_LIBRARIES_VENDOR", "private_llndk_libraries");
   android::linkerconfig::modules::Variables::AddValue(
-      "VNDK_SAMEPROCESS_LIBRARIES", "vndk_sameprocess_libraries");
-  android::linkerconfig::modules::Variables::AddValue("VNDK_CORE_LIBRARIES",
-                                                      "vndk_core_libraries");
+      "PRIVATE_LLNDK_LIBRARIES_PRODUCT", "private_llndk_libraries");
+  android::linkerconfig::modules::Variables::AddValue(
+      "VNDK_SAMEPROCESS_LIBRARIES_VENDOR", "vndk_sameprocess_libraries");
+  android::linkerconfig::modules::Variables::AddValue(
+      "VNDK_SAMEPROCESS_LIBRARIES_PRODUCT", "vndk_sameprocess_libraries");
+  android::linkerconfig::modules::Variables::AddValue(
+      "VNDK_CORE_LIBRARIES_VENDOR", "vndk_core_libraries");
+  android::linkerconfig::modules::Variables::AddValue(
+      "VNDK_CORE_LIBRARIES_PRODUCT", "vndk_core_libraries");
   android::linkerconfig::modules::Variables::AddValue(
       "VNDK_USING_CORE_VARIANT_LIBRARIES", "");
 }
 
 inline void MockVndkVersion(std::string vndk_version) {
-  android::linkerconfig::modules::Variables::AddValue("VNDK_VER", vndk_version);
+  android::linkerconfig::modules::Variables::AddValue("VENDOR_VNDK_VERSION",
+                                                      vndk_version);
+  android::linkerconfig::modules::Variables::AddValue("PRODUCT_VNDK_VERSION",
+                                                      vndk_version);
 }
 
 inline void MockVndkUsingCoreVariant() {

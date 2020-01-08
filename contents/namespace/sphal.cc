@@ -49,8 +49,9 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
   // namespaces are tried in this order. rs should be before vndk because both
   // are capable of loading libRS_internal.so
   ns.GetLink("rs").AddSharedLib("libRS_internal.so");
-  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("@{LLNDK_LIBRARIES:}");
-  ns.GetLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES:}");
+  ns.GetLink(ctx.GetSystemNamespaceName())
+      .AddSharedLib("@{LLNDK_LIBRARIES_VENDOR:}");
+  ns.GetLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES_VENDOR:}");
   ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;

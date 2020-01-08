@@ -36,6 +36,7 @@ NamespaceBuilder BuildVndkNamespace;
 NamespaceBuilder BuildVendorDefaultNamespace;
 NamespaceBuilder BuildSystemNamespace;
 NamespaceBuilder BuildVndkInSystemNamespace;
+NamespaceBuilder BuildProductDefaultNamespace;
 NamespaceBuilder BuildUnrestrictedDefaultNamespace;
 NamespaceBuilder BuildPostInstallNamespace;
 NamespaceBuilder BuildNeuralNetworksNamespace;
