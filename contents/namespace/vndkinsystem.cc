@@ -30,6 +30,7 @@
 #include "linkerconfig/environment.h"
 
 using android::linkerconfig::modules::AsanPath;
+using android::linkerconfig::modules::IsProductVndkVersionDefined;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -42,7 +43,9 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
   // The search paths here should be kept the same as that of the 'system' namespace.
   ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
+  if (!IsProductVndkVersionDefined()) {
+    ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
+  }
 
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
     ns.AddWhitelisted("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
@@ -53,7 +56,13 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
   //   1. 'vndk_in_system' needs to be freely linked back to 'vndk'.
   //   2. 'vndk_in_system' does not need to link to 'default', as any library that
   //      requires anything vendor would not be a vndk_in_system library.
-  ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("@{LLNDK_LIBRARIES}");
+  if (ctx.IsProductSection()) {
+    ns.GetLink(ctx.GetSystemNamespaceName())
+        .AddSharedLib("@{LLNDK_LIBRARIES_PRODUCT}");
+  } else {
+    ns.GetLink(ctx.GetSystemNamespaceName())
+        .AddSharedLib("@{LLNDK_LIBRARIES_VENDOR}");
+  }
   ns.GetLink("vndk").AllowAllSharedLibs();
   ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 

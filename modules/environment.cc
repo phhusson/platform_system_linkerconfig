@@ -41,6 +41,14 @@ std::string GetVendorVndkVersion() {
   return Variables::GetValue("ro.vndk.version").value_or("");
 }
 
+std::string GetProductVndkVersion() {
+  return Variables::GetValue("ro.product.vndk.version").value_or("");
+}
+
+bool IsProductVndkVersionDefined() {
+  return Variables::GetValue("ro.product.vndk.version").has_value();
+}
+
 bool IsRecoveryMode() {
   return access("/system/bin/recovery", F_OK) == 0;
 }

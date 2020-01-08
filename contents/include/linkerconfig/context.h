@@ -24,6 +24,7 @@ namespace contents {
 enum class SectionType {
   System,
   Vendor,
+  Product,
   Other,
 };
 
@@ -42,6 +43,7 @@ class Context {
   }
   bool IsSystemSection() const;
   bool IsVendorSection() const;
+  bool IsProductSection() const;
 
   bool IsDefaultConfig() const;
   bool IsLegacyConfig() const;
