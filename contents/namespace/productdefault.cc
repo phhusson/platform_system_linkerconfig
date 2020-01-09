@@ -14,38 +14,33 @@
  * limitations under the License.
  */
 
-// This namespace is where system libs (VNDK and LLNDK libs) are loaded for a
-// vendor process.
+// This is the default linker namespace for a vendor process (a process started
+// from /vendor/bin/*).
 
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::AsanPath;
-using android::linkerconfig::modules::IsProductVndkVersionDefined;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("system", /*is_isolated=*/false, /*is_visible=*/false);
-  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::WITH_DATA_ASAN);
-  if (!IsProductVndkVersionDefined()) {
-    ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
-  }
+Namespace BuildProductDefaultNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns.GetLink("art").AddSharedLib(
-      {"libdexfile_external.so",
-       "libdexfiled_external.so",
-       "libnativebridge.so",
-       "libnativehelper.so",
-       "libnativeloader.so",
-       "libandroidicu.so",
-       // TODO(b/120786417 or b/134659294): libicuuc.so
-       // and libicui18n.so are kept for app compat.
-       "libicui18n.so",
-       "libicuuc.so"});
+  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddPermittedPath("/@{PRODUCT:product}", AsanPath::WITH_DATA_ASAN);
+
+  ns.GetLink(ctx.GetSystemNamespaceName())
+      .AddSharedLib("@{LLNDK_LIBRARIES_PRODUCT}");
+  ns.GetLink("vndk").AddSharedLib({"@{VNDK_SAMEPROCESS_LIBRARIES_PRODUCT}",
+                                   "@{VNDK_CORE_LIBRARIES_PRODUCT}"});
+  if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
+    ns.GetLink("vndk_in_system")
+        .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
+  }
+  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;
 }

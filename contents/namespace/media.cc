@@ -36,7 +36,7 @@ const std::vector<std::string> kLibsFromDefaultLegacy = {"libandroid.so",
                                                          "libmediandk.so",
                                                          "libvndksupport.so"};
 
-const std::vector<std::string> kLibsFromDefault = {"@{LLNDK_LIBRARIES}",
+const std::vector<std::string> kLibsFromDefault = {"@{LLNDK_LIBRARIES_VENDOR}",
                                                    "libbinder_ndk.so",
                                                    "libmediametrics.so"};
 
