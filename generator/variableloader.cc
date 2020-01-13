@@ -17,6 +17,7 @@
 #include "linkerconfig/variableloader.h"
 
 #include <android-base/result.h>
+#include <android-base/strings.h>
 #include <climits>
 #include <cstdlib>
 #include <cstring>
@@ -34,6 +35,39 @@ using android::linkerconfig::modules::Variables;
 
 namespace {
 using namespace android::linkerconfig::generator;
+
+// Stub libraries are list of libraries which has stub interface and installed
+// in system image so other partition and APEX modules can link to it.
+// TODO(b/147210213) : Generate this list on build and read from the file
+std::vector<std::string> stub_libraries = {
+    "libEGL.so",
+    "libGLESv1_CM.so",
+    "libGLESv2.so",
+    "libGLESv3.so",
+    "libRS.so",
+    "libaaudio.so",
+    "libandroid.so",
+    "libandroid_net.so",
+    "libbinder_ndk.so",
+    "libc.so",
+    "libcgrouprc.so",
+    "libclang_rt.asan-arm-android.so",
+    "libclang_rt.asan-i686-android.so",
+    "libclang_rt.asan-x86_64-android.so",
+    "libdl.so",
+    "libdl_android.so",
+    "libft2.so",
+    "liblog.so",
+    "libm.so",
+    "libmediametrics.so",
+    "libmediandk.so",
+    "libnativewindow.so",
+    "libneuralnetworks_packageinfo.so",
+    "libstatssocket.so",
+    "libsync.so",
+    "libvndksupport.so",
+    "libvulkan.so",
+};
 
 void LoadVndkVersionVariable() {
   Variables::AddValue("VENDOR_VNDK_VERSION", GetVendorVndkVersion());
@@ -134,6 +168,9 @@ void LoadLibraryListVariables(const std::string& root) {
 
   Variables::AddValue("SANITIZER_RUNTIME_LIBRARIES",
                       GetLibrariesString(sanitizer_library_path));
+
+  Variables::AddValue("STUB_LIBRARIES",
+                      android::base::Join(stub_libraries, ':'));
 }
 }  // namespace
 

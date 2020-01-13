@@ -45,6 +45,8 @@ inline void MockGenericVariables() {
       "VNDK_CORE_LIBRARIES_PRODUCT", "vndk_core_libraries");
   android::linkerconfig::modules::Variables::AddValue(
       "VNDK_USING_CORE_VARIANT_LIBRARIES", "");
+  android::linkerconfig::modules::Variables::AddValue("STUB_LIBRARIES",
+                                                      "stub_libraries");
 }
 
 inline void MockVndkVersion(std::string vndk_version) {
