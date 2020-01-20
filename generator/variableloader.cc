@@ -110,21 +110,23 @@ void LoadLibraryListVariables(const std::string& root) {
                       GetPublicLibrariesString(vndkcore_library_path_vendor,
                                                private_library_path_vendor));
 
-  Variables::AddValue("LLNDK_LIBRARIES_PRODUCT",
-                      GetPublicLibrariesString(llndk_library_path_product,
-                                               private_library_path_product));
+  if (GetProductVndkVersion() != "") {
+    Variables::AddValue("LLNDK_LIBRARIES_PRODUCT",
+                        GetPublicLibrariesString(llndk_library_path_product,
+                                                 private_library_path_product));
 
-  Variables::AddValue("PRIVATE_LLNDK_LIBRARIES_PRODUCT",
-                      GetPrivateLibrariesString(llndk_library_path_product,
-                                                private_library_path_product));
+    Variables::AddValue("PRIVATE_LLNDK_LIBRARIES_PRODUCT",
+                        GetPrivateLibrariesString(llndk_library_path_product,
+                                                  private_library_path_product));
 
-  Variables::AddValue("VNDK_SAMEPROCESS_LIBRARIES_PRODUCT",
-                      GetPublicLibrariesString(vndksp_library_path_product,
-                                               private_library_path_product));
+    Variables::AddValue("VNDK_SAMEPROCESS_LIBRARIES_PRODUCT",
+                        GetPublicLibrariesString(vndksp_library_path_product,
+                                                 private_library_path_product));
 
-  Variables::AddValue("VNDK_CORE_LIBRARIES_PRODUCT",
-                      GetPublicLibrariesString(vndkcore_library_path_product,
-                                               private_library_path_product));
+    Variables::AddValue("VNDK_CORE_LIBRARIES_PRODUCT",
+                        GetPublicLibrariesString(vndkcore_library_path_product,
+                                                 private_library_path_product));
+  }
 
   Variables::AddValue("VNDK_USING_CORE_VARIANT_LIBRARIES",
                       GetPublicLibrariesString(vndkcorevariant_library_path,
