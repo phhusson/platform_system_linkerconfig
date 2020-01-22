@@ -16,39 +16,40 @@
 
 #include "linkerconfig/context.h"
 
+using android::linkerconfig::modules::ApexInfo;
 namespace android {
 namespace linkerconfig {
 namespace contents {
 bool Context::IsSystemSection() const {
-  return current_section == SectionType::System;
+  return current_section_ == SectionType::System;
 }
 
 bool Context::IsVendorSection() const {
-  return current_section == SectionType::Vendor;
+  return current_section_ == SectionType::Vendor;
 }
 
 bool Context::IsProductSection() const {
-  return current_section == SectionType::Product;
+  return current_section_ == SectionType::Product;
 }
 
 bool Context::IsDefaultConfig() const {
-  return current_linkerconfig_type == LinkerConfigType::Default;
+  return current_linkerconfig_type_ == LinkerConfigType::Default;
 }
 
 bool Context::IsLegacyConfig() const {
-  return current_linkerconfig_type == LinkerConfigType::Legacy;
+  return current_linkerconfig_type_ == LinkerConfigType::Legacy;
 }
 
 bool Context::IsVndkliteConfig() const {
-  return current_linkerconfig_type == LinkerConfigType::Vndklite;
+  return current_linkerconfig_type_ == LinkerConfigType::Vndklite;
 }
 
 bool Context::IsRecoveryConfig() const {
-  return current_linkerconfig_type == LinkerConfigType::Recovery;
+  return current_linkerconfig_type_ == LinkerConfigType::Recovery;
 }
 
 void Context::SetCurrentSection(SectionType section_type) {
-  current_section = section_type;
+  current_section_ = section_type;
 }
 
 std::string Context::GetSystemNamespaceName() const {
@@ -58,8 +59,17 @@ std::string Context::GetSystemNamespaceName() const {
 }
 
 void Context::SetCurrentLinkerConfigType(LinkerConfigType config_type) {
-  current_linkerconfig_type = config_type;
+  current_linkerconfig_type_ = config_type;
 }
+
+void Context::AddApexModule(ApexInfo apex_module) {
+  apex_modules_.push_back(std::move(apex_module));
+}
+
+const std::vector<ApexInfo>& Context::GetApexModules() const {
+  return apex_modules_;
+}
+
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

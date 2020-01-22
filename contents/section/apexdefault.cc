@@ -13,28 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include "linkerconfig/apex.h"
-#include "linkerconfig/context.h"
+#include "linkerconfig/sectionbuilder.h"
+
+#include <vector>
+
+#include "linkerconfig/common.h"
+#include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
 
-typedef android::linkerconfig::modules::Section SectionBuilder(
-    android::linkerconfig::contents::Context& ctx);
+using android::linkerconfig::contents::SectionType;
+using android::linkerconfig::modules::ApexInfo;
+using android::linkerconfig::modules::Namespace;
+using android::linkerconfig::modules::Section;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-SectionBuilder BuildSystemSection;
-SectionBuilder BuildVendorSection;
-SectionBuilder BuildProductSection;
-SectionBuilder BuildUnrestrictedSection;
-SectionBuilder BuildLegacySection;
-SectionBuilder BuildPostInstallSection;
-SectionBuilder BuildRecoverySection;
-android::linkerconfig::modules::Section BuildApexDefaultSection(
-    const android::linkerconfig::contents::Context& ctx,
-    const android::linkerconfig::modules::ApexInfo& target_apex);
+Section BuildApexDefaultSection(const Context& ctx, const ApexInfo& apex_info) {
+  std::vector<Namespace> namespaces;
+
+  namespaces.emplace_back(BuildApexDefaultNamespace(ctx, apex_info));
+  namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
+
+  Section section(apex_info.name, std::move(namespaces));
+  section.Resolve(ctx.GetApexModules());
+
+  return section;
+}
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
