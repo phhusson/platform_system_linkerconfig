@@ -43,6 +43,7 @@ class Section {
   std::string GetName();
 
   android::base::Result<void> Resolve();
+  android::base::Result<void> Resolve(const std::vector<ApexInfo>& candidates);
   Namespace* GetNamespace(const std::string& namespace_name);
 
   template <class _Function>

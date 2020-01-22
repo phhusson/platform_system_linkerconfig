@@ -24,7 +24,10 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+#include "linkerconfig/apex.h"
+#include "linkerconfig/apexconfig.h"
 #include "linkerconfig/baseconfig.h"
+#include "linkerconfig/context.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/legacy.h"
 #include "linkerconfig/log.h"
@@ -35,6 +38,7 @@
 using android::base::ErrnoError;
 using android::base::Error;
 using android::base::Result;
+using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::Configuration;
 
 namespace {
@@ -201,6 +205,41 @@ Result<void> GenerateLegacyLinkerConfiguration(std::string dir_path) {
       false);
 }
 
+Result<void> GenerateApexConfiguration(
+    const std::string& base_dir, android::linkerconfig::contents::Context& ctx,
+    const android::linkerconfig::modules::ApexInfo& target_apex) {
+  std::string dir_path = base_dir + "/" + target_apex.name;
+  if (mkdir(dir_path.c_str(), 0755) != 0) {
+    return ErrnoError() << "Failed to create directory " << dir_path;
+  }
+
+  return GenerateConfiguration(
+      android::linkerconfig::contents::CreateApexConfiguration(ctx, target_apex),
+      dir_path,
+      true);
+}
+
+void GenerateApexConfigurations(const std::string& dir_path) {
+  static std::string apex_root = "/apex";
+  auto apex_list = android::linkerconfig::modules::ScanActiveApexes(apex_root);
+  android::linkerconfig::contents::Context ctx;
+  for (auto const& apex_item : apex_list) {
+    auto apex_info = apex_item.second;
+    if (apex_info.has_bin || apex_info.has_lib) {
+      ctx.AddApexModule(apex_info);
+    }
+  }
+
+  for (auto const& apex_item : apex_list) {
+    if (apex_item.second.has_bin) {
+      auto result = GenerateApexConfiguration(dir_path, ctx, apex_item.second);
+      if (!result) {
+        LOG(WARNING) << result.error();
+      }
+    }
+  }
+}
+
 void ExitOnFailure(Result<void> task) {
   if (!task) {
     LOG(FATAL) << task.error();
@@ -244,6 +283,7 @@ int main(int argc, char* argv[]) {
     ExitOnFailure(GenerateLegacyLinkerConfiguration(args.target_directory));
   } else {
     ExitOnFailure(GenerateBaseLinkerConfiguration(args.target_directory));
+    GenerateApexConfigurations(args.target_directory);
   }
 
   return EXIT_SUCCESS;

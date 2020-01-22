@@ -17,8 +17,10 @@
 #include "linkerconfig/section.h"
 
 #include <android-base/result.h>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "apex_testbase.h"
 #include "linkerconfig/configwriter.h"
 #include "modules_testbase.h"
 
@@ -180,4 +182,32 @@ TEST(linkerconfig_section, error_if_no_providers) {
   auto result = section.Resolve();
   ASSERT_EQ("not found: libfoo.so is required by foo in [section]",
             result.error().message());
+}
+
+TEST_F(ApexTest, resolve_section_with_apex) {
+  std::vector<ApexInfo> apex_modules;
+  apex_modules.push_back(PrepareApex("foo", {"a.so"}, {"b.so"}));
+  apex_modules.push_back(PrepareApex("bar", {"b.so"}, {}));
+  apex_modules.push_back(PrepareApex("baz", {"c.so"}, {"a.so"}));
+
+  std::vector<Namespace> namespaces;
+  Namespace& default_ns = namespaces.emplace_back("default");
+  default_ns.AddRequires(std::vector{"a.so", "b.so"});
+
+  Section section("section", std::move(namespaces));
+  auto result = section.Resolve(apex_modules);
+
+  EXPECT_TRUE(result);
+  EXPECT_THAT(
+      std::vector<std::string>{"a.so"},
+      ::testing::ContainerEq(
+          section.GetNamespace("default")->GetLink("foo").GetSharedLibs()));
+  EXPECT_THAT(
+      std::vector<std::string>{"b.so"},
+      ::testing::ContainerEq(
+          section.GetNamespace("default")->GetLink("bar").GetSharedLibs()));
+  EXPECT_THAT(std::vector<std::string>{"b.so"},
+              ::testing::ContainerEq(
+                  section.GetNamespace("foo")->GetLink("bar").GetSharedLibs()));
+  EXPECT_EQ(nullptr, section.GetNamespace("baz"));
 }
