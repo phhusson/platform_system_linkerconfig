@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,14 @@
 #pragma once
 
 #include "linkerconfig/apex.h"
+#include "linkerconfig/configuration.h"
 #include "linkerconfig/context.h"
-#include "linkerconfig/section.h"
-
-typedef android::linkerconfig::modules::Section SectionBuilder(
-    android::linkerconfig::contents::Context& ctx);
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-SectionBuilder BuildSystemSection;
-SectionBuilder BuildVendorSection;
-SectionBuilder BuildProductSection;
-SectionBuilder BuildUnrestrictedSection;
-SectionBuilder BuildLegacySection;
-SectionBuilder BuildPostInstallSection;
-SectionBuilder BuildRecoverySection;
-android::linkerconfig::modules::Section BuildApexDefaultSection(
-    const android::linkerconfig::contents::Context& ctx,
+android::linkerconfig::modules::Configuration CreateApexConfiguration(
+    android::linkerconfig::contents::Context& ctx,
     const android::linkerconfig::modules::ApexInfo& target_apex);
 }  // namespace contents
 }  // namespace linkerconfig
