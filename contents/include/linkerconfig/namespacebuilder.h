@@ -27,6 +27,7 @@ namespace contents {
 NamespaceBuilder BuildSystemDefaultNamespace;
 NamespaceBuilder BuildMediaNamespace;
 NamespaceBuilder BuildArtNamespace;
+NamespaceBuilder BuildAdbdNamespace;
 NamespaceBuilder BuildConscryptNamespace;
 NamespaceBuilder BuildCronetNamespace;
 NamespaceBuilder BuildResolvNamespace;
