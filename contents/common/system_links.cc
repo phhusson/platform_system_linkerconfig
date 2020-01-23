@@ -36,6 +36,7 @@ void AddStandardSystemLinks(const Context& ctx, Section* section) {
           .AddSharedLib({"libc.so",
                          "libm.so",
                          "libdl.so",
+                         "liblog.so",
                          "@{SANITIZER_RUNTIME_LIBRARIES}"});
     }
   });
