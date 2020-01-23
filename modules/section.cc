@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "linkerconfig/section.h"
 
-#include <unordered_map>
-
 #include <android-base/result.h>
+#include <unordered_map>
+#include <utility>
+
+#include "linkerconfig/log.h"
 
 using android::base::Errorf;
 using android::base::Result;
@@ -50,6 +51,64 @@ void Section::WriteConfig(ConfigWriter& writer) {
   for (auto& ns : namespaces_) {
     ns.WriteConfig(writer);
   }
+}
+
+Result<void> Section::Resolve(const std::vector<ApexInfo>& candidates) {
+  std::unordered_map<std::string, std::string> providers;
+  for (auto& ns : namespaces_) {
+    for (const auto& lib : ns.GetProvides()) {
+      if (auto iter = providers.find(lib); iter != providers.end()) {
+        return Errorf("duplicate: {} is provided by {} and {} in [{}]",
+                      lib,
+                      iter->second,
+                      ns.GetName(),
+                      name_);
+      }
+      providers[lib] = ns.GetName();
+    }
+  }
+
+  std::unordered_map<std::string, ApexInfo> candidates_providers;
+  for (const auto& apex : candidates) {
+    for (const auto& lib : apex.provide_libs) {
+      candidates_providers[lib] = apex;
+    }
+  }
+
+  // Reserve enough space for namespace vector which can be increased maximum as
+  // much as available APEX modules. Appending new namespaces without reserving
+  // enough space from iteration can crash the process.
+  namespaces_.reserve(namespaces_.size() + candidates.size());
+
+  auto iter = namespaces_.begin();
+  do {
+    auto& ns = *iter;
+    for (const auto& lib : ns.GetRequires()) {
+      if (auto it = providers.find(lib); it != providers.end()) {
+        // If required library can be provided by existing namespaces, link to
+        // the namespace.
+        ns.GetLink(it->second).AddSharedLib(lib);
+      } else if (auto it = candidates_providers.find(lib);
+                 it != candidates_providers.end()) {
+        // If required library can be provided by a APEX module, create a new
+        // namespace with the APEX and add it to this section.
+        Namespace new_ns(it->second);
+
+        // Update providing library map from the new namespace
+        for (const auto& new_lib : new_ns.GetProvides()) {
+          providers[new_lib] = new_ns.GetName();
+        }
+        ns.GetLink(new_ns.GetName()).AddSharedLib(lib);
+        namespaces_.push_back(std::move(new_ns));
+      } else {
+        return Errorf(
+            "not found: {} is required by {} in [{}]", lib, ns.GetName(), name_);
+      }
+    }
+    iter++;
+  } while (iter != namespaces_.end());
+
+  return {};
 }
 
 Result<void> Section::Resolve() {

@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include "linkerconfig/apex.h"
 #include "linkerconfig/context.h"
 #include "linkerconfig/namespace.h"
 
@@ -42,6 +43,12 @@ NamespaceBuilder BuildPostInstallNamespace;
 NamespaceBuilder BuildNeuralNetworksNamespace;
 NamespaceBuilder BuildRuntimeNamespace;
 NamespaceBuilder BuildRecoveryDefaultNamespace;
+
+// Namespaces for APEX binaries
+android::linkerconfig::modules::Namespace BuildApexDefaultNamespace(
+    const android::linkerconfig::contents::Context& ctx,
+    const android::linkerconfig::modules::ApexInfo& apex_info);
+NamespaceBuilder BuildApexPlatformNamespace;
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
