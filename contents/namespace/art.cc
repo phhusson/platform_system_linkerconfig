@@ -47,6 +47,7 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
   // classloader-namespace for oat files, and tighten this up.
   ns.GetLink(ctx.GetSystemNamespaceName()).AllowAllSharedLibs();
 
+  ns.GetLink("adbd").AddSharedLib("libadbconnection_client.so");
   ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
 
   return ns;

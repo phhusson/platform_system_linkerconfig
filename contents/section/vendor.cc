@@ -38,6 +38,7 @@ Section BuildVendorSection(Context& ctx) {
 
   namespaces.emplace_back(BuildVendorDefaultNamespace(ctx));
   namespaces.emplace_back(BuildArtNamespace(ctx));
+  namespaces.emplace_back(BuildAdbdNamespace(ctx));
   // VNDK-Lite devices does not contain VNDK and System namespace in vendor
   // section. Instead they (except libraries from APEX) will be loaded from
   // default namespace, so VNDK libraries can access private platform libraries.
