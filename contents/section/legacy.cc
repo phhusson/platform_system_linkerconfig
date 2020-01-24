@@ -33,6 +33,7 @@ Section BuildLegacySection(Context& ctx) {
 
   namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
   namespaces.emplace_back(BuildArtNamespace(ctx));
+  namespaces.emplace_back(BuildAdbdNamespace(ctx));
   namespaces.emplace_back(BuildMediaNamespace(ctx));
   namespaces.emplace_back(BuildConscryptNamespace(ctx));
   namespaces.emplace_back(BuildCronetNamespace(ctx));

@@ -36,6 +36,7 @@ Section BuildProductSection(Context& ctx) {
 
   namespaces.emplace_back(BuildProductDefaultNamespace(ctx));
   namespaces.emplace_back(BuildArtNamespace(ctx));
+  namespaces.emplace_back(BuildAdbdNamespace(ctx));
   namespaces.emplace_back(BuildVndkNamespace(ctx));
   namespaces.emplace_back(BuildSystemNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
