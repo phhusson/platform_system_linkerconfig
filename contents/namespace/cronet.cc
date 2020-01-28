@@ -32,9 +32,6 @@ Namespace BuildCronetNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddSearchPath("/apex/com.android.cronet/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
 
-  ns.GetLink(ctx.GetSystemNamespaceName())
-      .AddSharedLib(
-          "libandroid.so", "libc.so", "libdl.so", "libm.so", "liblog.so");
   return ns;
 }
 }  // namespace contents
