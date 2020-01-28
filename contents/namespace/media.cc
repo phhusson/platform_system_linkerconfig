@@ -27,48 +27,15 @@ using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Link;
 using android::linkerconfig::modules::Namespace;
 
-namespace {
-const std::vector<std::string> kLibsFromDefaultLegacy = {"libandroid.so",
-                                                         "libbinder_ndk.so",
-                                                         "libcgrouprc.so",
-                                                         "liblog.so",
-                                                         "libmediametrics.so",
-                                                         "libmediandk.so",
-                                                         "libvndksupport.so"};
-
-const std::vector<std::string> kLibsFromDefault = {"@{LLNDK_LIBRARIES_VENDOR}",
-                                                   "libbinder_ndk.so",
-                                                   "libmediametrics.so"};
-
-const std::vector<std::string> kLibsFromDefaultSystem = {"libcgrouprc.so"};
-}  // namespace
-
 namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
-  bool is_legacy = ctx.IsLegacyConfig();
-  bool is_vndklite = ctx.IsVndkliteConfig();
-  bool is_system_section = ctx.IsSystemSection();
-
   Namespace ns("media", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.media/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
-  ns.AddPermittedPath(
-      "/apex/com.android.media/${LIB}/extractors",
-      (is_legacy || is_vndklite) ? AsanPath::NONE : AsanPath::SAME_PATH);
-
-  Link& system_link = ns.GetLink(ctx.GetSystemNamespaceName());
-  if (is_legacy) {
-    system_link.AddSharedLib(kLibsFromDefaultLegacy);
-  } else {
-    system_link.AddSharedLib(kLibsFromDefault);
-    if (is_system_section && !is_vndklite) {
-      system_link.AddSharedLib(kLibsFromDefaultSystem);
-    }
-  }
-
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.AddPermittedPath("/apex/com.android.media/${LIB}/extractors",
+                      AsanPath::SAME_PATH);
 
   return ns;
 }
