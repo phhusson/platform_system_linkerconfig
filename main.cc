@@ -211,7 +211,7 @@ Result<void> GenerateApexConfiguration(
     const std::string& base_dir, android::linkerconfig::contents::Context& ctx,
     const android::linkerconfig::modules::ApexInfo& target_apex) {
   std::string dir_path = base_dir + "/" + target_apex.name;
-  if (mkdir(dir_path.c_str(), 0755) != 0) {
+  if (auto ret = mkdir(dir_path.c_str(), 0755); ret != 0 && ret != EEXIST) {
     return ErrnoError() << "Failed to create directory " << dir_path;
   }
 
