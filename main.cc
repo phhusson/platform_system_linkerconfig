@@ -146,13 +146,15 @@ Result<void> WriteConfigurationToFile(Configuration& conf,
   return {};
 }
 
-Result<void> UpdatePermission(std::string file_path) {
+Result<void> UpdatePermission([[maybe_unused]] const std::string& file_path) {
+#ifdef __ANDROID__
   if (fchmodat(AT_FDCWD,
                file_path.c_str(),
                S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH,
                AT_SYMLINK_NOFOLLOW) < 0) {
     return ErrnoError() << "Failed to update permission of " << file_path;
   }
+#endif
 
   return {};
 }
