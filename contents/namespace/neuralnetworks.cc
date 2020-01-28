@@ -33,13 +33,6 @@ Namespace BuildNeuralNetworksNamespace([[maybe_unused]] const Context& ctx) {
                    AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
 
-  ns.GetLink(ctx.GetSystemNamespaceName())
-      .AddSharedLib({"libcgrouprc.so",
-                     "liblog.so",
-                     "libnativewindow.so",
-                     "libneuralnetworks_packageinfo.so",
-                     "libvndksupport.so"});
-
   return ns;
 }
 }  // namespace contents
