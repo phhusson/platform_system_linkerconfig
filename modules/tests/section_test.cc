@@ -147,14 +147,14 @@ TEST(linkerconfig_section, resolve_contraints) {
 
   ASSERT_EQ(
       "[section]\n"
-      "additional.namespaces = foo,bar,baz\n"
-      "namespace.foo.isolated = false\n"
-      "namespace.foo.links = bar\n"
-      "namespace.foo.link.bar.shared_libs = libbar.so\n"
+      "additional.namespaces = bar,baz,foo\n"
       "namespace.bar.isolated = false\n"
       "namespace.baz.isolated = false\n"
       "namespace.baz.links = foo\n"
-      "namespace.baz.link.foo.shared_libs = libfoo.so\n",
+      "namespace.baz.link.foo.shared_libs = libfoo.so\n"
+      "namespace.foo.isolated = false\n"
+      "namespace.foo.links = bar\n"
+      "namespace.foo.link.bar.shared_libs = libbar.so\n",
       writer.ToString());
 }
 
