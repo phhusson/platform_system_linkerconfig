@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/common.h"
-
 #include <string>
 
+#include "linkerconfig/common.h"
 #include "linkerconfig/context.h"
 #include "linkerconfig/section.h"
 
@@ -33,11 +32,7 @@ void AddStandardSystemLinks(const Context& ctx, Section* section) {
   section->ForEachNamespaces([system_ns_name](Namespace& ns) {
     if (ns.GetName() != system_ns_name) {
       ns.GetLink(system_ns_name)
-          .AddSharedLib({"libc.so",
-                         "libm.so",
-                         "libdl.so",
-                         "liblog.so",
-                         "@{SANITIZER_RUNTIME_LIBRARIES}"});
+          .AddSharedLib("@{STUB_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}");
     }
   });
 }
