@@ -60,6 +60,7 @@ class Namespace {
 
   Namespace(const Namespace& ns) = delete;
   Namespace(Namespace&& ns) = default;
+  Namespace& operator=(Namespace&& ns) = default;
 
   // Add path to search path
   // This function will add path to namespace.<<namespace>>.search.paths
@@ -134,9 +135,9 @@ class Namespace {
   }
 
  private:
-  const bool is_isolated_;
-  const bool is_visible_;
-  const std::string name_;
+  bool is_isolated_;
+  bool is_visible_;
+  std::string name_;
   std::vector<std::string> search_paths_;
   std::vector<std::string> permitted_paths_;
   std::vector<std::string> asan_search_paths_;

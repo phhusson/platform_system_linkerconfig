@@ -15,13 +15,18 @@
  */
 #include "linkerconfig/section.h"
 
-#include <android-base/result.h>
+#include <algorithm>
+#include <functional>
 #include <unordered_map>
 #include <utility>
+
+#include <android-base/result.h>
+#include <android-base/strings.h>
 
 #include "linkerconfig/log.h"
 
 using android::base::Errorf;
+using android::base::Join;
 using android::base::Result;
 
 namespace android {
@@ -30,22 +35,24 @@ namespace modules {
 void Section::WriteConfig(ConfigWriter& writer) {
   writer.WriteLine("[%s]", name_.c_str());
 
-  std::string additional_namespaces = "";
+  std::sort(namespaces_.begin(),
+            namespaces_.end(),
+            [](const auto& lhs, const auto& rhs) -> bool {
+              // make "default" a smallest one
+              if (lhs.GetName() == "default") return true;
+              if (rhs.GetName() == "default") return false;
+              return lhs.GetName() < rhs.GetName();
+            });
 
-  bool is_first = true;
-  for (auto& ns : namespaces_) {
-    if (ns.GetName() != "default") {
-      if (!is_first) {
-        additional_namespaces += ",";
+  if (namespaces_.size() > 1) {
+    std::vector<std::string> additional_namespaces;
+    for (const auto& ns : namespaces_) {
+      if (ns.GetName() != "default") {
+        additional_namespaces.push_back(ns.GetName());
       }
-
-      additional_namespaces += ns.GetName();
-      is_first = false;
     }
-  }
-
-  if (!is_first) {
-    writer.WriteLine("additional.namespaces = " + additional_namespaces);
+    writer.WriteLine("additional.namespaces = " +
+                     Join(additional_namespaces, ','));
   }
 
   for (auto& ns : namespaces_) {
