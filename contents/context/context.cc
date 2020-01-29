@@ -48,12 +48,17 @@ bool Context::IsRecoveryConfig() const {
   return current_linkerconfig_type_ == LinkerConfigType::Recovery;
 }
 
+bool Context::IsApexBinaryConfig() const {
+  return current_linkerconfig_type_ == LinkerConfigType::ApexBinary;
+}
+
 void Context::SetCurrentSection(SectionType section_type) {
   current_section_ = section_type;
 }
 
 std::string Context::GetSystemNamespaceName() const {
-  return (IsVendorSection() || IsProductSection()) && !IsVndkliteConfig()
+  return (IsVendorSection() || IsProductSection() || IsApexBinaryConfig()) &&
+                 !IsVndkliteConfig()
              ? "system"
              : "default";
 }

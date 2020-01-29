@@ -37,6 +37,18 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddSearchPath("/apex/com.android.art/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
 
+  if (ctx.IsApexBinaryConfig()) {
+    // JVMTI libraries used in ART testing are located under /data; dalvikvm has
+    // to be able to dlopen them.
+    // TODO(b/129534335): Move this to the linker configuration of the Test ART
+    // APEX when it is available.
+    ns.AddPermittedPath("/data");
+
+    // odex files are in /system/framework and /apex/com.android.art/javalib.
+    // dalvikvm has to be able to dlopen the files for CTS.
+    ns.AddPermittedPath("/system/framework");
+  }
+
   // Primary boot image is loaded through dlopen, so pass the primary boot image
   // to the list of paths.
   ns.AddPermittedPath("/apex/com.android.art/javalib", AsanPath::SAME_PATH);
@@ -72,6 +84,7 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
       // not listed in the manifest, but add here to preserve original configuration
       "libneuralnetworks.so",
   });
+
   return ns;
 }
 

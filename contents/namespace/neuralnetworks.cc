@@ -18,7 +18,6 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
-#include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
 using android::linkerconfig::modules::AsanPath;
@@ -45,6 +44,7 @@ Namespace BuildNeuralNetworksNamespace([[maybe_unused]] const Context& ctx) {
       "libneuralnetworks_packageinfo.so",
       "libvndksupport.so",
   });
+
   return ns;
 }
 }  // namespace contents

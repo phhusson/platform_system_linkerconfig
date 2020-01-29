@@ -44,6 +44,7 @@ namespace modules {
 
 void InitializeWithApex(Namespace& ns, const ApexInfo& apex_info) {
   ns.AddSearchPath(apex_info.path + "/${LIB}");
+  ns.AddPermittedPath(apex_info.path + "/${LIB}");
   ns.AddPermittedPath("/system/${LIB}");
   ns.AddProvides(apex_info.provide_libs);
   ns.AddRequires(apex_info.require_libs);
