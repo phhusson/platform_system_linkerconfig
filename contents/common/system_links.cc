@@ -16,9 +16,12 @@
 
 #include <string>
 
+#include <android-base/strings.h>
+
 #include "linkerconfig/common.h"
 #include "linkerconfig/context.h"
 #include "linkerconfig/section.h"
+#include "linkerconfig/variables.h"
 
 namespace android {
 namespace linkerconfig {
@@ -35,6 +38,14 @@ void AddStandardSystemLinks(const Context& ctx, Section* section) {
           .AddSharedLib("@{STUB_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}");
     }
   });
+
+  Namespace* system_ns = section->GetNamespace(system_ns_name);
+  if (system_ns) {
+    std::optional<std::string> stub_libraries_var =
+        android::linkerconfig::modules::Variables::GetValue("STUB_LIBRARIES");
+    system_ns->AddProvides(
+        android::base::Split(stub_libraries_var.value_or(""), ":"));
+  }
 }
 }  // namespace contents
 }  // namespace linkerconfig
