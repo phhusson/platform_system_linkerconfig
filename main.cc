@@ -146,13 +146,15 @@ Result<void> WriteConfigurationToFile(Configuration& conf,
   return {};
 }
 
-Result<void> UpdatePermission(std::string file_path) {
+Result<void> UpdatePermission([[maybe_unused]] const std::string& file_path) {
+#ifdef __ANDROID__
   if (fchmodat(AT_FDCWD,
                file_path.c_str(),
                S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH,
                AT_SYMLINK_NOFOLLOW) < 0) {
     return ErrnoError() << "Failed to update permission of " << file_path;
   }
+#endif
 
   return {};
 }
@@ -209,7 +211,7 @@ Result<void> GenerateApexConfiguration(
     const std::string& base_dir, android::linkerconfig::contents::Context& ctx,
     const android::linkerconfig::modules::ApexInfo& target_apex) {
   std::string dir_path = base_dir + "/" + target_apex.name;
-  if (mkdir(dir_path.c_str(), 0755) != 0) {
+  if (auto ret = mkdir(dir_path.c_str(), 0755); ret != 0 && ret != EEXIST) {
     return ErrnoError() << "Failed to create directory " << dir_path;
   }
 
