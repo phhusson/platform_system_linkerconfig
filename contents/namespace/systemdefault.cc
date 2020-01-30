@@ -27,22 +27,6 @@ using android::linkerconfig::modules::Namespace;
 
 namespace {
 
-// Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
-const std::vector<std::string> kLibsFromArt = {
-    "libdexfile_external.so",
-    "libdexfiled_external.so",
-    "libnativebridge.so",
-    "libnativehelper.so",
-    "libnativeloader.so",
-    "libandroidicu.so",
-    // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
-    "libpac.so",
-    // TODO(b/120786417 or b/134659294): libicuuc.so
-    // and libicui18n.so are kept for app compat.
-    "libicui18n.so",
-    "libicuuc.so",
-};
-
 // We can't have entire /system/${LIB} as permitted paths because doing so makes
 // it possible to load libs in /system/${LIB}/vndk* directories by their
 // absolute paths, e.g. dlopen("/system/lib/vndk/libbase.so"). VNDK libs are
@@ -121,11 +105,25 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
     BuildPermittedPath(ns);
   }
 
-  ns.GetLink("art").AddSharedLib(kLibsFromArt);
-
-  ns.GetLink("resolv").AddSharedLib("libnetd_resolv.so");
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
-
+  ns.AddRequires(std::vector{
+      // Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
+      "libdexfile_external.so",
+      "libdexfiled_external.so",
+      "libnativebridge.so",
+      "libnativehelper.so",
+      "libnativeloader.so",
+      "libandroidicu.so",
+      // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
+      "libpac.so",
+      // TODO(b/120786417 or b/134659294): libicuuc.so
+      // and libicui18n.so are kept for app compat.
+      "libicui18n.so",
+      "libicuuc.so",
+      // resolv
+      "libnetd_resolv.so",
+      // nn
+      "libneuralnetworks.so",
+  });
   return ns;
 }
 }  // namespace contents

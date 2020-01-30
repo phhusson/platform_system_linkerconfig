@@ -31,6 +31,16 @@ Namespace BuildAdbdNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("adbd", /*is_isolated=*/true, /*is_visible=*/false);
   ns.AddSearchPath("/apex/com.android.adbd/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
+
+  ns.AddProvides(std::vector{
+      "libadbconnection_client.so",
+  });
+  ns.AddRequires(std::vector{
+      "libc.so",
+      "libdl.so",
+      "liblog.so",
+      "libm.so",
+  });
   return ns;
 }
 }  // namespace contents
