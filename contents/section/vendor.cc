@@ -56,6 +56,9 @@ Section BuildVendorSection(Context& ctx) {
 
   Section section("vendor", std::move(namespaces));
   AddStandardSystemLinks(ctx, &section);
+  if (auto res = section.Resolve(); !res) {
+    LOG(ERROR) << res.error();
+  }
   return section;
 }
 }  // namespace contents

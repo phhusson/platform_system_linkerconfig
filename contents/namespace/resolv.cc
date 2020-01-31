@@ -32,6 +32,15 @@ Namespace BuildResolvNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddSearchPath("/apex/com.android.resolv/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
 
+  ns.AddProvides(std::vector{
+      "libnetd_resolv.so",
+  });
+  ns.AddRequires(std::vector{
+      "libbinder_ndk.so",
+      "libc.so",
+      "libdl.so",
+      "libm.so",
+  });
   return ns;
 }
 }  // namespace contents

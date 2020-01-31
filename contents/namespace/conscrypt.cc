@@ -31,13 +31,19 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildConscryptNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("conscrypt", /*is_isolated=*/true,
+  Namespace ns("conscrypt",
+               /*is_isolated=*/true,
                /*is_visible=*/true);
 
   ns.AddSearchPath("/apex/com.android.conscrypt/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
-  ns.GetLink("art").AddSharedLib("libandroidio.so");
-
+  ns.AddRequires(std::vector{
+      "libandroidio.so",
+      "libc.so",
+      "libdl.so",
+      "liblog.so",
+      "libm.so",
+  });
   return ns;
 }
 }  // namespace contents
