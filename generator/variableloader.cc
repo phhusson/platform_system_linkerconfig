@@ -46,6 +46,7 @@ std::vector<std::string> stub_libraries = {
     "libGLESv3.so",
     "libRS.so",
     "libaaudio.so",
+    "libadbd_auth.so",
     "libandroid.so",
     "libandroid_net.so",
     "libbinder_ndk.so",
