@@ -36,7 +36,6 @@ Section BuildProductSection(Context& ctx) {
 
   namespaces.emplace_back(BuildProductDefaultNamespace(ctx));
   namespaces.emplace_back(BuildArtNamespace(ctx));
-  namespaces.emplace_back(BuildAdbdNamespace(ctx));
   namespaces.emplace_back(BuildVndkNamespace(ctx));
   namespaces.emplace_back(BuildSystemNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
@@ -49,7 +48,7 @@ Section BuildProductSection(Context& ctx) {
 
   Section section("product", std::move(namespaces));
   AddStandardSystemLinks(ctx, &section);
-  if (auto res = section.Resolve(); !res) {
+  if (auto res = section.Resolve(ctx.GetApexModules()); !res) {
     LOG(ERROR) << res.error();
   }
   return section;
