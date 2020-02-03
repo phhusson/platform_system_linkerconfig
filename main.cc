@@ -47,6 +47,7 @@ using android::linkerconfig::modules::Configuration;
 namespace {
 const static struct option program_options[] = {
     {"target", required_argument, 0, 't'},
+    {"strict", no_argument, 0, 's'},
 #ifndef __ANDROID__
     {"root", required_argument, 0, 'r'},
     {"vndk", required_argument, 0, 'v'},
@@ -58,6 +59,7 @@ const static struct option program_options[] = {
 
 struct ProgramArgs {
   std::string target_directory;
+  bool strict;
   std::string root;
   std::string vndk_version;
   bool is_recovery;
@@ -66,6 +68,7 @@ struct ProgramArgs {
 
 [[noreturn]] void PrintUsage(int status = EXIT_SUCCESS) {
   std::cerr << "Usage : linkerconfig [--target <target_directory>]"
+               " [--strict]"
 #ifndef __ANDROID__
                " --root <root dir>"
                " --vndk <vndk version>"
@@ -80,10 +83,13 @@ struct ProgramArgs {
 bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
   int parse_result;
   while ((parse_result = getopt_long(
-              argc, argv, "t:r:v:hyl", program_options, NULL)) != -1) {
+              argc, argv, "t:sr:v:hyl", program_options, NULL)) != -1) {
     switch (parse_result) {
       case 't':
         args->target_directory = optarg;
+        break;
+      case 's':
+        args->strict = true;
         break;
       case 'r':
         args->root = optarg;
@@ -171,6 +177,9 @@ Context GetContext(ProgramArgs args) {
     if (apex_info.has_bin || apex_info.has_lib) {
       ctx.AddApexModule(std::move(apex_info));
     }
+  }
+  if (args.strict) {
+    ctx.SetStrictMode(true);
   }
   return ctx;
 }

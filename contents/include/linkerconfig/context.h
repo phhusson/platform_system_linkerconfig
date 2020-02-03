@@ -41,7 +41,8 @@ class Context {
  public:
   Context()
       : current_section_(SectionType::System),
-        current_linkerconfig_type_(LinkerConfigType::Default) {
+        current_linkerconfig_type_(LinkerConfigType::Default),
+        strict_(false) {
   }
   bool IsSystemSection() const;
   bool IsVendorSection() const;
@@ -62,9 +63,13 @@ class Context {
   const std::vector<android::linkerconfig::modules::ApexInfo>& GetApexModules()
       const;
 
+  void SetStrictMode(bool strict);
+  bool IsStrictMode() const;
+
  private:
   SectionType current_section_;
   LinkerConfigType current_linkerconfig_type_;
+  bool strict_;
 
   // Available APEX Modules which contains binary and/or library
   std::vector<android::linkerconfig::modules::ApexInfo> apex_modules_;
