@@ -15,20 +15,23 @@
  */
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "linkerconfig/context.h"
+#include "linkerconfig/namespace.h"
 #include "linkerconfig/section.h"
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
 
-using android::linkerconfig::modules::Section;
-
 // Adds links from all namespaces in the given section to the namespace for
 // /system/${LIB} for standard libraries like Bionic (libc.so, libm.so,
 // libdl.so) and applicable libclang_rt.*.
-void AddStandardSystemLinks(const Context& ctx, Section* section);
+void AddStandardSystemLinks(const Context& ctx, modules::Section* section);
 
+std::vector<std::string> GetSystemStubLibraries();
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
