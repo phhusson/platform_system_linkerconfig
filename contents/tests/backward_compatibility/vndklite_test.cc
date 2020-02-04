@@ -20,13 +20,15 @@
 #include "linkerconfig/variables.h"
 #include "testbase.h"
 
+using android::linkerconfig::contents::Context;
 using android::linkerconfig::modules::AsanPath;
 
 TEST(linkerconfig_vndklite_backward_compatibility, system_section) {
   MockVariables();
   MockVnkdLite();
 
-  auto config = android::linkerconfig::contents::CreateBaseConfiguration();
+  Context ctx;
+  auto config = android::linkerconfig::contents::CreateBaseConfiguration(ctx);
 
   auto system_section = config.GetSection("system");
   ASSERT_TRUE(system_section);
@@ -97,7 +99,8 @@ TEST(linkerconfig_vndklite_backward_compatibility, vendor_section) {
   MockVariables();
   MockVnkdLite();
 
-  auto config = android::linkerconfig::contents::CreateBaseConfiguration();
+  Context ctx;
+  auto config = android::linkerconfig::contents::CreateBaseConfiguration(ctx);
 
   auto vendor_section = config.GetSection("vendor");
   ASSERT_TRUE(vendor_section);
@@ -123,7 +126,8 @@ TEST(linkerconfig_vndklite_backward_compatibility, unrestricted_section) {
   MockVariables();
   MockVnkdLite();
 
-  auto config = android::linkerconfig::contents::CreateBaseConfiguration();
+  Context ctx;
+  auto config = android::linkerconfig::contents::CreateBaseConfiguration(ctx);
 
   auto unrestricted_section = config.GetSection("unrestricted");
   ASSERT_TRUE(unrestricted_section);
