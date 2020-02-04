@@ -41,13 +41,13 @@ const std::vector<DirToSection> kDirToSection = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-android::linkerconfig::modules::Configuration CreateLegacyConfiguration() {
+android::linkerconfig::modules::Configuration CreateLegacyConfiguration(
+    Context& ctx) {
   std::vector<Section> sections;
-  Context current_context;
-  current_context.SetCurrentLinkerConfigType(LinkerConfigType::Legacy);
+  ctx.SetCurrentLinkerConfigType(LinkerConfigType::Legacy);
 
-  sections.emplace_back(BuildLegacySection(current_context));
-  sections.emplace_back(BuildPostInstallSection(current_context));
+  sections.emplace_back(BuildLegacySection(ctx));
+  sections.emplace_back(BuildPostInstallSection(ctx));
 
   return android::linkerconfig::modules::Configuration(std::move(sections),
                                                        kDirToSection);

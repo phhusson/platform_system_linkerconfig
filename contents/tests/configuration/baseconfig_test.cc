@@ -19,10 +19,15 @@
 #include "linkerconfig/configwriter.h"
 #include "mockenv.h"
 
+using android::linkerconfig::contents::Context;
+using android::linkerconfig::contents::CreateBaseConfiguration;
+using android::linkerconfig::modules::ConfigWriter;
+
 TEST(linkerconfig_configuration_fulltest, baseconfig_test) {
   MockGenericVariables();
-  auto base_config = android::linkerconfig::contents::CreateBaseConfiguration();
-  android::linkerconfig::modules::ConfigWriter config_writer;
+  Context ctx;
+  auto base_config = CreateBaseConfiguration(ctx);
+  ConfigWriter config_writer;
 
   base_config.WriteConfig(config_writer);
 
@@ -33,9 +38,9 @@ TEST(linkerconfig_configuration_fulltest,
      baseconfig_vndk_using_core_variant_test) {
   MockGenericVariables();
   MockVndkUsingCoreVariant();
-
-  auto base_config = android::linkerconfig::contents::CreateBaseConfiguration();
-  android::linkerconfig::modules::ConfigWriter config_writer;
+  Context ctx;
+  auto base_config = CreateBaseConfiguration(ctx);
+  ConfigWriter config_writer;
 
   base_config.WriteConfig(config_writer);
 
@@ -45,8 +50,9 @@ TEST(linkerconfig_configuration_fulltest,
 TEST(linkerconfig_configuration_fulltest, baseconfig_vndk_27_test) {
   MockGenericVariables();
   MockVndkVersion("27");
-  auto base_config = android::linkerconfig::contents::CreateBaseConfiguration();
-  android::linkerconfig::modules::ConfigWriter config_writer;
+  Context ctx;
+  auto base_config = CreateBaseConfiguration(ctx);
+  ConfigWriter config_writer;
 
   base_config.WriteConfig(config_writer);
 
@@ -56,10 +62,9 @@ TEST(linkerconfig_configuration_fulltest, baseconfig_vndk_27_test) {
 TEST(linkerconfig_configuration_fulltest, vndklite_test) {
   MockGenericVariables();
   MockVnkdLite();
-
-  auto vndklite_config =
-      android::linkerconfig::contents::CreateBaseConfiguration();
-  android::linkerconfig::modules::ConfigWriter config_writer;
+  Context ctx;
+  auto vndklite_config = CreateBaseConfiguration(ctx);
+  ConfigWriter config_writer;
 
   vndklite_config.WriteConfig(config_writer);
 
