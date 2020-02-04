@@ -30,12 +30,12 @@ const std::vector<DirToSection> kDirToSection = {
 namespace android {
 namespace linkerconfig {
 namespace contents {
-android::linkerconfig::modules::Configuration CreateRecoveryConfiguration() {
+android::linkerconfig::modules::Configuration CreateRecoveryConfiguration(
+    Context& ctx) {
   std::vector<Section> sections;
-  Context current_context;
-  current_context.SetCurrentLinkerConfigType(LinkerConfigType::Recovery);
+  ctx.SetCurrentLinkerConfigType(LinkerConfigType::Recovery);
 
-  sections.emplace_back(BuildRecoverySection(current_context));
+  sections.emplace_back(BuildRecoverySection(ctx));
 
   return android::linkerconfig::modules::Configuration(std::move(sections),
                                                        kDirToSection);
