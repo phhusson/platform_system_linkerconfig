@@ -16,11 +16,12 @@
 #pragma once
 
 #include "linkerconfig/configuration.h"
+#include "linkerconfig/context.h"
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-android::linkerconfig::modules::Configuration CreateBaseConfiguration();
+modules::Configuration CreateBaseConfiguration(Context& ctx);
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

@@ -19,11 +19,15 @@
 #include "linkerconfig/configwriter.h"
 #include "mockenv.h"
 
+using android::linkerconfig::contents::Context;
+using android::linkerconfig::contents::CreateRecoveryConfiguration;
+using android::linkerconfig::modules::ConfigWriter;
+
 TEST(linkerconfig_configuration_fulltest, recovery_test) {
   MockGenericVariables();
-  auto legacy_config =
-      android::linkerconfig::contents::CreateRecoveryConfiguration();
-  android::linkerconfig::modules::ConfigWriter config_writer;
+  Context ctx;
+  auto legacy_config = CreateRecoveryConfiguration(ctx);
+  ConfigWriter config_writer;
 
   legacy_config.WriteConfig(config_writer);
 
