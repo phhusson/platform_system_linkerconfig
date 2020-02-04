@@ -18,7 +18,8 @@
 #include <optional>
 #include <string>
 
-#include "linkerconfig/apex.h"
+#include "linkerconfig/basecontext.h"
+
 namespace android {
 namespace linkerconfig {
 namespace contents {
@@ -37,12 +38,11 @@ enum class LinkerConfigType {
   Recovery,
 };
 
-class Context {
+class Context : public modules::BaseContext {
  public:
   Context()
       : current_section_(SectionType::System),
-        current_linkerconfig_type_(LinkerConfigType::Default),
-        strict_(false) {
+        current_linkerconfig_type_(LinkerConfigType::Default) {
   }
   bool IsSystemSection() const;
   bool IsVendorSection() const;
@@ -59,21 +59,11 @@ class Context {
   // Returns the namespace that covers /system/${LIB}.
   std::string GetSystemNamespaceName() const;
 
-  void AddApexModule(android::linkerconfig::modules::ApexInfo apex_module);
-  const std::vector<android::linkerconfig::modules::ApexInfo>& GetApexModules()
-      const;
-
-  void SetStrictMode(bool strict);
-  bool IsStrictMode() const;
-
  private:
   SectionType current_section_;
   LinkerConfigType current_linkerconfig_type_;
-  bool strict_;
-
-  // Available APEX Modules which contains binary and/or library
-  std::vector<android::linkerconfig::modules::ApexInfo> apex_modules_;
 };
+
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
