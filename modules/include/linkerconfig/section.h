@@ -42,8 +42,8 @@ class Section {
   std::vector<std::string> GetBinaryPaths();
   std::string GetName();
 
-  android::base::Result<void> Resolve();
-  android::base::Result<void> Resolve(const std::vector<ApexInfo>& candidates);
+  android::base::Result<void> Resolve(
+      const std::vector<ApexInfo>& candidates = {}, bool strict = true);
   Namespace* GetNamespace(const std::string& namespace_name);
 
   template <class _Function>

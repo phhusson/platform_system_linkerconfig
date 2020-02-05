@@ -48,7 +48,8 @@ Section BuildProductSection(Context& ctx) {
 
   Section section("product", std::move(namespaces));
   AddStandardSystemLinks(ctx, &section);
-  if (auto res = section.Resolve(ctx.GetApexModules()); !res) {
+  if (auto res = section.Resolve(ctx.GetApexModules(), ctx.IsStrictMode());
+      !res) {
     LOG(ERROR) << res.error();
   }
   return section;
