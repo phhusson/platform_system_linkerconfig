@@ -24,8 +24,8 @@ using android::linkerconfig::modules::AsanPath;
 
 TEST(linkerconfig_legacy_backward_compatibility, default_namespace) {
   MockVariables();
-
-  auto config = android::linkerconfig::contents::CreateLegacyConfiguration();
+  android::linkerconfig::contents::Context ctx;
+  auto config = android::linkerconfig::contents::CreateLegacyConfiguration(ctx);
 
   auto legacy_section = config.GetSection("legacy");
   ASSERT_TRUE(legacy_section);

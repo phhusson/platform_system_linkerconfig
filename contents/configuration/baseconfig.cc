@@ -35,12 +35,14 @@ void redirect_section(std::vector<DirToSection>& dirToSection,
 namespace android {
 namespace linkerconfig {
 namespace contents {
-android::linkerconfig::modules::Configuration CreateBaseConfiguration() {
+android::linkerconfig::modules::Configuration CreateBaseConfiguration(
+    Context& ctx) {
   std::vector<Section> sections;
 
-  Context current_context;
   if (android::linkerconfig::modules::IsVndkLiteDevice()) {
-    current_context.SetCurrentLinkerConfigType(LinkerConfigType::Vndklite);
+    ctx.SetCurrentLinkerConfigType(LinkerConfigType::Vndklite);
+  } else {
+    ctx.SetCurrentLinkerConfigType(LinkerConfigType::Default);
   }
 
   // Don't change the order here. The first pattern that matches with the
@@ -79,17 +81,17 @@ android::linkerconfig::modules::Configuration CreateBaseConfiguration() {
       {"/data", "system"},
   };
 
-  sections.emplace_back(BuildSystemSection(current_context));
-  sections.emplace_back(BuildVendorSection(current_context));
+  sections.emplace_back(BuildSystemSection(ctx));
+  sections.emplace_back(BuildVendorSection(ctx));
   if (android::linkerconfig::modules::IsProductVndkVersionDefined() &&
       !android::linkerconfig::modules::IsVndkLiteDevice()) {
-    sections.emplace_back(BuildProductSection(current_context));
+    sections.emplace_back(BuildProductSection(ctx));
   } else {
     redirect_section(dirToSection, "product", "system");
   }
 
-  sections.emplace_back(BuildUnrestrictedSection(current_context));
-  sections.emplace_back(BuildPostInstallSection(current_context));
+  sections.emplace_back(BuildUnrestrictedSection(ctx));
+  sections.emplace_back(BuildPostInstallSection(ctx));
 
   return android::linkerconfig::modules::Configuration(std::move(sections),
                                                        dirToSection);
