@@ -46,13 +46,7 @@ Section BuildProductSection(Context& ctx) {
 
   namespaces.emplace_back(BuildRuntimeNamespace(ctx));
 
-  Section section("product", std::move(namespaces));
-  AddStandardSystemLinks(ctx, &section);
-  if (auto res = section.Resolve(ctx.GetApexModules(), ctx.IsStrictMode());
-      !res) {
-    LOG(ERROR) << res.error();
-  }
-  return section;
+  return BuildSection(ctx, "product", std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig
