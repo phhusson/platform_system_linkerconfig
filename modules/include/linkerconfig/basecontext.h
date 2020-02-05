@@ -13,29 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "linkerconfig/sectionbuilder.h"
+#pragma once
 
-#include "linkerconfig/common.h"
-#include "linkerconfig/log.h"
-#include "linkerconfig/namespace.h"
-#include "linkerconfig/section.h"
+#include <string>
+#include <vector>
+
+#include "linkerconfig/apex.h"
 
 namespace android {
 namespace linkerconfig {
-namespace contents {
+namespace modules {
 
-using modules::Namespace;
-using modules::Section;
+class BaseContext {
+ public:
+  BaseContext();
 
-Section BuildSection(const Context& ctx, std::string name,
-                     std::vector<Namespace> namespaces) {
-  Section section(std::move(name), std::move(namespaces));
-  if (auto res = section.Resolve(ctx); !res) {
-    LOG(ERROR) << res.error();
-  }
-  AddStandardSystemLinks(ctx, &section);
-  return section;
-}
-}  // namespace contents
+  void AddApexModule(ApexInfo apex_module);
+  const std::vector<ApexInfo>& GetApexModules() const;
+
+  void SetStrictMode(bool strict);
+  bool IsStrictMode() const;
+
+ private:
+  bool strict_;
+
+  // Available APEX Modules which contains binary and/or library
+  std::vector<ApexInfo> apex_modules_;
+};
+
+}  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
