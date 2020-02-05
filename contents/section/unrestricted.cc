@@ -39,17 +39,15 @@ Section BuildUnrestrictedSection(Context& ctx) {
 
   namespaces.emplace_back(BuildUnrestrictedDefaultNamespace(ctx));
   namespaces.emplace_back(BuildArtNamespace(ctx));
-  namespaces.emplace_back(BuildAdbdNamespace(ctx));
   namespaces.emplace_back(BuildMediaNamespace(ctx));
   namespaces.emplace_back(BuildConscryptNamespace(ctx));
   namespaces.emplace_back(BuildCronetNamespace(ctx));
-  namespaces.emplace_back(BuildResolvNamespace(ctx));
   namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
   namespaces.emplace_back(BuildRuntimeNamespace(ctx));
 
   Section section("unrestricted", std::move(namespaces));
   AddStandardSystemLinks(ctx, &section);
-  if (auto res = section.Resolve(); !res) {
+  if (auto res = section.Resolve(ctx.GetApexModules()); !res) {
     LOG(ERROR) << res.error();
   }
   return section;

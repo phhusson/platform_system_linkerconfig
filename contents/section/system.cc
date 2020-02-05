@@ -34,11 +34,9 @@ Section BuildSystemSection(Context& ctx) {
 
   namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
   namespaces.emplace_back(BuildArtNamespace(ctx));
-  namespaces.emplace_back(BuildAdbdNamespace(ctx));
   namespaces.emplace_back(BuildMediaNamespace(ctx));
   namespaces.emplace_back(BuildConscryptNamespace(ctx));
   namespaces.emplace_back(BuildCronetNamespace(ctx));
-  namespaces.emplace_back(BuildResolvNamespace(ctx));
   namespaces.emplace_back(BuildSphalNamespace(ctx));
   namespaces.emplace_back(BuildRsNamespace(ctx));
   namespaces.emplace_back(BuildVndkNamespace(ctx));
@@ -47,7 +45,7 @@ Section BuildSystemSection(Context& ctx) {
 
   Section section("system", std::move(namespaces));
   AddStandardSystemLinks(ctx, &section);
-  if (auto res = section.Resolve(); !res) {
+  if (auto res = section.Resolve(ctx.GetApexModules()); !res) {
     LOG(ERROR) << res.error();
   }
   return section;
