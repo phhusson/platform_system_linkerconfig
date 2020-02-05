@@ -17,6 +17,7 @@
 // Framework-side code runs in this namespace. Libs from /vendor partition can't
 // be loaded in this namespace.
 
+#include "linkerconfig/common.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 #include "linkerconfig/namespacebuilder.h"
@@ -124,6 +125,8 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
       // nn
       "libneuralnetworks.so",
   });
+
+  ns.AddProvides(GetSystemStubLibraries());
   return ns;
 }
 }  // namespace contents

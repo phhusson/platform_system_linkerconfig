@@ -18,12 +18,10 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
-#include <android-base/strings.h>
-
 #include "linkerconfig/apex.h"
+#include "linkerconfig/common.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
-#include "linkerconfig/variables.h"
 
 using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::AsanPath;
@@ -38,10 +36,7 @@ Namespace BuildApexPlatformNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddPermittedPath("/apex/com.android.runtime/${LIB}", AsanPath::SAME_PATH);
 
-  auto stub_libraries_var =
-      android::linkerconfig::modules::Variables::GetValue("STUB_LIBRARIES");
-  ns.AddProvides(android::base::Split(stub_libraries_var.value_or(""), ":"));
-
+  ns.AddProvides(GetSystemStubLibraries());
   return ns;
 }
 }  // namespace contents

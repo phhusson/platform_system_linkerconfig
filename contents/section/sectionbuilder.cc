@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "linkerconfig/sectionbuilder.h"
 
-#include <vector>
-
 #include "linkerconfig/common.h"
-#include "linkerconfig/namespacebuilder.h"
+#include "linkerconfig/log.h"
+#include "linkerconfig/namespace.h"
 #include "linkerconfig/section.h"
-
-using android::linkerconfig::contents::SectionType;
-using android::linkerconfig::modules::ApexInfo;
-using android::linkerconfig::modules::Namespace;
-using android::linkerconfig::modules::Section;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Section BuildApexDefaultSection(const Context& ctx, const ApexInfo& apex_info) {
-  std::vector<Namespace> namespaces;
 
-  namespaces.emplace_back(BuildApexDefaultNamespace(ctx, apex_info));
-  namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
+using modules::Namespace;
+using modules::Section;
 
-  return BuildSection(ctx, apex_info.name, std::move(namespaces));
+Section BuildSection(const Context& ctx, std::string name,
+                     std::vector<Namespace> namespaces) {
+  Section section(std::move(name), std::move(namespaces));
+  if (auto res = section.Resolve(ctx.GetApexModules(), ctx.IsStrictMode());
+      !res) {
+    LOG(ERROR) << res.error();
+  }
+  AddStandardSystemLinks(ctx, &section);
+  return section;
 }
 }  // namespace contents
 }  // namespace linkerconfig
