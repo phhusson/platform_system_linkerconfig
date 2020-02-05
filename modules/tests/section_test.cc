@@ -173,7 +173,7 @@ TEST(linkerconfig_section, error_if_duplicate_providing) {
             result.error().message());
 }
 
-TEST(linkerconfig_section, error_if_no_providers) {
+TEST(linkerconfig_section, error_if_no_providers_in_strict_mode) {
   std::vector<Namespace> namespaces;
   Namespace& foo = namespaces.emplace_back("foo");
   foo.AddRequires(std::vector{"libfoo.so"});
@@ -182,6 +182,24 @@ TEST(linkerconfig_section, error_if_no_providers) {
   auto result = section.Resolve();
   ASSERT_EQ("not found: libfoo.so is required by foo in [section]",
             result.error().message());
+}
+
+TEST(linkerconfig_section, ignore_unmet_requirements) {
+  std::vector<Namespace> namespaces;
+  Namespace& foo = namespaces.emplace_back("foo");
+  foo.AddRequires(std::vector{"libfoo.so"});
+
+  Section section("section", std::move(namespaces));
+  auto result = section.Resolve({}, false);
+  ASSERT_TRUE(result);
+
+  ConfigWriter writer;
+  section.WriteConfig(writer);
+
+  ASSERT_EQ(
+      "[section]\n"
+      "namespace.foo.isolated = false\n",
+      writer.ToString());
 }
 
 TEST_F(ApexTest, resolve_section_with_apex) {
