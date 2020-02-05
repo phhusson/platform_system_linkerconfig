@@ -70,6 +70,14 @@ const std::vector<ApexInfo>& Context::GetApexModules() const {
   return apex_modules_;
 }
 
+void Context::SetStrictMode(bool strict) {
+  strict_ = strict;
+}
+
+bool Context::IsStrictMode() const {
+  return strict_;
+}
+
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
