@@ -13,32 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
 
-// This namespace is for libraries within the NNAPI APEX.
-
-#include "linkerconfig/namespacebuilder.h"
+#include <string>
+#include <vector>
 
 #include "linkerconfig/apex.h"
-#include "linkerconfig/common.h"
-#include "linkerconfig/environment.h"
-#include "linkerconfig/namespace.h"
-
-using android::linkerconfig::modules::ApexInfo;
-using android::linkerconfig::modules::AsanPath;
-using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
-namespace contents {
-Namespace BuildApexPlatformNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("system", /*is_isolated=*/true, /*is_visible=*/false);
+namespace modules {
 
-  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddPermittedPath("/apex/com.android.runtime/${LIB}", AsanPath::SAME_PATH);
+class BaseContext {
+ public:
+  BaseContext();
 
-  ns.AddProvides(GetSystemStubLibraries());
-  return ns;
-}
-}  // namespace contents
+  void AddApexModule(ApexInfo apex_module);
+  const std::vector<ApexInfo>& GetApexModules() const;
+
+  void SetStrictMode(bool strict);
+  bool IsStrictMode() const;
+
+ private:
+  bool strict_;
+
+  // Available APEX Modules which contains binary and/or library
+  std::vector<ApexInfo> apex_modules_;
+};
+
+}  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
