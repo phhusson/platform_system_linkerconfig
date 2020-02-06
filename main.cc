@@ -205,7 +205,7 @@ Result<void> GenerateConfiguration(Configuration config, std::string dir_path,
   }
 
   auto write_config = WriteConfigurationToFile(config, file_path);
-  if (!write_config) {
+  if (!write_config.ok()) {
     return write_config;
   } else if (update_permission && file_path != "") {
     return UpdatePermission(file_path);
@@ -253,7 +253,7 @@ void GenerateApexConfigurations(Context& ctx, const std::string& dir_path) {
   for (auto const& apex_item : ctx.GetApexModules()) {
     if (apex_item.has_bin) {
       auto result = GenerateApexConfiguration(dir_path, ctx, apex_item);
-      if (!result) {
+      if (!result.ok()) {
         LOG(WARNING) << result.error();
       }
     }
@@ -261,7 +261,7 @@ void GenerateApexConfigurations(Context& ctx, const std::string& dir_path) {
 }
 
 void ExitOnFailure(Result<void> task) {
-  if (!task) {
+  if (!task.ok()) {
     LOG(FATAL) << task.error();
     exit(EXIT_FAILURE);
   }

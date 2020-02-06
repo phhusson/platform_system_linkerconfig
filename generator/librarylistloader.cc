@@ -66,7 +66,7 @@ namespace linkerconfig {
 namespace generator {
 std::string GetLibrariesString(std::string library_file_path) {
   auto library_list_result = GetLibrariesFromFile(library_file_path);
-  if (library_list_result) {
+  if (library_list_result.ok()) {
     return android::base::Join(*library_list_result, ':');
   } else {
     // Consider unavailable library file as empty
@@ -80,13 +80,13 @@ std::string GetPublicLibrariesString(std::string library_file_path,
   auto library_list = GetLibrariesFromFile(library_file_path);
   auto private_library_list = GetLibrariesFromFile(private_library_file_path);
 
-  if (!library_list) {
+  if (!library_list.ok()) {
     // Consider unavailable library file as empty
     LOG(WARNING) << library_list.error();
     return "";
   }
 
-  if (!private_library_list) {
+  if (!private_library_list.ok()) {
     // No private library found. All libraries are public
     LOG(WARNING) << private_library_list.error();
     return android::base::Join(*library_list, ':');
@@ -109,13 +109,13 @@ std::string GetPrivateLibrariesString(std::string library_file_path,
   auto library_list = GetLibrariesFromFile(library_file_path);
   auto private_library_list = GetLibrariesFromFile(private_library_file_path);
 
-  if (!library_list) {
+  if (!library_list.ok()) {
     // Consider unavailable library file as empty
     LOG(WARNING) << library_list.error();
     return "";
   }
 
-  if (!private_library_list) {
+  if (!private_library_list.ok()) {
     // No private library found. All libraries are public
     LOG(WARNING) << private_library_list.error();
     return "";
