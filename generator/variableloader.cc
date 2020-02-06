@@ -91,7 +91,7 @@ Result<std::string> GetRealPath(std::string target_path) {
 void LoadVariableFromPartitionPath(std::string variable_name, std::string path) {
   auto real_path = GetRealPath(path);
 
-  if (real_path) {
+  if (real_path.ok()) {
     Variables::AddValue(variable_name, *real_path);
   } else {
     LOG(WARNING) << real_path.error();
