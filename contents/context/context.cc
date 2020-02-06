@@ -16,10 +16,15 @@
 
 #include "linkerconfig/context.h"
 
+#include "linkerconfig/namespacebuilder.h"
+
 using android::linkerconfig::modules::ApexInfo;
+using android::linkerconfig::modules::Namespace;
+
 namespace android {
 namespace linkerconfig {
 namespace contents {
+
 bool Context::IsSystemSection() const {
   return current_section_ == SectionType::System;
 }
@@ -65,6 +70,21 @@ std::string Context::GetSystemNamespaceName() const {
 
 void Context::SetCurrentLinkerConfigType(LinkerConfigType config_type) {
   current_linkerconfig_type_ = config_type;
+}
+
+void Context::RegisterApexNamespaceBuilder(const std::string& name,
+                                           ApexNamespaceBuilder builder) {
+  builders_[name] = builder;
+}
+
+Namespace Context::BuildApexNamespace(const ApexInfo& apex_info,
+                                      bool visible) const {
+  auto builder = builders_.find(apex_info.name);
+  if (builder != builders_.end()) {
+    return builder->second(*this, apex_info);
+  }
+
+  return BaseContext::BuildApexNamespace(apex_info, visible);
 }
 
 }  // namespace contents

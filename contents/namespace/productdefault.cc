@@ -40,8 +40,9 @@ Namespace BuildProductDefaultNamespace([[maybe_unused]] const Context& ctx) {
     ns.GetLink("vndk_in_system")
         .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
   }
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
-
+  ns.AddRequires(std::vector{
+      "libneuralnetworks.so",
+  });
   return ns;
 }
 }  // namespace contents

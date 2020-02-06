@@ -50,14 +50,6 @@ class Namespace {
         name_(std::move(name)) {
   }
 
-  explicit Namespace(const ApexInfo& apex_info)
-      : is_isolated_(true), is_visible_(false), name_(apex_info.name) {
-    AddSearchPath(apex_info.path + "/${LIB}");
-    AddPermittedPath("/system/${LIB}");
-    AddProvides(apex_info.provide_libs);
-    AddRequires(apex_info.require_libs);
-  }
-
   Namespace(const Namespace& ns) = delete;
   Namespace(Namespace&& ns) = default;
   Namespace& operator=(Namespace&& ns) = default;
@@ -108,6 +100,10 @@ class Namespace {
   void AddWhitelisted(const std::string& path);
 
   std::string GetName() const;
+
+  void SetVisible(bool visible) {
+    is_visible_ = visible;
+  }
 
   // For test usage
   const std::vector<Link>& Links() const {

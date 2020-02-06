@@ -33,17 +33,21 @@ Section BuildSystemSection(Context& ctx) {
   std::vector<Namespace> namespaces;
 
   namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildArtNamespace(ctx));
-  namespaces.emplace_back(BuildMediaNamespace(ctx));
-  namespaces.emplace_back(BuildConscryptNamespace(ctx));
-  namespaces.emplace_back(BuildCronetNamespace(ctx));
   namespaces.emplace_back(BuildSphalNamespace(ctx));
   namespaces.emplace_back(BuildRsNamespace(ctx));
   namespaces.emplace_back(BuildVndkNamespace(ctx));
-  namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
-  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
 
-  return BuildSection(ctx, "system", std::move(namespaces));
+  return BuildSection(ctx,
+                      "system",
+                      std::move(namespaces),
+                      {
+                          "com.android.art",
+                          "com.android.neuralnetworks",
+                          "com.android.runtime",
+                          "com.android.cronet",
+                          "com.android.media",
+                          "com.android.conscrypt",
+                      });
 }
 }  // namespace contents
 }  // namespace linkerconfig
