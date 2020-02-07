@@ -38,8 +38,7 @@ void Configuration::WriteConfig(ConfigWriter& writer) {
                    << " will be ignored.";
     } else {
       resolved_dirs[resolved_dir] = dir_to_section.second;
-      writer.WriteLine(
-          "dir.%s = %s", dir_to_section.second.c_str(), resolved_dir.c_str());
+      writer.WriteLine("dir." + dir_to_section.second + " = " + resolved_dir);
     }
   }
 
