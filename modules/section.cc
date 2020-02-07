@@ -103,7 +103,9 @@ Result<void> Section::Resolve(const BaseContext& ctx) {
 
         // Update providing library map from the new namespace
         for (const auto& new_lib : new_ns.GetProvides()) {
-          providers[new_lib] = new_ns.GetName();
+          if (providers.find(new_lib) == providers.end()) {
+            providers[new_lib] = new_ns.GetName();
+          }
         }
         ns.GetLink(new_ns.GetName()).AddSharedLib(lib);
         namespaces_.push_back(std::move(new_ns));
