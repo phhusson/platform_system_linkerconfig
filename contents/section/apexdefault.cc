@@ -46,7 +46,7 @@ Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
     namespaces.emplace_back(BuildVndkNamespace(ctx));
   }
 
-  return BuildSection(ctx, apex_info.name, std::move(namespaces));
+  return BuildSection(ctx, apex_info.name, std::move(namespaces), {});
 }
 }  // namespace contents
 }  // namespace linkerconfig
