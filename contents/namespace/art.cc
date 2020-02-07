@@ -19,6 +19,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
@@ -26,7 +27,8 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 
-Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
+Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx,
+                            [[maybe_unused]] const ApexInfo& apex) {
   // Make the namespace visible to allow links to be created at runtime, e.g.
   // through android_link_namespaces in libnativeloader. That is not applicable
   // to the vendor section.

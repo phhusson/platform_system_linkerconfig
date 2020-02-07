@@ -18,19 +18,15 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
-#include <string>
-#include <vector>
-
-#include "linkerconfig/environment.h"
-
+using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::AsanPath;
-using android::linkerconfig::modules::Link;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx) {
+Namespace BuildMediaNamespace([[maybe_unused]] const Context& ctx,
+                              [[maybe_unused]] const ApexInfo& apex) {
   Namespace ns("media", /*is_isolated=*/true, /*is_visible=*/true);
   ns.AddSearchPath("/apex/com.android.media/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");

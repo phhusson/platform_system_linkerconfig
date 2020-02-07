@@ -85,7 +85,7 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/system/vendor", AsanPath::NONE);
 
   if (is_vndklite) {
-    ns.GetLink("art").AddSharedLib(kVndkLiteArtLibs);
+    ns.AddRequires(kVndkLiteArtLibs);
   } else {
     ns.GetLink(ctx.GetSystemNamespaceName())
         .AddSharedLib("@{LLNDK_LIBRARIES_VENDOR}");
@@ -96,8 +96,7 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
           .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
     }
   }
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
-
+  ns.AddRequires(std::vector{"libneuralnetworks.so"});
   return ns;
 }
 }  // namespace contents

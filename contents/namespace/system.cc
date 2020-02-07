@@ -36,17 +36,16 @@ Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
     ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
   }
 
-  ns.GetLink("art").AddSharedLib(
-      {"libdexfile_external.so",
-       "libdexfiled_external.so",
-       "libnativebridge.so",
-       "libnativehelper.so",
-       "libnativeloader.so",
-       "libandroidicu.so",
-       // TODO(b/120786417 or b/134659294): libicuuc.so
-       // and libicui18n.so are kept for app compat.
-       "libicui18n.so",
-       "libicuuc.so"});
+  ns.AddRequires(std::vector{"libdexfile_external.so",
+                             "libdexfiled_external.so",
+                             "libnativebridge.so",
+                             "libnativehelper.so",
+                             "libnativeloader.so",
+                             "libandroidicu.so",
+                             // TODO(b/120786417 or b/134659294): libicuuc.so
+                             // and libicui18n.so are kept for app compat.
+                             "libicui18n.so",
+                             "libicuuc.so"});
 
   ns.AddProvides(GetSystemStubLibraries());
   return ns;

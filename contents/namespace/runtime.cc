@@ -20,6 +20,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
@@ -27,7 +28,8 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 
-Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
+Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx,
+                                [[maybe_unused]] const ApexInfo& apex) {
   Namespace ns("runtime",
                /*is_isolated=*/true,
                /*is_visible=*/true);

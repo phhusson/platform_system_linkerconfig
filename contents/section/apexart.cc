@@ -37,12 +37,14 @@ Section BuildApexArtSection(Context& ctx, const ApexInfo& apex_info) {
   namespaces.emplace_back(BuildApexArtDefaultNamespace(ctx));
   namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
 
-  // Add extra namespaces for visible namespaces
-  namespaces.emplace_back(BuildArtNamespace(ctx));
-  namespaces.emplace_back(BuildConscryptNamespace(ctx));
-  namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
-
-  return BuildSection(ctx, apex_info.name, std::move(namespaces));
+  return BuildSection(ctx,
+                      apex_info.name,
+                      std::move(namespaces),
+                      {
+                          "com.android.art",
+                          "com.android.conscrypt",
+                          "com.android.neuralnetworks",
+                      });
 }
 }  // namespace contents
 }  // namespace linkerconfig

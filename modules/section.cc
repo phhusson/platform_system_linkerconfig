@@ -99,7 +99,7 @@ Result<void> Section::Resolve(const BaseContext& ctx) {
                  it != candidates_providers.end()) {
         // If required library can be provided by a APEX module, create a new
         // namespace with the APEX and add it to this section.
-        Namespace new_ns(it->second);
+        auto new_ns = ctx.BuildApexNamespace(it->second, false);
 
         // Update providing library map from the new namespace
         for (const auto& new_lib : new_ns.GetProvides()) {
