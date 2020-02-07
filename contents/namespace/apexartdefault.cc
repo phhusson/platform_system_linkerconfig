@@ -15,27 +15,22 @@
  */
 #include "linkerconfig/namespacebuilder.h"
 
-#include "linkerconfig/apex.h"
-#include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
-using android::linkerconfig::modules::ApexInfo;
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Namespace BuildApexDefaultNamespace([[maybe_unused]] const Context& ctx,
-                                    const ApexInfo& apex_info) {
+Namespace BuildApexArtDefaultNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/false);
 
-  ns.AddSearchPath(apex_info.path + "/${LIB}", AsanPath::SAME_PATH);
-  ns.AddPermittedPath(apex_info.path + "/${LIB}", AsanPath::SAME_PATH);
-  ns.AddPermittedPath("/system/${LIB}");
-
-  ns.AddRequires(apex_info.require_libs);
-  ns.AddProvides(apex_info.provide_libs);
+  // The default namespace here only links to other namespaces, in particular
+  // "art" where the real library loading takes place. Any outgoing links from
+  // "art" also need to be present here.
+  ns.GetLink("art").AllowAllSharedLibs();
+  ns.GetLink("system").AllowAllSharedLibs();
+  ns.AddRequires(std::vector{"libadbconnection_client.so"});
 
   return ns;
 }

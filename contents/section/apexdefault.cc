@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "linkerconfig/common.h"
+#include "linkerconfig/log.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
 
@@ -30,11 +31,20 @@ using android::linkerconfig::modules::Section;
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Section BuildApexDefaultSection(const Context& ctx, const ApexInfo& apex_info) {
+Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
   std::vector<Namespace> namespaces;
+
+  ctx.SetCurrentSection(SectionType::Other);
 
   namespaces.emplace_back(BuildApexDefaultNamespace(ctx, apex_info));
   namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
+
+  // SWCodec APEX requires extra access to SPHAL (and corresponding VNDK)
+  // namespace(s)
+  if (apex_info.name == "com.android.media.swcodec") {
+    namespaces.emplace_back(BuildSphalNamespace(ctx));
+    namespaces.emplace_back(BuildVndkNamespace(ctx));
+  }
 
   return BuildSection(ctx, apex_info.name, std::move(namespaces));
 }

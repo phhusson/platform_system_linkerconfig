@@ -25,6 +25,10 @@
 typedef android::linkerconfig::modules::Section SectionBuilder(
     android::linkerconfig::contents::Context& ctx);
 
+typedef android::linkerconfig::modules::Section ApexSectionBuilder(
+    android::linkerconfig::contents::Context& ctx,
+    const android::linkerconfig::modules::ApexInfo& target_apex);
+
 namespace android {
 namespace linkerconfig {
 namespace contents {
@@ -38,9 +42,8 @@ SectionBuilder BuildUnrestrictedSection;
 SectionBuilder BuildLegacySection;
 SectionBuilder BuildPostInstallSection;
 SectionBuilder BuildRecoverySection;
-android::linkerconfig::modules::Section BuildApexDefaultSection(
-    const android::linkerconfig::contents::Context& ctx,
-    const android::linkerconfig::modules::ApexInfo& target_apex);
+ApexSectionBuilder BuildApexDefaultSection;
+ApexSectionBuilder BuildApexArtSection;
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

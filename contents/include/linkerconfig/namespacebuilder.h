@@ -48,6 +48,7 @@ android::linkerconfig::modules::Namespace BuildApexDefaultNamespace(
     const android::linkerconfig::contents::Context& ctx,
     const android::linkerconfig::modules::ApexInfo& apex_info);
 NamespaceBuilder BuildApexPlatformNamespace;
+NamespaceBuilder BuildApexArtDefaultNamespace;
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
