@@ -27,7 +27,7 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
-  bool is_system_section = ctx.IsSystemSection();
+  bool is_system_section = ctx.IsSystemSection() || ctx.IsApexBinaryConfig();
   bool is_product_section = ctx.IsProductSection();
   bool is_vndklite = ctx.IsVndkliteConfig();
   // Isolated but visible when used in the [system] section to allow links to be
@@ -101,7 +101,7 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
     }
   }
 
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.AddRequires(std::vector{"libneuralnetworks.so"});
 
   return ns;
 }

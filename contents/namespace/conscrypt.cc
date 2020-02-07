@@ -22,8 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "linkerconfig/environment.h"
-
 using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
@@ -44,6 +42,7 @@ Namespace BuildConscryptNamespace([[maybe_unused]] const Context& ctx) {
       "liblog.so",
       "libm.so",
   });
+
   return ns;
 }
 }  // namespace contents
