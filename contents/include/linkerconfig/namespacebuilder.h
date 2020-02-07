@@ -39,8 +39,6 @@ NamespaceBuilder BuildRecoveryDefaultNamespace;
 
 modules::Namespace BuildArtNamespace(const Context& ctx,
                                      const modules::ApexInfo& apex_info);
-modules::Namespace BuildRuntimeNamespace(const Context& ctx,
-                                         const modules::ApexInfo& apex_info);
 
 // Namespaces for APEX binaries
 modules::Namespace BuildApexDefaultNamespace(const Context& ctx,
