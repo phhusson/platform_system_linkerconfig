@@ -32,9 +32,9 @@ typedef android::linkerconfig::modules::Section ApexSectionBuilder(
 namespace android {
 namespace linkerconfig {
 namespace contents {
-modules::Section BuildSection(const Context& ctx, std::string name,
-                              std::vector<modules::Namespace> namespaces);
-
+modules::Section BuildSection(const Context& ctx, const std::string& name,
+                              std::vector<modules::Namespace>&& namespaces,
+                              const std::vector<std::string>& visible_apexes);
 SectionBuilder BuildSystemSection;
 SectionBuilder BuildVendorSection;
 SectionBuilder BuildProductSection;

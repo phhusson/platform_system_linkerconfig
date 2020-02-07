@@ -60,7 +60,7 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
     ns.GetLink(ctx.GetSystemNamespaceName())
         .AddSharedLib("@{LLNDK_LIBRARIES_VENDOR:}");
     ns.GetLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES_VENDOR:}");
-    ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+    ns.AddRequires(std::vector{"libneuralnetworks.so"});
   }
 
   return ns;

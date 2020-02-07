@@ -48,7 +48,7 @@ Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
       .AddSharedLib(
           {"@{LLNDK_LIBRARIES_VENDOR}", "@{PRIVATE_LLNDK_LIBRARIES_VENDOR:}"});
 
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.AddRequires(std::vector{"libneuralnetworks.so"});
 
   return ns;
 }
