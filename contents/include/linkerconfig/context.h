@@ -79,6 +79,10 @@ class Context : public modules::BaseContext {
   LinkerConfigType current_linkerconfig_type_;
 };
 
+std::string Var(const std::string& name);
+
+std::string Var(const std::string& name, const std::string& default_value);
+
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

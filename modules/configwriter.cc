@@ -33,8 +33,7 @@ void ConfigWriter::WriteVars(const std::string& var,
 }
 
 void ConfigWriter::WriteLine(const std::string& line) {
-  auto resolved_line = Variables::ResolveVariables(line);
-  content_ << resolved_line << '\n';
+  content_ << line << '\n';
 }
 
 std::string ConfigWriter::ToString() {

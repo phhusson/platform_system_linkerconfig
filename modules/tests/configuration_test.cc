@@ -94,18 +94,17 @@ namespace.default.asan.permitted.paths += /permitted_path2
 )";
 
 TEST(linkerconfig_configuration, generate_configuration) {
-  Variables::AddValue("PRODUCT", "product");
   std::vector<Section> sections;
 
   std::vector<DirToSection> dir_to_sections = {
       {"/system/bin", "system"},
       {"/system/xbin", "system"},
-      {"/@{PRODUCT}/bin", "system"},
+      {"/product/bin", "system"},
       {"/odm/bin", "vendor"},
       {"/vendor/bin", "vendor"},
       {"/system/bin/vendor", "vendor"},
       {"/product/bin/vendor", "vendor"},
-      {"/product/bin", "vendor"},
+      {"/product/bin", "vendor"},  // note that this is ignored
   };
 
   std::vector<Namespace> system_namespaces;

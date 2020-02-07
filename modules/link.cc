@@ -16,6 +16,8 @@
 
 #include "linkerconfig/link.h"
 
+#include "linkerconfig/log.h"
+
 namespace android {
 namespace linkerconfig {
 namespace modules {

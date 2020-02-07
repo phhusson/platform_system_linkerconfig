@@ -21,31 +21,12 @@
 
 constexpr const char* kSampleContent = "Lorem ipsum dolor sit amet";
 
-constexpr const char* kExpectedResultWithVariables =
-    R"(/Value/Test
-/Invalid_Value/Path
-//Path2
-)";
-
 TEST(linkerconfig_configwriter, write_line) {
   android::linkerconfig::modules::ConfigWriter writer;
 
   writer.WriteLine(kSampleContent);
 
   ASSERT_EQ(writer.ToString(), "Lorem ipsum dolor sit amet\n");
-}
-
-TEST(linkerconfig_configwriter, replace_variable) {
-  android::linkerconfig::modules::ConfigWriter writer;
-
-  android::linkerconfig::modules::Variables::AddValue("Test_Prop_Q", "Value");
-  android::linkerconfig::modules::Variables::AddValue("VNDK_VER", "Q");
-
-  writer.WriteLine("/@{Test_Prop_@{VNDK_VER}}/Test");
-  writer.WriteLine("/@{Invalid_Key:Invalid_Value}/Path");
-  writer.WriteLine("/@{Invalid_Key:}/Path2");
-
-  ASSERT_EQ(writer.ToString(), kExpectedResultWithVariables);
 }
 
 TEST(linkerconfig_configwriter, WriteVars) {
