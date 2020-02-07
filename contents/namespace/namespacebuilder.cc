@@ -23,7 +23,6 @@ namespace contents {
 void RegisterApexNamespaceBuilders(Context& ctx) {
   ctx.RegisterApexNamespaceBuilder("com.android.art", BuildArtNamespace);
   ctx.RegisterApexNamespaceBuilder("com.android.runtime", BuildRuntimeNamespace);
-  ctx.RegisterApexNamespaceBuilder("com.android.media", BuildMediaNamespace);
 }
 
 }  // namespace contents
