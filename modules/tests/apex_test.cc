@@ -24,12 +24,14 @@
 
 #include "apex_testbase.h"
 #include "linkerconfig/apex.h"
+#include "linkerconfig/basecontext.h"
 #include "linkerconfig/configwriter.h"
 #include "linkerconfig/namespace.h"
 #include "linkerconfig/section.h"
 
 using ::android::base::WriteStringToFile;
 using ::android::linkerconfig::modules::ApexInfo;
+using ::android::linkerconfig::modules::BaseContext;
 using ::android::linkerconfig::modules::ConfigWriter;
 using ::android::linkerconfig::modules::InitializeWithApex;
 using ::android::linkerconfig::modules::Namespace;
@@ -61,6 +63,7 @@ TEST(apex_namespace, build_namespace) {
 }
 
 TEST(apex_namespace, resolve_between_apex_namespaces) {
+  BaseContext ctx;
   Namespace foo("foo"), bar("bar");
   InitializeWithApex(foo,
                      ApexInfo("com.android.foo",
@@ -82,7 +85,7 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
   namespaces.push_back(std::move(bar));
   Section section("section", std::move(namespaces));
 
-  auto result = section.Resolve();
+  auto result = section.Resolve(ctx);
   ASSERT_TRUE(result) << result.error();
 
   // See if two namespaces are linked correctly

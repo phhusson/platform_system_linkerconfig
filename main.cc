@@ -47,6 +47,7 @@ using android::linkerconfig::modules::Configuration;
 namespace {
 const static struct option program_options[] = {
     {"target", required_argument, 0, 't'},
+    {"strict", no_argument, 0, 's'},
 #ifndef __ANDROID__
     {"root", required_argument, 0, 'r'},
     {"vndk", required_argument, 0, 'v'},
@@ -58,6 +59,7 @@ const static struct option program_options[] = {
 
 struct ProgramArgs {
   std::string target_directory;
+  bool strict;
   std::string root;
   std::string vndk_version;
   bool is_recovery;
@@ -66,6 +68,7 @@ struct ProgramArgs {
 
 [[noreturn]] void PrintUsage(int status = EXIT_SUCCESS) {
   std::cerr << "Usage : linkerconfig [--target <target_directory>]"
+               " [--strict]"
 #ifndef __ANDROID__
                " --root <root dir>"
                " --vndk <vndk version>"
@@ -80,10 +83,13 @@ struct ProgramArgs {
 bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
   int parse_result;
   while ((parse_result = getopt_long(
-              argc, argv, "t:r:v:hyl", program_options, NULL)) != -1) {
+              argc, argv, "t:sr:v:hyl", program_options, NULL)) != -1) {
     switch (parse_result) {
       case 't':
         args->target_directory = optarg;
+        break;
+      case 's':
+        args->strict = true;
         break;
       case 'r':
         args->root = optarg;
@@ -172,6 +178,9 @@ Context GetContext(ProgramArgs args) {
       ctx.AddApexModule(std::move(apex_info));
     }
   }
+  if (args.strict) {
+    ctx.SetStrictMode(true);
+  }
   return ctx;
 }
 
@@ -196,7 +205,7 @@ Result<void> GenerateConfiguration(Configuration config, std::string dir_path,
   }
 
   auto write_config = WriteConfigurationToFile(config, file_path);
-  if (!write_config) {
+  if (!write_config.ok()) {
     return write_config;
   } else if (update_permission && file_path != "") {
     return UpdatePermission(file_path);
@@ -244,7 +253,7 @@ void GenerateApexConfigurations(Context& ctx, const std::string& dir_path) {
   for (auto const& apex_item : ctx.GetApexModules()) {
     if (apex_item.has_bin) {
       auto result = GenerateApexConfiguration(dir_path, ctx, apex_item);
-      if (!result) {
+      if (!result.ok()) {
         LOG(WARNING) << result.error();
       }
     }
@@ -252,7 +261,7 @@ void GenerateApexConfigurations(Context& ctx, const std::string& dir_path) {
 }
 
 void ExitOnFailure(Result<void> task) {
-  if (!task) {
+  if (!task.ok()) {
     LOG(FATAL) << task.error();
     exit(EXIT_FAILURE);
   }

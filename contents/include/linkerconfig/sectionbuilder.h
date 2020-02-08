@@ -15,6 +15,9 @@
  */
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "linkerconfig/apex.h"
 #include "linkerconfig/context.h"
 #include "linkerconfig/section.h"
@@ -25,6 +28,9 @@ typedef android::linkerconfig::modules::Section SectionBuilder(
 namespace android {
 namespace linkerconfig {
 namespace contents {
+modules::Section BuildSection(const Context& ctx, std::string name,
+                              std::vector<modules::Namespace> namespaces);
+
 SectionBuilder BuildSystemSection;
 SectionBuilder BuildVendorSection;
 SectionBuilder BuildProductSection;

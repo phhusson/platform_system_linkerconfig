@@ -35,6 +35,7 @@ struct ApexConfigTest : ::testing::Test {
 
   void SetUp() override {
     apex_root = tmp_dir.path + std::string("/");
+    MockGenericVariables();
   }
 
   ApexInfo PrepareApex(std::string apex_name,

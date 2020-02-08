@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 
 #include "apex_testbase.h"
+#include "linkerconfig/basecontext.h"
 #include "linkerconfig/configwriter.h"
 #include "modules_testbase.h"
 
@@ -130,6 +131,7 @@ TEST(linkerconfig_section, section_with_one_namespace) {
 }
 
 TEST(linkerconfig_section, resolve_contraints) {
+  BaseContext ctx;
   std::vector<Namespace> namespaces;
   Namespace& foo = namespaces.emplace_back("foo");
   foo.AddProvides(std::vector{"libfoo.so"});
@@ -140,7 +142,7 @@ TEST(linkerconfig_section, resolve_contraints) {
   baz.AddRequires(std::vector{"libfoo.so"});
 
   Section section("section", std::move(namespaces));
-  section.Resolve();
+  section.Resolve(ctx);
 
   ConfigWriter writer;
   section.WriteConfig(writer);
@@ -159,6 +161,7 @@ TEST(linkerconfig_section, resolve_contraints) {
 }
 
 TEST(linkerconfig_section, error_if_duplicate_providing) {
+  BaseContext ctx;
   std::vector<Namespace> namespaces;
   Namespace& foo1 = namespaces.emplace_back("foo1");
   foo1.AddProvides(std::vector{"libfoo.so"});
@@ -168,34 +171,58 @@ TEST(linkerconfig_section, error_if_duplicate_providing) {
   bar.AddRequires(std::vector{"libfoo.so"});
 
   Section section("section", std::move(namespaces));
-  auto result = section.Resolve();
+  auto result = section.Resolve(ctx);
   ASSERT_EQ("duplicate: libfoo.so is provided by foo1 and foo2 in [section]",
             result.error().message());
 }
 
-TEST(linkerconfig_section, error_if_no_providers) {
+TEST(linkerconfig_section, error_if_no_providers_in_strict_mode) {
+  BaseContext ctx;
+  ctx.SetStrictMode(true);
+
   std::vector<Namespace> namespaces;
   Namespace& foo = namespaces.emplace_back("foo");
   foo.AddRequires(std::vector{"libfoo.so"});
 
   Section section("section", std::move(namespaces));
-  auto result = section.Resolve();
+  auto result = section.Resolve(ctx);
   ASSERT_EQ("not found: libfoo.so is required by foo in [section]",
             result.error().message());
 }
 
+TEST(linkerconfig_section, ignore_unmet_requirements) {
+  BaseContext ctx;
+  ctx.SetStrictMode(false);  // default
+
+  std::vector<Namespace> namespaces;
+  Namespace& foo = namespaces.emplace_back("foo");
+  foo.AddRequires(std::vector{"libfoo.so"});
+
+  Section section("section", std::move(namespaces));
+  auto result = section.Resolve(ctx);
+  ASSERT_TRUE(result);
+
+  ConfigWriter writer;
+  section.WriteConfig(writer);
+
+  ASSERT_EQ(
+      "[section]\n"
+      "namespace.foo.isolated = false\n",
+      writer.ToString());
+}
+
 TEST_F(ApexTest, resolve_section_with_apex) {
-  std::vector<ApexInfo> apex_modules;
-  apex_modules.push_back(PrepareApex("foo", {"a.so"}, {"b.so"}));
-  apex_modules.push_back(PrepareApex("bar", {"b.so"}, {}));
-  apex_modules.push_back(PrepareApex("baz", {"c.so"}, {"a.so"}));
+  BaseContext ctx;
+  ctx.AddApexModule(PrepareApex("foo", {"a.so"}, {"b.so"}));
+  ctx.AddApexModule(PrepareApex("bar", {"b.so"}, {}));
+  ctx.AddApexModule(PrepareApex("baz", {"c.so"}, {"a.so"}));
 
   std::vector<Namespace> namespaces;
   Namespace& default_ns = namespaces.emplace_back("default");
   default_ns.AddRequires(std::vector{"a.so", "b.so"});
 
   Section section("section", std::move(namespaces));
-  auto result = section.Resolve(apex_modules);
+  auto result = section.Resolve(ctx);
 
   EXPECT_TRUE(result);
   EXPECT_THAT(
