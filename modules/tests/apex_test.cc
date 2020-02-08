@@ -55,10 +55,11 @@ TEST(apex_namespace, build_namespace) {
   ASSERT_EQ(
       "namespace.foo.isolated = false\n"
       "namespace.foo.search.paths = /apex/com.android.foo/${LIB}\n"
-      "namespace.foo.permitted.paths = /system/${LIB}\n"
+      "namespace.foo.permitted.paths = /apex/com.android.foo/${LIB}\n"
+      "namespace.foo.permitted.paths += /system/${LIB}\n"
       "namespace.foo.asan.search.paths = /apex/com.android.foo/${LIB}\n"
-      "namespace.foo.asan.permitted.paths = /system/${LIB}\n",
-
+      "namespace.foo.asan.permitted.paths = /apex/com.android.foo/${LIB}\n"
+      "namespace.foo.asan.permitted.paths += /system/${LIB}\n",
       writer.ToString());
 }
 

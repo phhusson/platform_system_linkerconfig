@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// Currently, the runtime namespace is only to isolate
-// libc_malloc_hooks/debug.so in the Runtime APEX. libc/l/d are loaded in the
-// default namespace.
-
 #include "linkerconfig/namespacebuilder.h"
 
-using android::linkerconfig::modules::AsanPath;
+#include "linkerconfig/namespace.h"
+
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
+Namespace BuildApexArtDefaultNamespace([[maybe_unused]] const Context& ctx) {
+  Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/false);
 
-Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("runtime",
-               /*is_isolated=*/true,
-               /*is_visible=*/true);
-
-  ns.AddSearchPath("/apex/com.android.runtime/${LIB}", AsanPath::SAME_PATH);
-  ns.AddPermittedPath("/system/${LIB}");
+  // The default namespace here only links to other namespaces, in particular
+  // "art" where the real library loading takes place. Any outgoing links from
+  // "art" also need to be present here.
+  ns.GetLink("art").AllowAllSharedLibs();
+  ns.GetLink("system").AllowAllSharedLibs();
+  ns.AddRequires(std::vector{"libadbconnection_client.so"});
 
   return ns;
 }
-
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

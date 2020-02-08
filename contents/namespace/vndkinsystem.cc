@@ -64,7 +64,7 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
         .AddSharedLib("@{LLNDK_LIBRARIES_VENDOR}");
   }
   ns.GetLink("vndk").AllowAllSharedLibs();
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.AddRequires(std::vector{"libneuralnetworks.so"});
 
   return ns;
 }

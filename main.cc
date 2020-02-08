@@ -33,6 +33,7 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/legacy.h"
 #include "linkerconfig/log.h"
+#include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/recovery.h"
 #include "linkerconfig/variableloader.h"
 #include "linkerconfig/variables.h"
@@ -181,6 +182,7 @@ Context GetContext(ProgramArgs args) {
   if (args.strict) {
     ctx.SetStrictMode(true);
   }
+  android::linkerconfig::contents::RegisterApexNamespaceBuilders(ctx);
   return ctx;
 }
 

@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "linkerconfig/apex.h"
+#include "linkerconfig/namespace.h"
 
 namespace android {
 namespace linkerconfig {
@@ -27,12 +28,16 @@ namespace modules {
 class BaseContext {
  public:
   BaseContext();
+  virtual ~BaseContext() = default;
 
   void AddApexModule(ApexInfo apex_module);
   const std::vector<ApexInfo>& GetApexModules() const;
 
   void SetStrictMode(bool strict);
   bool IsStrictMode() const;
+
+  virtual Namespace BuildApexNamespace(const ApexInfo& apex_info,
+                                       bool visible) const;
 
  private:
   bool strict_;
