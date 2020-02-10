@@ -42,7 +42,7 @@ Section BuildSection(const Context& ctx, const std::string& name,
 
   // resolve provide/require constraints
   Section section(std::move(name), std::move(namespaces));
-  if (auto res = section.Resolve(ctx); !res) {
+  if (auto res = section.Resolve(ctx); !res.ok()) {
     LOG(ERROR) << res.error();
   }
 
