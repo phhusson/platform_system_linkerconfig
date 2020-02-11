@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "linkerconfig/configwriter.h"
-#include "linkerconfig/log.h"
 
 namespace android {
 namespace linkerconfig {
