@@ -91,6 +91,16 @@ cc_binary {
         "main.cc",
     ],
     static_executable: true,
+    required: [
+        // files from /system/etc
+        "sanitizer.libraries.txt",
+        "vndkcorevariant.libraries.txt",
+        // TODO(b/145184886): remove these when these are read from vndk apex
+        "llndk.libraries.txt",
+        "vndkcore.libraries.txt",
+        "vndkprivate.libraries.txt",
+        "vndksp.libraries.txt",
+    ],
 }
 
 cc_test {
