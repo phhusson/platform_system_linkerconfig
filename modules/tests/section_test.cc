@@ -200,7 +200,7 @@ TEST(linkerconfig_section, ignore_unmet_requirements) {
 
   Section section("section", std::move(namespaces));
   auto result = section.Resolve(ctx);
-  ASSERT_TRUE(result);
+  ASSERT_RESULT_OK(result);
 
   ConfigWriter writer;
   section.WriteConfig(writer);
@@ -224,7 +224,7 @@ TEST_F(ApexTest, resolve_section_with_apex) {
   Section section("section", std::move(namespaces));
   auto result = section.Resolve(ctx);
 
-  EXPECT_TRUE(result);
+  EXPECT_RESULT_OK(result);
   EXPECT_THAT(
       std::vector<std::string>{"a.so"},
       ::testing::ContainerEq(
