@@ -19,25 +19,6 @@
 namespace android {
 namespace linkerconfig {
 namespace modules {
-namespace {
-// TODO(b/148826508): use apex_name directly as a name of an apex namespace
-// after removing all references to the short names, remove this function.
-std::string LinkerNamespaceNameFor(const ApexInfo& apex) {
-  static const std::map<std::string, std::string> namespaceNameForApex = {
-      {"com.android.art", "art"},
-      {"com.android.conscrypt", "conscrypt"},
-      {"com.android.cronet", "cronet"},
-      {"com.android.media", "media"},
-      {"com.android.neuralnetworks", "neuralnetworks"},
-      {"com.android.runtime", "runtime"},
-  };
-  if (auto it = namespaceNameForApex.find(apex.name);
-      it != namespaceNameForApex.end()) {
-    return it->second;
-  }
-  return apex.name;
-}
-}  // namespace
 BaseContext::BaseContext() : strict_(false) {
 }
 
@@ -59,7 +40,7 @@ bool BaseContext::IsStrictMode() const {
 
 Namespace BaseContext::BuildApexNamespace(const ApexInfo& apex_info,
                                           bool visible) const {
-  Namespace ns(LinkerNamespaceNameFor(apex_info),
+  Namespace ns(apex_info.name,
                /*is_isolated=*/true,
                visible);
   InitializeWithApex(ns, apex_info);
