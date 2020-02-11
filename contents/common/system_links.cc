@@ -36,16 +36,16 @@ void AddStandardSystemLinks(const Context& ctx, Section* section) {
   section->ForEachNamespaces([system_ns_name](Namespace& ns) {
     if (ns.GetName() != system_ns_name) {
       ns.GetLink(system_ns_name)
-          .AddSharedLib("@{STUB_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}");
+          .AddSharedLib(Var("STUB_LIBRARIES"),
+                        Var("SANITIZER_RUNTIME_LIBRARIES"));
     }
   });
 }
 
 std::vector<std::string> GetSystemStubLibraries() {
-  std::optional<std::string> stub_libraries_var =
-      android::linkerconfig::modules::Variables::GetValue("STUB_LIBRARIES");
-  return android::base::Split(stub_libraries_var.value_or(""), ":");
+  return android::base::Split(Var("STUB_LIBRARIES", ""), ":");
 }
+
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
