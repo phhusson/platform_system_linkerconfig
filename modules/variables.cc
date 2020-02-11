@@ -17,15 +17,6 @@
 #include "linkerconfig/variables.h"
 
 #include <android-base/properties.h>
-#include <regex>
-#include <sstream>
-
-#include "linkerconfig/log.h"
-
-namespace {
-constexpr const char* kVariableRegex =
-    "@\\{([^@\\{\\}:]+)(:([^@\\{\\}:]*))?\\}";
-}
 
 namespace android {
 namespace linkerconfig {
@@ -52,33 +43,6 @@ std::optional<std::string> Variables::GetValue(const std::string& variable) {
 
 void Variables::AddValue(const std::string& key, const std::string& value) {
   variables_[key] = value;
-}
-
-std::string Variables::ResolveVariables(const std::string& str) {
-  std::string result = str;
-  std::regex variable_regex(kVariableRegex);
-  std::smatch sm;
-
-  while (std::regex_search(result, sm, variable_regex)) {
-    std::stringstream ss;
-    ss << sm.prefix();
-    auto resolved_value = GetValue(sm[1]);
-    if (resolved_value.has_value()) {
-      ss << resolved_value.value();
-    } else {
-      LOG(WARNING) << "Unable to find value for " << sm[1];
-      bool contains_default = sm[2].length() > 0;
-      if (contains_default) {
-        ss << sm[3];
-      } else {
-        LOG(FATAL) << "There is no default value defined for " << sm[1];
-      }
-    }
-    ss << ResolveVariables(sm.suffix());
-    result = ss.str();
-  }
-
-  return result;
 }
 }  // namespace modules
 }  // namespace linkerconfig

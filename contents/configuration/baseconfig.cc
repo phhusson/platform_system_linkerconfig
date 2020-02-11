@@ -50,12 +50,12 @@ android::linkerconfig::modules::Configuration CreateBaseConfiguration(
   std::vector<DirToSection> dirToSection = {
       {"/system/bin/", "system"},
       {"/system/xbin/", "system"},
-      {"/@{SYSTEM_EXT:system_ext}/bin/", "system"},
+      {"/" + Var("SYSTEM_EXT", "system_ext") + "/bin/", "system"},
 
       // Processes from the product partition will have a separate section if
       // PRODUCT_PRODUCT_VNDK_VERSION is defined. Otherwise, they are run from
       // the "system" section.
-      {"/@{PRODUCT:product}/bin/", "product"},
+      {"/" + Var("PRODUCT", "product") + "/bin/", "product"},
 
       {"/odm/bin/", "vendor"},
       {"/vendor/bin/", "vendor"},
