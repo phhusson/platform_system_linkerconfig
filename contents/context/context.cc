@@ -16,7 +16,9 @@
 
 #include "linkerconfig/context.h"
 
+#include "linkerconfig/log.h"
 #include "linkerconfig/namespacebuilder.h"
+#include "linkerconfig/variables.h"
 
 using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::Namespace;
@@ -85,6 +87,23 @@ Namespace Context::BuildApexNamespace(const ApexInfo& apex_info,
   }
 
   return BaseContext::BuildApexNamespace(apex_info, visible);
+}
+
+std::string Var(const std::string& name) {
+  auto val = modules::Variables::GetValue(name);
+  if (val.has_value()) {
+    return *val;
+  }
+  CHECK(!"undefined var") << name << " is not defined";
+  return "";
+}
+
+std::string Var(const std::string& name, const std::string& default_value) {
+  auto val = modules::Variables::GetValue(name);
+  if (val.has_value()) {
+    return *val;
+  }
+  return default_value;
 }
 
 }  // namespace contents

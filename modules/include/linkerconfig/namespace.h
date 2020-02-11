@@ -22,7 +22,6 @@
 #include "linkerconfig/apex.h"
 #include "linkerconfig/configwriter.h"
 #include "linkerconfig/link.h"
-#include "linkerconfig/log.h"
 
 namespace android {
 namespace linkerconfig {
