@@ -16,6 +16,8 @@
 
 #include "linkerconfig/link.h"
 
+#include "linkerconfig/log.h"
+
 namespace android {
 namespace linkerconfig {
 namespace modules {
@@ -34,23 +36,16 @@ void Link::AllowAllSharedLibs() {
 }
 
 void Link::WriteConfig(ConfigWriter& writer) const {
-  writer.SetPrefix("namespace." + origin_namespace_ + ".link." +
-                   target_namespace_);
+  const auto prefix =
+      "namespace." + origin_namespace_ + ".link." + target_namespace_ + ".";
   if (allow_all_shared_libs_) {
-    writer.WriteLine(".allow_all_shared_libs = true");
+    writer.WriteLine(prefix + "allow_all_shared_libs = true");
   } else if (!shared_libs_.empty()) {
-    bool is_first = true;
-
-    for (auto& lib_name : shared_libs_) {
-      writer.WriteLine(
-          ".shared_libs %s %s", is_first ? "=" : "+=", lib_name.c_str());
-      is_first = false;
-    }
+    writer.WriteVars(prefix + "shared_libs", shared_libs_);
   } else {
     LOG(WARNING) << "Ignored empty shared libs link from " << origin_namespace_
                  << " to " << target_namespace_;
   }
-  writer.ResetPrefix();
 }
 
 }  // namespace modules

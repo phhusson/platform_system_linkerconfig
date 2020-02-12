@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace android {
 namespace linkerconfig {
@@ -24,15 +25,12 @@ namespace modules {
 
 class ConfigWriter {
  public:
-  void SetPrefix(const std::string& prefix);
-  void ResetPrefix();
+  void WriteVars(const std::string& var, const std::vector<std::string>& values);
   void WriteLine(const std::string& line);
-  void WriteLine(const char* format, ...);
   std::string ToString();
 
  private:
   std::stringstream content_;
-  std::string prefix_;
 };
 
 }  // namespace modules

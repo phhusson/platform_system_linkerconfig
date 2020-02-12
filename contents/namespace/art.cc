@@ -32,7 +32,7 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx,
   // Make the namespace visible to allow links to be created at runtime, e.g.
   // through android_link_namespaces in libnativeloader. That is not applicable
   // to the vendor section.
-  Namespace ns("art",
+  Namespace ns(apex.name,
                /*is_isolated=*/true,
                /*is_visible=*/!ctx.IsVendorSection());
 
