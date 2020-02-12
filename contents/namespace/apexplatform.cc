@@ -45,6 +45,7 @@ std::vector<std::string> required_libs = {
     "libpac.so",
     // statsd
     "libstatspull.so",
+    "libstatssocket.so",
 };
 }  // namespace
 
