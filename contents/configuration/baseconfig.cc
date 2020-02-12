@@ -22,13 +22,21 @@ using android::linkerconfig::modules::DirToSection;
 using android::linkerconfig::modules::Section;
 
 namespace {
-void redirect_section(std::vector<DirToSection>& dirToSection,
-                      const std::string& from, const std::string& to) {
-  for (auto& [key, val] : dirToSection) {
-    if (val == from) {
-      val = to;
+void RedirectSection(std::vector<DirToSection>& dir_to_section,
+                     const std::string& from, const std::string& to) {
+  for (auto& [dir, section] : dir_to_section) {
+    if (section == from) {
+      section = to;
     }
   }
+}
+void RemoveSection(std::vector<DirToSection>& dir_to_section,
+                   const std::string& to_be_removed) {
+  dir_to_section.erase(
+      std::remove_if(dir_to_section.begin(),
+                     dir_to_section.end(),
+                     [&](auto pair) { return (pair.second == to_be_removed); }),
+      dir_to_section.end());
 }
 }  // namespace
 
@@ -82,12 +90,17 @@ android::linkerconfig::modules::Configuration CreateBaseConfiguration(
   };
 
   sections.emplace_back(BuildSystemSection(ctx));
-  sections.emplace_back(BuildVendorSection(ctx));
-  if (android::linkerconfig::modules::IsProductVndkVersionDefined() &&
-      !android::linkerconfig::modules::IsVndkLiteDevice()) {
-    sections.emplace_back(BuildProductSection(ctx));
+  if (ctx.IsVndkAvailable()) {
+    sections.emplace_back(BuildVendorSection(ctx));
+    if (android::linkerconfig::modules::IsProductVndkVersionDefined() &&
+        !android::linkerconfig::modules::IsVndkLiteDevice()) {
+      sections.emplace_back(BuildProductSection(ctx));
+    } else {
+      RedirectSection(dirToSection, "product", "system");
+    }
   } else {
-    redirect_section(dirToSection, "product", "system");
+    RemoveSection(dirToSection, "product");
+    RemoveSection(dirToSection, "vendor");
   }
 
   sections.emplace_back(BuildUnrestrictedSection(ctx));

@@ -33,10 +33,11 @@ Section BuildSystemSection(Context& ctx) {
   std::vector<Namespace> namespaces;
 
   namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildSphalNamespace(ctx));
-  namespaces.emplace_back(BuildRsNamespace(ctx));
-  namespaces.emplace_back(BuildVndkNamespace(ctx));
-
+  if (ctx.IsVndkAvailable()) {
+    namespaces.emplace_back(BuildSphalNamespace(ctx));
+    namespaces.emplace_back(BuildRsNamespace(ctx));
+    namespaces.emplace_back(BuildVndkNamespace(ctx));
+  }
   return BuildSection(ctx,
                       "system",
                       std::move(namespaces),
