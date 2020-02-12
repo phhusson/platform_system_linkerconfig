@@ -16,10 +16,13 @@
 
 #include "linkerconfig/context.h"
 
+#include <android-base/strings.h>
+
 #include "linkerconfig/log.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/variables.h"
 
+using android::base::StartsWith;
 using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::Namespace;
 
@@ -72,6 +75,15 @@ std::string Context::GetSystemNamespaceName() const {
 
 void Context::SetCurrentLinkerConfigType(LinkerConfigType config_type) {
   current_linkerconfig_type_ = config_type;
+}
+
+bool Context::IsVndkAvailable() const {
+  for (auto& apex : GetApexModules()) {
+    if (StartsWith(apex.name, "com.android.vndk.")) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void Context::RegisterApexNamespaceBuilder(const std::string& name,
