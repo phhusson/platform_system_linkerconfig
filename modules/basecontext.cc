@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include <string>
-#include <vector>
-
-#include "linkerconfig/context.h"
-#include "linkerconfig/namespace.h"
-#include "linkerconfig/section.h"
+#include "linkerconfig/basecontext.h"
 
 namespace android {
 namespace linkerconfig {
-namespace contents {
+namespace modules {
 
-// Adds links from all namespaces in the given section to the namespace for
-// /system/${LIB} for standard libraries like Bionic (libc.so, libm.so,
-// libdl.so) and applicable libclang_rt.*.
-void AddStandardSystemLinks(const Context& ctx, modules::Section* section);
+BaseContext::BaseContext() : strict_(false) {
+}
 
-std::vector<std::string> GetSystemStubLibraries();
-}  // namespace contents
+void BaseContext::AddApexModule(ApexInfo apex_module) {
+  apex_modules_.push_back(std::move(apex_module));
+}
+
+const std::vector<ApexInfo>& BaseContext::GetApexModules() const {
+  return apex_modules_;
+}
+
+void BaseContext::SetStrictMode(bool strict) {
+  strict_ = strict;
+}
+
+bool BaseContext::IsStrictMode() const {
+  return strict_;
+}
+
+}  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android

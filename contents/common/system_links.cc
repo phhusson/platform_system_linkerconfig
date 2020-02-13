@@ -15,6 +15,7 @@
  */
 
 #include <string>
+#include <vector>
 
 #include <android-base/strings.h>
 
@@ -38,14 +39,12 @@ void AddStandardSystemLinks(const Context& ctx, Section* section) {
           .AddSharedLib("@{STUB_LIBRARIES}", "@{SANITIZER_RUNTIME_LIBRARIES}");
     }
   });
+}
 
-  Namespace* system_ns = section->GetNamespace(system_ns_name);
-  if (system_ns) {
-    std::optional<std::string> stub_libraries_var =
-        android::linkerconfig::modules::Variables::GetValue("STUB_LIBRARIES");
-    system_ns->AddProvides(
-        android::base::Split(stub_libraries_var.value_or(""), ":"));
-  }
+std::vector<std::string> GetSystemStubLibraries() {
+  std::optional<std::string> stub_libraries_var =
+      android::linkerconfig::modules::Variables::GetValue("STUB_LIBRARIES");
+  return android::base::Split(stub_libraries_var.value_or(""), ":");
 }
 }  // namespace contents
 }  // namespace linkerconfig

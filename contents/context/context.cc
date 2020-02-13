@@ -62,14 +62,6 @@ void Context::SetCurrentLinkerConfigType(LinkerConfigType config_type) {
   current_linkerconfig_type_ = config_type;
 }
 
-void Context::AddApexModule(ApexInfo apex_module) {
-  apex_modules_.push_back(std::move(apex_module));
-}
-
-const std::vector<ApexInfo>& Context::GetApexModules() const {
-  return apex_modules_;
-}
-
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

@@ -13,35 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "linkerconfig/sectionbuilder.h"
 
-// This namespace is for libraries within the adbd APEX.
-
-#include "linkerconfig/namespacebuilder.h"
-
-#include "linkerconfig/environment.h"
+#include "linkerconfig/common.h"
+#include "linkerconfig/log.h"
 #include "linkerconfig/namespace.h"
-
-using android::linkerconfig::modules::AsanPath;
-using android::linkerconfig::modules::Namespace;
+#include "linkerconfig/section.h"
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Namespace BuildAdbdNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("adbd", /*is_isolated=*/true, /*is_visible=*/false);
-  ns.AddSearchPath("/apex/com.android.adbd/${LIB}", AsanPath::SAME_PATH);
-  ns.AddPermittedPath("/system/${LIB}");
 
-  ns.AddProvides(std::vector{
-      "libadbconnection_client.so",
-  });
-  ns.AddRequires(std::vector{
-      "libc.so",
-      "libdl.so",
-      "liblog.so",
-      "libm.so",
-  });
-  return ns;
+using modules::Namespace;
+using modules::Section;
+
+Section BuildSection(const Context& ctx, std::string name,
+                     std::vector<Namespace> namespaces) {
+  Section section(std::move(name), std::move(namespaces));
+  if (auto res = section.Resolve(ctx); !res) {
+    LOG(ERROR) << res.error();
+  }
+  AddStandardSystemLinks(ctx, &section);
+  return section;
 }
 }  // namespace contents
 }  // namespace linkerconfig

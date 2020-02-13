@@ -17,6 +17,7 @@
 // This namespace is where system libs (VNDK and LLNDK libs) are loaded for a
 // vendor process.
 
+#include "linkerconfig/common.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 
@@ -47,6 +48,7 @@ Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
        "libicui18n.so",
        "libicuuc.so"});
 
+  ns.AddProvides(GetSystemStubLibraries());
   return ns;
 }
 }  // namespace contents

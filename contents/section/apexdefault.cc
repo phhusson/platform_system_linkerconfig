@@ -36,10 +36,7 @@ Section BuildApexDefaultSection(const Context& ctx, const ApexInfo& apex_info) {
   namespaces.emplace_back(BuildApexDefaultNamespace(ctx, apex_info));
   namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
 
-  Section section(apex_info.name, std::move(namespaces));
-  section.Resolve(ctx.GetApexModules());
-
-  return section;
+  return BuildSection(ctx, apex_info.name, std::move(namespaces));
 }
 }  // namespace contents
 }  // namespace linkerconfig

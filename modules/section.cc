@@ -60,7 +60,7 @@ void Section::WriteConfig(ConfigWriter& writer) {
   }
 }
 
-Result<void> Section::Resolve(const std::vector<ApexInfo>& candidates) {
+Result<void> Section::Resolve(const BaseContext& ctx) {
   std::unordered_map<std::string, std::string> providers;
   for (auto& ns : namespaces_) {
     for (const auto& lib : ns.GetProvides()) {
@@ -76,7 +76,7 @@ Result<void> Section::Resolve(const std::vector<ApexInfo>& candidates) {
   }
 
   std::unordered_map<std::string, ApexInfo> candidates_providers;
-  for (const auto& apex : candidates) {
+  for (const auto& apex : ctx.GetApexModules()) {
     for (const auto& lib : apex.provide_libs) {
       candidates_providers[lib] = apex;
     }
@@ -85,7 +85,7 @@ Result<void> Section::Resolve(const std::vector<ApexInfo>& candidates) {
   // Reserve enough space for namespace vector which can be increased maximum as
   // much as available APEX modules. Appending new namespaces without reserving
   // enough space from iteration can crash the process.
-  namespaces_.reserve(namespaces_.size() + candidates.size());
+  namespaces_.reserve(namespaces_.size() + ctx.GetApexModules().size());
 
   auto iter = namespaces_.begin();
   do {
@@ -107,7 +107,7 @@ Result<void> Section::Resolve(const std::vector<ApexInfo>& candidates) {
         }
         ns.GetLink(new_ns.GetName()).AddSharedLib(lib);
         namespaces_.push_back(std::move(new_ns));
-      } else {
+      } else if (ctx.IsStrictMode()) {
         return Errorf(
             "not found: {} is required by {} in [{}]", lib, ns.GetName(), name_);
       }
@@ -115,33 +115,6 @@ Result<void> Section::Resolve(const std::vector<ApexInfo>& candidates) {
     iter++;
   } while (iter != namespaces_.end());
 
-  return {};
-}
-
-Result<void> Section::Resolve() {
-  std::unordered_map<std::string, std::string> providers;
-  for (auto& ns : namespaces_) {
-    for (const auto& lib : ns.GetProvides()) {
-      if (auto iter = providers.find(lib); iter != providers.end()) {
-        return Errorf("duplicate: {} is provided by {} and {} in [{}]",
-                      lib,
-                      iter->second,
-                      ns.GetName(),
-                      name_);
-      }
-      providers[lib] = ns.GetName();
-    }
-  }
-  for (auto& ns : namespaces_) {
-    for (const auto& lib : ns.GetRequires()) {
-      if (auto it = providers.find(lib); it != providers.end()) {
-        ns.GetLink(it->second).AddSharedLib(lib);
-      } else {
-        return Errorf(
-            "not found: {} is required by {} in [{}]", lib, ns.GetName(), name_);
-      }
-    }
-  }
   return {};
 }
 

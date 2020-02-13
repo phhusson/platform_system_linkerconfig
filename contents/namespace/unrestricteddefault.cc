@@ -16,6 +16,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+#include "linkerconfig/common.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
@@ -51,6 +52,8 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
       // nn
       "libneuralnetworks.so",
   });
+
+  ns.AddProvides(GetSystemStubLibraries());
   return ns;
 }
 }  // namespace contents
