@@ -120,6 +120,8 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
       "libnetd_resolv.so",
       // nn
       "libneuralnetworks.so",
+      // statsd
+      "libstatspull.so",
   });
 
   ns.AddProvides(GetSystemStubLibraries());
