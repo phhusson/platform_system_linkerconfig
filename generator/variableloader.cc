@@ -58,6 +58,7 @@ std::vector<std::string> stub_libraries = {
     "libdl.so",
     "libdl_android.so",
     "libft2.so",
+    "libincident.so",
     "liblog.so",
     "libm.so",
     "libmediametrics.so",
