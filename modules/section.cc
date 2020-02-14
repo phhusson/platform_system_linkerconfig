@@ -25,7 +25,6 @@
 
 #include "linkerconfig/log.h"
 
-using android::base::Errorf;
 using android::base::Join;
 using android::base::Result;
 
