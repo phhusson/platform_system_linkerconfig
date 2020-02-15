@@ -43,8 +43,6 @@ std::vector<std::string> required_libs = {
     "libnativeloader.so",
     // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
     "libpac.so",
-    // statsd
-    "libstatspull.so",
 };
 }  // namespace
 
