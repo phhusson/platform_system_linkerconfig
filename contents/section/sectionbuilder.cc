@@ -18,6 +18,7 @@
 #include "linkerconfig/common.h"
 #include "linkerconfig/log.h"
 #include "linkerconfig/namespace.h"
+#include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
 
 namespace android {
@@ -27,12 +28,24 @@ namespace contents {
 using modules::Namespace;
 using modules::Section;
 
-Section BuildSection(const Context& ctx, std::string name,
-                     std::vector<Namespace> namespaces) {
+Section BuildSection(const Context& ctx, const std::string& name,
+                     std::vector<Namespace>&& namespaces,
+                     const std::vector<std::string>& visible_apexes) {
+  // add additional visible APEX namespaces
+  for (const auto& apex : ctx.GetApexModules()) {
+    if (std::find(visible_apexes.begin(), visible_apexes.end(), apex.name) !=
+        visible_apexes.end()) {
+      auto ns = ctx.BuildApexNamespace(apex, true);
+      namespaces.push_back(std::move(ns));
+    }
+  }
+
+  // resolve provide/require constraints
   Section section(std::move(name), std::move(namespaces));
-  if (auto res = section.Resolve(ctx); !res) {
+  if (auto res = section.Resolve(ctx); !res.ok()) {
     LOG(ERROR) << res.error();
   }
+
   AddStandardSystemLinks(ctx, &section);
   return section;
 }

@@ -58,6 +58,7 @@ std::vector<std::string> stub_libraries = {
     "libdl.so",
     "libdl_android.so",
     "libft2.so",
+    "libincident.so",
     "liblog.so",
     "libm.so",
     "libmediametrics.so",
@@ -104,69 +105,56 @@ void LoadPartitionPathVariables(const std::string& root) {
   LoadVariableFromPartitionPath("SYSTEM_EXT", root + "/system_ext");
 }
 
-void LoadLibraryListVariables(const std::string& root) {
-  auto private_library_path_vendor = root +
-                                     "/system/etc/vndkprivate.libraries." +
-                                     GetVendorVndkVersion() + ".txt";
-  auto llndk_library_path_vendor =
-      root + "/system/etc/llndk.libraries." + GetVendorVndkVersion() + ".txt";
-  auto vndksp_library_path_vendor =
-      root + "/system/etc/vndksp.libraries." + GetVendorVndkVersion() + ".txt";
-  auto vndkcore_library_path_vendor = root + "/system/etc/vndkcore.libraries." +
-                                      GetVendorVndkVersion() + ".txt";
-
-  auto private_library_path_product = root +
-                                      "/system/etc/vndkprivate.libraries." +
-                                      GetProductVndkVersion() + ".txt";
-  auto llndk_library_path_product =
-      root + "/system/etc/llndk.libraries." + GetProductVndkVersion() + ".txt";
-  auto vndksp_library_path_product =
-      root + "/system/etc/vndksp.libraries." + GetProductVndkVersion() + ".txt";
-  auto vndkcore_library_path_product = root + "/system/etc/vndkcore.libraries." +
-                                       GetProductVndkVersion() + ".txt";
-
-  auto vndkcorevariant_library_path =
-      root + "/system/etc/vndkcorevariant.libraries.txt";
-  auto sanitizer_library_path = root + "/system/etc/sanitizer.libraries.txt";
-
-  Variables::AddValue("LLNDK_LIBRARIES_VENDOR",
-                      GetPublicLibrariesString(llndk_library_path_vendor,
-                                               private_library_path_vendor));
-
-  Variables::AddValue("PRIVATE_LLNDK_LIBRARIES_VENDOR",
-                      GetPrivateLibrariesString(llndk_library_path_vendor,
-                                                private_library_path_vendor));
-
-  Variables::AddValue("VNDK_SAMEPROCESS_LIBRARIES_VENDOR",
-                      GetPublicLibrariesString(vndksp_library_path_vendor,
-                                               private_library_path_vendor));
-
-  Variables::AddValue("VNDK_CORE_LIBRARIES_VENDOR",
-                      GetPublicLibrariesString(vndkcore_library_path_vendor,
-                                               private_library_path_vendor));
-
-  if (GetProductVndkVersion() != "") {
-    Variables::AddValue("LLNDK_LIBRARIES_PRODUCT",
-                        GetPublicLibrariesString(llndk_library_path_product,
-                                                 private_library_path_product));
-
-    Variables::AddValue("PRIVATE_LLNDK_LIBRARIES_PRODUCT",
-                        GetPrivateLibrariesString(llndk_library_path_product,
-                                                  private_library_path_product));
-
-    Variables::AddValue("VNDK_SAMEPROCESS_LIBRARIES_PRODUCT",
-                        GetPublicLibrariesString(vndksp_library_path_product,
-                                                 private_library_path_product));
-
-    Variables::AddValue("VNDK_CORE_LIBRARIES_PRODUCT",
-                        GetPublicLibrariesString(vndkcore_library_path_product,
-                                                 private_library_path_product));
+void LoadVndkLibraryListVariables(const std::string& root,
+                                  const std::string& vndk_version,
+                                  const std::string& partition) {
+  if (vndk_version == "") {
+    return;
   }
+  const std::string vndk_path = root + "/apex/com.android.vndk.v" + vndk_version;
+  // Skip loading if VNDK APEX is not available
+  if (::access(vndk_path.c_str(), F_OK) != 0) {
+    return;
+  }
+  const std::string llndk_libraries_path =
+      vndk_path + "/etc/llndk.libraries." + vndk_version + ".txt";
+  const std::string vndksp_libraries_path =
+      vndk_path + "/etc/vndksp.libraries." + vndk_version + ".txt";
+  const std::string vndkcore_libraries_path =
+      vndk_path + "/etc/vndkcore.libraries." + vndk_version + ".txt";
+  const std::string vndkprivate_libraries_path =
+      vndk_path + "/etc/vndkprivate.libraries." + vndk_version + ".txt";
 
-  Variables::AddValue("VNDK_USING_CORE_VARIANT_LIBRARIES",
-                      GetPublicLibrariesString(vndkcorevariant_library_path,
-                                               private_library_path_vendor));
+  Variables::AddValue("LLNDK_LIBRARIES_" + partition,
+                      GetPublicLibrariesString(llndk_libraries_path,
+                                               vndkprivate_libraries_path));
 
+  Variables::AddValue("PRIVATE_LLNDK_LIBRARIES_" + partition,
+                      GetPrivateLibrariesString(llndk_libraries_path,
+                                                vndkprivate_libraries_path));
+
+  Variables::AddValue("VNDK_SAMEPROCESS_LIBRARIES_" + partition,
+                      GetPublicLibrariesString(vndksp_libraries_path,
+                                               vndkprivate_libraries_path));
+
+  Variables::AddValue("VNDK_CORE_LIBRARIES_" + partition,
+                      GetPublicLibrariesString(vndkcore_libraries_path,
+                                               vndkprivate_libraries_path));
+
+  if (partition == "VENDOR") {
+    auto vndkcorevariant_library_path =
+        root + "/system/etc/vndkcorevariant.libraries.txt";
+    Variables::AddValue("VNDK_USING_CORE_VARIANT_LIBRARIES",
+                        GetPublicLibrariesString(vndkcorevariant_library_path,
+                                                 vndkprivate_libraries_path));
+  }
+}
+
+void LoadLibraryListVariables(const std::string& root) {
+  LoadVndkLibraryListVariables(root, GetVendorVndkVersion(), "VENDOR");
+  LoadVndkLibraryListVariables(root, GetProductVndkVersion(), "PRODUCT");
+
+  auto sanitizer_library_path = root + "/system/etc/sanitizer.libraries.txt";
   Variables::AddValue("SANITIZER_RUNTIME_LIBRARIES",
                       GetLibrariesString(sanitizer_library_path));
 

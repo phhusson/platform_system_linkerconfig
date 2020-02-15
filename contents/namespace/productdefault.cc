@@ -29,19 +29,21 @@ namespace contents {
 Namespace BuildProductDefaultNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddPermittedPath("/@{PRODUCT:product}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/" + Var("PRODUCT", "product") + "/${LIB}",
+                   AsanPath::WITH_DATA_ASAN);
+  ns.AddPermittedPath("/" + Var("PRODUCT", "product"), AsanPath::WITH_DATA_ASAN);
 
   ns.GetLink(ctx.GetSystemNamespaceName())
-      .AddSharedLib("@{LLNDK_LIBRARIES_PRODUCT}");
-  ns.GetLink("vndk").AddSharedLib({"@{VNDK_SAMEPROCESS_LIBRARIES_PRODUCT}",
-                                   "@{VNDK_CORE_LIBRARIES_PRODUCT}"});
+      .AddSharedLib(Var("LLNDK_LIBRARIES_PRODUCT"));
+  ns.GetLink("vndk").AddSharedLib({Var("VNDK_SAMEPROCESS_LIBRARIES_PRODUCT"),
+                                   Var("VNDK_CORE_LIBRARIES_PRODUCT")});
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
     ns.GetLink("vndk_in_system")
-        .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
+        .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
   }
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
-
+  ns.AddRequires(std::vector{
+      "libneuralnetworks.so",
+  });
   return ns;
 }
 }  // namespace contents

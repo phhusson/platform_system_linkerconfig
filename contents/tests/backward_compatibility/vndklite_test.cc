@@ -16,18 +16,27 @@
 
 #include <gtest/gtest.h>
 
+#include "linkerconfig/apex.h"
 #include "linkerconfig/baseconfig.h"
 #include "linkerconfig/variables.h"
 #include "testbase.h"
 
 using android::linkerconfig::contents::Context;
+using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::AsanPath;
 
-TEST(linkerconfig_vndklite_backward_compatibility, system_section) {
-  MockVariables();
-  MockVnkdLite();
-
+struct linkerconfig_vndklite_backward_compatibility : ::testing::Test {
+  void SetUp() override {
+    MockVariables();
+    MockVnkdLite();
+    ApexInfo vndk_apex;
+    vndk_apex.name = "com.android.vndk.vQ";
+    ctx.AddApexModule(vndk_apex);
+  }
   Context ctx;
+};
+
+TEST_F(linkerconfig_vndklite_backward_compatibility, system_section) {
   auto config = android::linkerconfig::contents::CreateBaseConfiguration(ctx);
 
   auto system_section = config.GetSection("system");
@@ -95,11 +104,7 @@ TEST(linkerconfig_vndklite_backward_compatibility, system_section) {
                                                     AsanPath::WITH_DATA_ASAN));
 }
 
-TEST(linkerconfig_vndklite_backward_compatibility, vendor_section) {
-  MockVariables();
-  MockVnkdLite();
-
-  Context ctx;
+TEST_F(linkerconfig_vndklite_backward_compatibility, vendor_section) {
   auto config = android::linkerconfig::contents::CreateBaseConfiguration(ctx);
 
   auto vendor_section = config.GetSection("vendor");
@@ -122,11 +127,7 @@ TEST(linkerconfig_vndklite_backward_compatibility, vendor_section) {
                                                     AsanPath::WITH_DATA_ASAN));
 }
 
-TEST(linkerconfig_vndklite_backward_compatibility, unrestricted_section) {
-  MockVariables();
-  MockVnkdLite();
-
-  Context ctx;
+TEST_F(linkerconfig_vndklite_backward_compatibility, unrestricted_section) {
   auto config = android::linkerconfig::contents::CreateBaseConfiguration(ctx);
 
   auto unrestricted_section = config.GetSection("unrestricted");

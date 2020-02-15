@@ -44,15 +44,26 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddPermittedPath("/system/vendor/${LIB}", AsanPath::NONE);
 
-  // Once in this namespace, access to libraries in /system/lib is restricted.
-  // Only libs listed here can be used. Order is important here as the
-  // namespaces are tried in this order. rs should be before vndk because both
-  // are capable of loading libRS_internal.so
-  ns.GetLink("rs").AddSharedLib("libRS_internal.so");
-  ns.GetLink(ctx.GetSystemNamespaceName())
-      .AddSharedLib("@{LLNDK_LIBRARIES_VENDOR:}");
-  ns.GetLink("vndk").AddSharedLib("@{VNDK_SAMEPROCESS_LIBRARIES_VENDOR:}");
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  if (ctx.IsApexBinaryConfig()) {
+    ns.GetLink("vndk").AddSharedLib(
+        Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR", ""));
+    ns.GetLink(ctx.GetSystemNamespaceName())
+        .AddSharedLib(Var("LLNDK_LIBRARIES_VENDOR", ""),
+                      // Add a link for libz.so which is llndk on
+                      // devices where VNDK is not enforced.
+                      "libz.so");
+  } else {
+    // Once in this namespace, access to libraries in /system/lib is restricted.
+    // Only libs listed here can be used. Order is important here as the
+    // namespaces are tried in this order. rs should be before vndk because both
+    // are capable of loading libRS_internal.so
+    ns.GetLink("rs").AddSharedLib("libRS_internal.so");
+    ns.GetLink(ctx.GetSystemNamespaceName())
+        .AddSharedLib(Var("LLNDK_LIBRARIES_VENDOR", ""));
+    ns.GetLink("vndk").AddSharedLib(
+        Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR", ""));
+    ns.AddRequires(std::vector{"libneuralnetworks.so"});
+  }
 
   return ns;
 }

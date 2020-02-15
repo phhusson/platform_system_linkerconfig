@@ -33,7 +33,7 @@ namespace android {
 namespace linkerconfig {
 namespace modules {
 void Section::WriteConfig(ConfigWriter& writer) {
-  writer.WriteLine("[%s]", name_.c_str());
+  writer.WriteLine("[" + name_ + "]");
 
   std::sort(namespaces_.begin(),
             namespaces_.end(),
@@ -99,11 +99,13 @@ Result<void> Section::Resolve(const BaseContext& ctx) {
                  it != candidates_providers.end()) {
         // If required library can be provided by a APEX module, create a new
         // namespace with the APEX and add it to this section.
-        Namespace new_ns(it->second);
+        auto new_ns = ctx.BuildApexNamespace(it->second, false);
 
         // Update providing library map from the new namespace
         for (const auto& new_lib : new_ns.GetProvides()) {
-          providers[new_lib] = new_ns.GetName();
+          if (providers.find(new_lib) == providers.end()) {
+            providers[new_lib] = new_ns.GetName();
+          }
         }
         ns.GetLink(new_ns.GetName()).AddSharedLib(lib);
         namespaces_.push_back(std::move(new_ns));

@@ -17,25 +17,32 @@
 
 #include "linkerconfig/variables.h"
 
+inline void MockVndkVariables(std::string partition, std::string vndk_ver) {
+  using android::linkerconfig::modules::Variables;
+
+  Variables::AddValue(partition + "_VNDK_VERSION", vndk_ver);
+  Variables::AddValue("LLNDK_LIBRARIES_" + partition, "llndk_libraries");
+  Variables::AddValue("PRIVATE_LLNDK_LIBRARIES_" + partition,
+                      "private_llndk_libraries");
+  Variables::AddValue("VNDK_SAMEPROCESS_LIBRARIES_" + partition,
+                      "vndk_sameprocess_libraries");
+  Variables::AddValue("VNDK_CORE_LIBRARIES_" + partition, "vndk_core_libraries");
+}
+
 inline void MockVariables(std::string vndk_ver = "Q") {
-  android::linkerconfig::modules::Variables::AddValue("VNDK_VER", vndk_ver);
-  android::linkerconfig::modules::Variables::AddValue("PRODUCT", "product");
-  android::linkerconfig::modules::Variables::AddValue("SYSTEM_EXT",
-                                                      "system_ext");
-  android::linkerconfig::modules::Variables::AddValue("LLNDK_LIBRARIES",
-                                                      "llndk_libraries");
-  android::linkerconfig::modules::Variables::AddValue(
-      "SANITIZER_RUNTIME_LIBRARIES", "sanitizer_runtime_libraries");
-  android::linkerconfig::modules::Variables::AddValue(
-      "PRIVATE_LLNDK_LIBRARIES", "private_llndk_libraries");
-  android::linkerconfig::modules::Variables::AddValue(
-      "VNDK_SAMEPROCESS_LIBRARIES", "vndk_sameprocess_libraries");
-  android::linkerconfig::modules::Variables::AddValue("VNDK_CORE_LIBRARIES",
-                                                      "vndk_core_libraries");
-  android::linkerconfig::modules::Variables::AddValue(
-      "VNDK_USING_CORE_VARIANT_LIBRARIES", "vndk_using_core_variant_libraries");
-  android::linkerconfig::modules::Variables::AddValue("STUB_LIBRARIES",
-                                                      "stub_libraries");
+  using android::linkerconfig::modules::Variables;
+
+  MockVndkVariables("VENDOR", vndk_ver);
+  Variables::AddValue("ro.vndk.version", vndk_ver);
+
+  MockVndkVariables("PRODUCT", vndk_ver);
+  Variables::AddValue("ro.product.vndk.version", vndk_ver);
+
+  Variables::AddValue("VNDK_USING_CORE_VARIANT_LIBRARIES",
+                      "vndk_using_core_variant_libraries");
+  Variables::AddValue("STUB_LIBRARIES", "stub_libraries");
+  Variables::AddValue("SANITIZER_RUNTIME_LIBRARIES",
+                      "sanitizer_runtime_libraries");
 }
 
 inline void MockVnkdLite() {

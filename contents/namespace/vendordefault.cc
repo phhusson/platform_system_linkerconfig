@@ -67,12 +67,14 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   // VNDK-Lite devices require broader access from vendor to system/product partition
   if (is_vndklite) {
     ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}",
+    ns.AddSearchPath("/" + Var("SYSTEM_EXT", "system_ext") + "/${LIB}",
                      AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/" + Var("PRODUCT", "product") + "/${LIB}",
+                     AsanPath::WITH_DATA_ASAN);
     // Put system vndk at the last search order in vndk_lite for GSI
-    ns.AddSearchPath("/apex/com.android.vndk.v@{VENDOR_VNDK_VERSION}/${LIB}",
-                     AsanPath::SAME_PATH);
+    ns.AddSearchPath(
+        "/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") + "/${LIB}",
+        AsanPath::SAME_PATH);
   }
 
   if (ctx.IsDefaultConfig() && GetVendorVndkVersion() == "27") {
@@ -85,19 +87,18 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/system/vendor", AsanPath::NONE);
 
   if (is_vndklite) {
-    ns.GetLink("art").AddSharedLib(kVndkLiteArtLibs);
+    ns.AddRequires(kVndkLiteArtLibs);
   } else {
     ns.GetLink(ctx.GetSystemNamespaceName())
-        .AddSharedLib("@{LLNDK_LIBRARIES_VENDOR}");
-    ns.GetLink("vndk").AddSharedLib({"@{VNDK_SAMEPROCESS_LIBRARIES_VENDOR}",
-                                     "@{VNDK_CORE_LIBRARIES_VENDOR}"});
+        .AddSharedLib(Var("LLNDK_LIBRARIES_VENDOR"));
+    ns.GetLink("vndk").AddSharedLib({Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR"),
+                                     Var("VNDK_CORE_LIBRARIES_VENDOR")});
     if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
       ns.GetLink("vndk_in_system")
-          .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
+          .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
     }
   }
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
-
+  ns.AddRequires(std::vector{"libneuralnetworks.so"});
   return ns;
 }
 }  // namespace contents

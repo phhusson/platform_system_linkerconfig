@@ -22,15 +22,16 @@
 namespace android {
 namespace linkerconfig {
 namespace modules {
+
 class Variables {
  public:
   static std::optional<std::string> GetValue(const std::string& key);
   static void AddValue(const std::string& key, const std::string& value);
-  static std::string ResolveVariables(const std::string& str);
 
  private:
   static std::map<std::string, std::string> variables_;
 };
+
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android

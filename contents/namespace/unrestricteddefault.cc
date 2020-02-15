@@ -51,6 +51,9 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
       "libnetd_resolv.so",
       // nn
       "libneuralnetworks.so",
+      // statsd
+      "libstatspull.so",
+      "libstatssocket.so",
   });
 
   ns.AddProvides(GetSystemStubLibraries());

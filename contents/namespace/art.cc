@@ -19,6 +19,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
@@ -26,16 +27,29 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 
-Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
+Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx,
+                            [[maybe_unused]] const ApexInfo& apex) {
   // Make the namespace visible to allow links to be created at runtime, e.g.
   // through android_link_namespaces in libnativeloader. That is not applicable
   // to the vendor section.
-  Namespace ns("art",
+  Namespace ns(apex.name,
                /*is_isolated=*/true,
                /*is_visible=*/!ctx.IsVendorSection());
 
   ns.AddSearchPath("/apex/com.android.art/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath("/system/${LIB}");
+
+  if (ctx.IsApexBinaryConfig()) {
+    // JVMTI libraries used in ART testing are located under /data; dalvikvm has
+    // to be able to dlopen them.
+    // TODO(b/129534335): Move this to the linker configuration of the Test ART
+    // APEX when it is available.
+    ns.AddPermittedPath("/data");
+
+    // odex files are in /system/framework and /apex/com.android.art/javalib.
+    // dalvikvm has to be able to dlopen the files for CTS.
+    ns.AddPermittedPath("/system/framework");
+  }
 
   // Primary boot image is loaded through dlopen, so pass the primary boot image
   // to the list of paths.
@@ -72,6 +86,7 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
       // not listed in the manifest, but add here to preserve original configuration
       "libneuralnetworks.so",
   });
+
   return ns;
 }
 

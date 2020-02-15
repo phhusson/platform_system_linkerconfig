@@ -27,19 +27,15 @@ namespace modules {
 void Configuration::WriteConfig(ConfigWriter& writer) {
   std::unordered_map<std::string, std::string> resolved_dirs;
 
-  for (auto& dir_to_section : dir_to_section_list_) {
-    auto resolved_dir = Variables::ResolveVariables(dir_to_section.first);
-
-    auto it = resolved_dirs.find(resolved_dir);
-
+  for (const auto& [dir, section] : dir_to_section_list_) {
+    auto it = resolved_dirs.find(dir);
     if (it != resolved_dirs.end()) {
-      LOG(WARNING) << "Binary path " << resolved_dir << " already found from "
-                   << it->second << ". Path from " << dir_to_section.second
+      LOG(WARNING) << "Binary path " << dir << " already found from "
+                   << it->second << ". Path from " << section
                    << " will be ignored.";
     } else {
-      resolved_dirs[resolved_dir] = dir_to_section.second;
-      writer.WriteLine(
-          "dir.%s = %s", dir_to_section.second.c_str(), resolved_dir.c_str());
+      resolved_dirs[dir] = section;
+      writer.WriteLine("dir." + section + " = " + dir);
     }
   }
 

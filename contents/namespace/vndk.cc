@@ -27,7 +27,7 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
-  bool is_system_section = ctx.IsSystemSection();
+  bool is_system_section = ctx.IsSystemSection() || ctx.IsApexBinaryConfig();
   bool is_product_section = ctx.IsProductSection();
   bool is_vndklite = ctx.IsVndkliteConfig();
   // Isolated but visible when used in the [system] section to allow links to be
@@ -41,20 +41,23 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
     // It is linked from vendor HAL. It must use vendor vndk libs.
     ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/apex/com.android.vndk.v@{VENDOR_VNDK_VERSION}/${LIB}",
-                     AsanPath::SAME_PATH);
+    ns.AddSearchPath(
+        "/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") + "/${LIB}",
+        AsanPath::SAME_PATH);
   } else if (is_product_section) {
     ns.AddSearchPath("/product/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/product/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/apex/com.android.vndk.v@{PRODUCT_VNDK_VERSION}/${LIB}",
-                     AsanPath::SAME_PATH);
+    ns.AddSearchPath(
+        "/apex/com.android.vndk.v" + Var("PRODUCT_VNDK_VERSION") + "/${LIB}",
+        AsanPath::SAME_PATH);
   } else {
     ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/odm/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
     ns.AddSearchPath("/vendor/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/apex/com.android.vndk.v@{VENDOR_VNDK_VERSION}/${LIB}",
-                     AsanPath::SAME_PATH);
+    ns.AddSearchPath(
+        "/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") + "/${LIB}",
+        AsanPath::SAME_PATH);
   }
 
   if (is_system_section) {
@@ -69,7 +72,7 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
 
     // This is exceptionally required since android.hidl.memory@1.0-impl.so is here
     ns.AddPermittedPath(
-        "/apex/com.android.vndk.v@{VENDOR_VNDK_VERSION}/${LIB}/hw",
+        "/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") + "/${LIB}/hw",
         AsanPath::SAME_PATH);
   }
 
@@ -78,10 +81,10 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
 
   if (is_product_section) {
     ns.GetLink(ctx.GetSystemNamespaceName())
-        .AddSharedLib({"@{LLNDK_LIBRARIES_PRODUCT}"});
+        .AddSharedLib({Var("LLNDK_LIBRARIES_PRODUCT")});
   } else {
     ns.GetLink(ctx.GetSystemNamespaceName())
-        .AddSharedLib({"@{LLNDK_LIBRARIES_VENDOR}"});
+        .AddSharedLib({Var("LLNDK_LIBRARIES_VENDOR")});
   }
 
   if (!is_vndklite) {
@@ -96,12 +99,12 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx) {
 
       if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
         ns.GetLink("vndk_in_system")
-            .AddSharedLib("@{VNDK_USING_CORE_VARIANT_LIBRARIES}");
+            .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
       }
     }
   }
 
-  ns.GetLink("neuralnetworks").AddSharedLib("libneuralnetworks.so");
+  ns.AddRequires(std::vector{"libneuralnetworks.so"});
 
   return ns;
 }
