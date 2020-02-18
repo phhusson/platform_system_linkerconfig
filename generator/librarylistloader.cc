@@ -29,7 +29,6 @@
 
 using LibraryList = std::set<std::string>;
 
-using android::base::ErrnoErrorf;
 using android::base::Result;
 
 namespace {
