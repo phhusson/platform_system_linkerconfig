@@ -25,7 +25,6 @@
 #include "linkerconfig/configwriter.h"
 #include "modules_testbase.h"
 
-using android::base::Errorf;
 using namespace android::linkerconfig::modules;
 
 constexpr const char* kSectionWithNamespacesExpectedResult =

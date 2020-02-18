@@ -27,7 +27,6 @@
 #include "linkerconfig/log.h"
 #include "linkerconfig/variables.h"
 
-using android::base::ErrnoErrorf;
 using android::base::Result;
 using android::linkerconfig::modules::GetProductVndkVersion;
 using android::linkerconfig::modules::GetVendorVndkVersion;
