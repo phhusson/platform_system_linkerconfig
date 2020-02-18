@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/sectionbuilder.h"
-
 #include "linkerconfig/common.h"
 #include "linkerconfig/context.h"
+#include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
+#include "linkerconfig/sectionbuilder.h"
 
 using android::linkerconfig::contents::SectionType;
 using android::linkerconfig::modules::Namespace;
@@ -36,7 +36,11 @@ Section BuildSystemSection(Context& ctx) {
   if (ctx.IsVndkAvailable()) {
     namespaces.emplace_back(BuildSphalNamespace(ctx));
     namespaces.emplace_back(BuildRsNamespace(ctx));
-    namespaces.emplace_back(BuildVndkNamespace(ctx));
+    namespaces.emplace_back(BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
+    if (android::linkerconfig::modules::IsProductVndkVersionDefined()) {
+      namespaces.emplace_back(
+          BuildVndkNamespace(ctx, VndkUserPartition::Product));
+    }
   }
   return BuildSection(ctx,
                       "system",
