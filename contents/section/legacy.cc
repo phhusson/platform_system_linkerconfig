@@ -33,18 +33,24 @@ Section BuildLegacySection(Context& ctx) {
 
   namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
 
-  return BuildSection(ctx,
-                      "legacy",
-                      std::move(namespaces),
-                      {
-                          "com.android.art",
-                          "com.android.neuralnetworks",
-                          "com.android.runtime",
-                          "com.android.cronet",
-                          "com.android.media",
-                          "com.android.conscrypt",
-                          "com.android.os.statsd",
-                      });
+  std::set<std::string> visible_apexes{
+      "com.android.art",
+      "com.android.neuralnetworks",
+      "com.android.runtime",
+      "com.android.cronet",
+      "com.android.media",
+      "com.android.conscrypt",
+      "com.android.os.statsd",
+  };
+
+  // APEXes with JNI libs should be visible
+  for (const auto& apex : ctx.GetApexModules()) {
+    if (apex.jni_libs.size() > 0) {
+      visible_apexes.insert(apex.name);
+    }
+  }
+
+  return BuildSection(ctx, "legacy", std::move(namespaces), visible_apexes);
 }
 }  // namespace contents
 }  // namespace linkerconfig

@@ -30,11 +30,10 @@ using modules::Section;
 
 Section BuildSection(const Context& ctx, const std::string& name,
                      std::vector<Namespace>&& namespaces,
-                     const std::vector<std::string>& visible_apexes) {
+                     const std::set<std::string>& visible_apexes) {
   // add additional visible APEX namespaces
   for (const auto& apex : ctx.GetApexModules()) {
-    if (std::find(visible_apexes.begin(), visible_apexes.end(), apex.name) !=
-        visible_apexes.end()) {
+    if (visible_apexes.find(apex.name) != visible_apexes.end()) {
       auto ns = ctx.BuildApexNamespace(apex, true);
       namespaces.push_back(std::move(ns));
     }
