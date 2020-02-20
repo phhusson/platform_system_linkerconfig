@@ -25,7 +25,7 @@ using android::linkerconfig::modules::ConfigWriter;
 
 TEST(linkerconfig_configuration_fulltest, baseconfig_test) {
   MockGenericVariables();
-  Context ctx;
+  Context ctx = GenerateContextWithVndk();
   auto base_config = CreateBaseConfiguration(ctx);
   ConfigWriter config_writer;
 
@@ -38,7 +38,7 @@ TEST(linkerconfig_configuration_fulltest,
      baseconfig_vndk_using_core_variant_test) {
   MockGenericVariables();
   MockVndkUsingCoreVariant();
-  Context ctx;
+  Context ctx = GenerateContextWithVndk();
   auto base_config = CreateBaseConfiguration(ctx);
   ConfigWriter config_writer;
 
@@ -50,7 +50,7 @@ TEST(linkerconfig_configuration_fulltest,
 TEST(linkerconfig_configuration_fulltest, baseconfig_vndk_27_test) {
   MockGenericVariables();
   MockVndkVersion("27");
-  Context ctx;
+  Context ctx = GenerateContextWithVndk();
   auto base_config = CreateBaseConfiguration(ctx);
   ConfigWriter config_writer;
 
@@ -62,7 +62,7 @@ TEST(linkerconfig_configuration_fulltest, baseconfig_vndk_27_test) {
 TEST(linkerconfig_configuration_fulltest, vndklite_test) {
   MockGenericVariables();
   MockVnkdLite();
-  Context ctx;
+  Context ctx = GenerateContextWithVndk();
   auto vndklite_config = CreateBaseConfiguration(ctx);
   ConfigWriter config_writer;
 
