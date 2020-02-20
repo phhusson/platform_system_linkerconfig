@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <android-base/result.h>
-#include <getopt.h>
 
+#include <climits>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -23,8 +23,11 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <getopt.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include <android-base/result.h>
 
 #include "linkerconfig/apex.h"
 #include "linkerconfig/apexconfig.h"
@@ -81,6 +84,14 @@ struct ProgramArgs {
   exit(status);
 }
 
+std::string RealPath(std::string_view path) {
+  char resolved_path[PATH_MAX];
+  if (realpath(path.data(), resolved_path) != nullptr) {
+    return resolved_path;
+  }
+  PrintUsage(-1);
+}
+
 bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
   int parse_result;
   while ((parse_result = getopt_long(
@@ -93,7 +104,7 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
         args->strict = true;
         break;
       case 'r':
-        args->root = optarg;
+        args->root = RealPath(optarg);
         break;
       case 'v':
         args->vndk_version = optarg;
@@ -170,8 +181,7 @@ Result<void> UpdatePermission([[maybe_unused]] const std::string& file_path) {
 }
 
 Context GetContext(ProgramArgs args) {
-  const std::string apex_root = args.root + "/apex";
-  auto apex_list = android::linkerconfig::modules::ScanActiveApexes(apex_root);
+  auto apex_list = android::linkerconfig::modules::ScanActiveApexes(args.root);
   Context ctx;
   for (auto const& apex_item : apex_list) {
     auto apex_info = apex_item.second;
