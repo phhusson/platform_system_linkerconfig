@@ -40,7 +40,7 @@ bool BaseContext::IsStrictMode() const {
 
 Namespace BaseContext::BuildApexNamespace(const ApexInfo& apex_info,
                                           bool visible) const {
-  Namespace ns(apex_info.name,
+  Namespace ns(apex_info.namespace_name,
                /*is_isolated=*/true,
                visible);
   InitializeWithApex(ns, apex_info);
