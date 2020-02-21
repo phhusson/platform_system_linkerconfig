@@ -29,9 +29,9 @@ namespace contents {
 Namespace BuildProductDefaultNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns.AddSearchPath("/" + Var("PRODUCT", "product") + "/${LIB}",
+  ns.AddSearchPath(Var("PRODUCT", "product") + "/${LIB}",
                    AsanPath::WITH_DATA_ASAN);
-  ns.AddPermittedPath("/" + Var("PRODUCT", "product"), AsanPath::WITH_DATA_ASAN);
+  ns.AddPermittedPath(Var("PRODUCT", "product"), AsanPath::WITH_DATA_ASAN);
 
   ns.GetLink(ctx.GetSystemNamespaceName())
       .AddSharedLib(Var("LLNDK_LIBRARIES_PRODUCT"));
