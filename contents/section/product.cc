@@ -35,7 +35,7 @@ Section BuildProductSection(Context& ctx) {
   std::vector<Namespace> namespaces;
 
   namespaces.emplace_back(BuildProductDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildVndkNamespace(ctx));
+  namespaces.emplace_back(BuildVndkNamespace(ctx, VndkUserPartition::Product));
   namespaces.emplace_back(BuildSystemNamespace(ctx));
 
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
