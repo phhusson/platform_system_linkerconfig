@@ -41,7 +41,7 @@ Section BuildVendorSection(Context& ctx) {
   // section. Instead they (except libraries from APEX) will be loaded from
   // default namespace, so VNDK libraries can access private platform libraries.
   if (!is_vndklite) {
-    namespaces.emplace_back(BuildVndkNamespace(ctx));
+    namespaces.emplace_back(BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
     namespaces.emplace_back(BuildSystemNamespace(ctx));
   }
 

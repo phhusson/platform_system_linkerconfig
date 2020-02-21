@@ -23,12 +23,16 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 
+enum class VndkUserPartition {
+  Vendor,
+  Product,
+};
+
 typedef modules::Namespace NamespaceBuilder(const Context& ctx);
 
 NamespaceBuilder BuildSystemDefaultNamespace;
 NamespaceBuilder BuildSphalNamespace;
 NamespaceBuilder BuildRsNamespace;
-NamespaceBuilder BuildVndkNamespace;
 NamespaceBuilder BuildVendorDefaultNamespace;
 NamespaceBuilder BuildSystemNamespace;
 NamespaceBuilder BuildVndkInSystemNamespace;
@@ -36,6 +40,9 @@ NamespaceBuilder BuildProductDefaultNamespace;
 NamespaceBuilder BuildUnrestrictedDefaultNamespace;
 NamespaceBuilder BuildPostInstallNamespace;
 NamespaceBuilder BuildRecoveryDefaultNamespace;
+
+modules::Namespace BuildVndkNamespace(const Context& ctx,
+                                      VndkUserPartition vndk_user);
 
 modules::Namespace BuildArtNamespace(const Context& ctx,
                                      const modules::ApexInfo& apex_info);

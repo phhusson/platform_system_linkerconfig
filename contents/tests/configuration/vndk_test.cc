@@ -50,7 +50,7 @@ std::string Search(const Namespace& ns, std::string_view soname, fsmap fs) {
 TEST(vndk_namespace, vndk_ext) {
   Context vendor_context;
   vendor_context.SetCurrentSection(SectionType::Vendor);
-  auto vndk_ns = BuildVndkNamespace(vendor_context);
+  auto vndk_ns = BuildVndkNamespace(vendor_context, VndkUserPartition::Vendor);
 
   auto libvndk = "libvndk.so";
   auto libvndksp = "libvndksp.so";
