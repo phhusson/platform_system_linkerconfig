@@ -48,7 +48,7 @@ struct ApexInfo {
   }
 };
 
-std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& apex_root);
+std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root);
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android

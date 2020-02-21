@@ -38,6 +38,9 @@ inline void MockVariables(std::string vndk_ver = "Q") {
   MockVndkVariables("PRODUCT", vndk_ver);
   Variables::AddValue("ro.product.vndk.version", vndk_ver);
 
+  Variables::AddValue("SYSTEM_EXT", "/system_ext");
+  Variables::AddValue("PRODUCT", "/procut");
+
   Variables::AddValue("VNDK_USING_CORE_VARIANT_LIBRARIES",
                       "vndk_using_core_variant_libraries");
   Variables::AddValue("STUB_LIBRARIES", "stub_libraries");
