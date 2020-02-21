@@ -19,22 +19,28 @@
 
 #include <apexutil.h>
 
+#include "linkerconfig/stringutil.h"
+
 namespace {
+
 bool DirExists(const std::string& path) {
   return access(path.c_str(), F_OK) == 0;
 }
+
 }  // namespace
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
-std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& apex_root) {
+
+std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
   std::map<std::string, ApexInfo> apexes;
+  const auto apex_root = root + apex::kApexRoot;
   for (const auto& [path, manifest] : apex::GetActivePackages(apex_root)) {
     bool has_bin = DirExists(path + "/bin");
     bool has_lib = DirExists(path + "/lib") || DirExists(path + "/lib64");
     ApexInfo info(manifest.name(),
-                  path,
+                  TrimPrefix(path, root),
                   {manifest.providenativelibs().begin(),
                    manifest.providenativelibs().end()},
                   {manifest.requirenativelibs().begin(),
@@ -45,6 +51,7 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& apex_root) {
   }
   return apexes;
 }
+
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android

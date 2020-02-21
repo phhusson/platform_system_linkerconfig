@@ -67,10 +67,8 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   // VNDK-Lite devices require broader access from vendor to system/product partition
   if (is_vndklite) {
     ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/" + Var("SYSTEM_EXT", "system_ext") + "/${LIB}",
-                     AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/" + Var("PRODUCT", "product") + "/${LIB}",
-                     AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
     // Put system vndk at the last search order in vndk_lite for GSI
     ns.AddSearchPath(
         "/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") + "/${LIB}",

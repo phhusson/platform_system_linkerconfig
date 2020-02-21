@@ -42,11 +42,9 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
 
   // The search paths here should be kept the same as that of the 'system' namespace.
   ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/" + Var("SYSTEM_EXT", "system_ext") + "/${LIB}",
-                   AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
   if (!IsProductVndkVersionDefined()) {
-    ns.AddSearchPath("/" + Var("PRODUCT", "product") + "/${LIB}",
-                     AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
   }
 
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
