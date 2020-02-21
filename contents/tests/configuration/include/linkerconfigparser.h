@@ -35,8 +35,8 @@ inline void ParseDirPath(const std::string& line, Configuration& conf) {
   static std::regex dir_regex(kDirRegex);
   std::smatch match;
 
-  ASSERT_TRUE(std::regex_match(line, match, dir_regex));
-  ASSERT_EQ(3u, match.size());
+  ASSERT_TRUE(std::regex_match(line, match, dir_regex)) << line;
+  ASSERT_EQ(3u, match.size()) << line;
   std::string section_name = match[1];
   std::string dir_path = match[2];
 
@@ -55,7 +55,8 @@ inline void ParseAdditionalNamespaces(const std::smatch& match,
   std::stringstream namespaces(match[1]);
   for (std::string namespace_name;
        std::getline(namespaces, namespace_name, ',');) {
-    EXPECT_FALSE(MapContainsKey(current_section.namespaces, namespace_name));
+    EXPECT_FALSE(MapContainsKey(current_section.namespaces, namespace_name))
+        << "Namespace " << namespace_name << " already exists";
     Namespace new_namespace;
     new_namespace.name = namespace_name;
     current_section.namespaces[namespace_name] = new_namespace;
@@ -80,7 +81,7 @@ inline void ParseNamespacePath(const std::vector<std::string>& property_descs,
     target_path = &current_namespace.asan_permitted_path;
   }
 
-  ASSERT_NE(nullptr, target_path);
+  ASSERT_NE(nullptr, target_path) << line;
   EXPECT_EQ(is_additional, target_path->size() != 0)
       << "Path should be marked as = if and only if it is mentioned first : "
       << line;
@@ -114,9 +115,10 @@ inline void ParseLink(const std::vector<std::string>& property_descs,
                       const std::string& line) {
   // namespace.from.link.to.shared_libs = a.so
   // namespace.from.link.to.allow_all_shared_libs = true
-  ASSERT_EQ(3u, property_descs.size());
+  ASSERT_EQ(3u, property_descs.size()) << line;
   ASSERT_TRUE(property_descs[2] == "shared_libs" ||
-              property_descs[2] == "allow_all_shared_libs");
+              property_descs[2] == "allow_all_shared_libs")
+      << line;
   std::string namespace_to = property_descs[1];
 
   ASSERT_TRUE(MapContainsKey(current_section.namespaces, namespace_to))
@@ -132,7 +134,7 @@ inline void ParseLink(const std::vector<std::string>& property_descs,
 
     current_namespace.links[namespace_to].shared_libs.push_back(value);
   } else {
-    EXPECT_EQ("true", value);
+    EXPECT_EQ("true", value) << line;
     current_namespace.links[namespace_to].allow_all_shared = true;
   }
 }
@@ -161,13 +163,13 @@ inline void ParseNamespaceCommand(const std::string& namespace_name,
 
   if (property_descs[0].compare("isolated") == 0) {
     // namespace.test.isolated = true
-    EXPECT_EQ(1u, property_descs.size());
-    EXPECT_TRUE(value == "true" || value == "false");
+    EXPECT_EQ(1u, property_descs.size()) << line;
+    EXPECT_TRUE(value == "true" || value == "false") << line;
     current_namespace.is_isolated = value == "true";
   } else if (property_descs[0].compare("visible") == 0) {
     // namespace.test.visible = true
-    EXPECT_EQ(1u, property_descs.size());
-    EXPECT_TRUE(value == "true" || value == "false");
+    EXPECT_EQ(1u, property_descs.size()) << line;
+    EXPECT_TRUE(value == "true" || value == "false") << line;
     current_namespace.is_visible = value == "true";
   } else if (property_descs[property_descs.size() - 1] == "paths") {
     // namespace.test.search.path += /system/lib
@@ -186,7 +188,7 @@ inline void ParseNamespaceCommand(const std::string& namespace_name,
               current_section,
               line);
   } else if (property_descs[0] == "whitelisted") {
-    EXPECT_EQ(1u, property_descs.size());
+    EXPECT_EQ(1u, property_descs.size()) << line;
     current_namespace.whitelisted.push_back(value);
   } else {
     EXPECT_TRUE(false) << "Failed to parse line : " << line;
@@ -214,9 +216,9 @@ inline void ParseConfiguration(const std::string& configuration_str,
 
     if (std::regex_match(line, match, section_name_regex)) {
       // [section_name]
-      ASSERT_EQ(2u, match.size());
+      ASSERT_EQ(2u, match.size()) << line;
       std::string section_name = match[1];
-      ASSERT_TRUE(MapContainsKey(conf.sections, section_name));
+      ASSERT_TRUE(MapContainsKey(conf.sections, section_name)) << line;
       current_section = &conf.sections[section_name];
 
       continue;
@@ -228,8 +230,8 @@ inline void ParseConfiguration(const std::string& configuration_str,
       if (std::regex_match(line, match, additional_namespaces_regex)) {
         ParseAdditionalNamespaces(match, *current_section);
       } else {
-        EXPECT_TRUE(std::regex_match(line, match, namespace_base_regex));
-        ASSERT_EQ(5u, match.size());
+        EXPECT_TRUE(std::regex_match(line, match, namespace_base_regex)) << line;
+        ASSERT_EQ(5u, match.size()) << line;
         std::string namespace_name = match[1];
         std::string property_desc = match[2];
         bool is_additional_property = match[3] == "+=";
