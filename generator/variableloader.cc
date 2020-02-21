@@ -25,11 +25,13 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/librarylistloader.h"
 #include "linkerconfig/log.h"
+#include "linkerconfig/stringutil.h"
 #include "linkerconfig/variables.h"
 
 using android::base::Result;
 using android::linkerconfig::modules::GetProductVndkVersion;
 using android::linkerconfig::modules::GetVendorVndkVersion;
+using android::linkerconfig::modules::TrimPrefix;
 using android::linkerconfig::modules::Variables;
 
 namespace {
@@ -78,30 +80,29 @@ void LoadVndkVersionVariable() {
 Result<std::string> GetRealPath(std::string target_path) {
   char resolved_path[PATH_MAX];
   if (realpath(target_path.c_str(), resolved_path) != nullptr) {
-    int start_index = 0;
-    if (resolved_path[0] == '/') {
-      start_index = 1;
-    }
-    return &resolved_path[start_index];
+    return resolved_path;
   }
 
   return ErrnoErrorf("Failed to get realpath from {}", target_path);
 }
 
-void LoadVariableFromPartitionPath(std::string variable_name, std::string path) {
-  auto real_path = GetRealPath(path);
+void LoadVariableFromPartitionPath(const std::string& root,
+                                   std::string variable_name,
+                                   std::string partition) {
+  auto real_path = GetRealPath(root + partition);
 
   if (real_path.ok()) {
-    Variables::AddValue(variable_name, *real_path);
+    Variables::AddValue(variable_name, TrimPrefix(*real_path, root));
   } else {
     LOG(WARNING) << real_path.error();
+    Variables::AddValue(variable_name, partition);
   }
 }
 
 void LoadPartitionPathVariables(const std::string& root) {
   // TODO(b/141714913): generalize path handling
-  LoadVariableFromPartitionPath("PRODUCT", root + "/product");
-  LoadVariableFromPartitionPath("SYSTEM_EXT", root + "/system_ext");
+  LoadVariableFromPartitionPath(root, "PRODUCT", "/product");
+  LoadVariableFromPartitionPath(root, "SYSTEM_EXT", "/system_ext");
 }
 
 void LoadVndkLibraryListVariables(const std::string& root,

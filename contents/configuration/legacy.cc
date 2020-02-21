@@ -35,8 +35,8 @@ android::linkerconfig::modules::Configuration CreateLegacyConfiguration(
   const std::vector<DirToSection> kDirToSection = {
       // All binaries gets the same configuration 'legacy'
       {"/system", "legacy"},
-      {"/" + Var("SYSTEM_EXT", "system_ext"), "legacy"},
-      {"/" + Var("PRODUCT", "product"), "legacy"},
+      {Var("SYSTEM_EXT"), "legacy"},
+      {Var("PRODUCT"), "legacy"},
       {"/vendor", "legacy"},
       {"/odm", "legacy"},
       {"/sbin", "legacy"},

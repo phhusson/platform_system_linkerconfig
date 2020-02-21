@@ -21,12 +21,14 @@
 
 #include "linkerconfig/apex.h"
 
+#include <iostream>
+
 struct ApexTest : ::testing::Test {
   TemporaryDir tmp_dir;
-  std::string apex_root;
+  std::string root;
 
   void SetUp() override {
-    apex_root = tmp_dir.path + std::string("/");
+    root = tmp_dir.path;
   }
 
   android::linkerconfig::modules::ApexInfo PrepareApex(
@@ -40,10 +42,11 @@ struct ApexTest : ::testing::Test {
     for (auto lib : required_libs) {
       manifest.add_requirenativelibs(lib);
     }
-    WriteFile(apex_name + "/apex_manifest.pb", manifest.SerializeAsString());
+    const auto apex_path = "/apex/" + apex_name;
+    WriteFile(apex_path + "/apex_manifest.pb", manifest.SerializeAsString());
     return android::linkerconfig::modules::ApexInfo(
         manifest.name(),
-        tmp_dir.path,
+        apex_path,
         {manifest.providenativelibs().begin(),
          manifest.providenativelibs().end()},
         {manifest.requirenativelibs().begin(),
@@ -55,13 +58,15 @@ struct ApexTest : ::testing::Test {
   void Mkdir(std::string dir_path) {
     if (access(dir_path.c_str(), F_OK) == 0) return;
     Mkdir(android::base::Dirname(dir_path));
+    std::cout << "mkdir(" + dir_path + ")\n";
     ASSERT_NE(-1, mkdir(dir_path.c_str(), 0755) == -1)
         << "Failed to create a directory: " << dir_path;
   }
 
   void WriteFile(std::string file, std::string content) {
-    std::string file_path = apex_root + file;
+    std::string file_path = root + file;
     Mkdir(::android::base::Dirname(file_path));
+    std::cout << "writeFile(" + file_path + ")\n";
     ASSERT_TRUE(::android::base::WriteStringToFile(content, file_path))
         << "Failed to write a file: " << file_path;
   }
