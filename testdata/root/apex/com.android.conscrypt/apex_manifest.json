@@ -1,0 +1,12 @@
+{
+  "name": "com.android.conscrypt",
+  "version": 299900000,
+  "provideNativeLibs": [],
+  "requireNativeLibs": [
+    "libandroidio.so",
+    "libc.so",
+    "libdl.so",
+    "liblog.so",
+    "libm.so"
+  ]
+}
