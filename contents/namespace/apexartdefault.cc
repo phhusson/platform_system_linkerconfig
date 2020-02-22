@@ -28,7 +28,7 @@ Namespace BuildApexArtDefaultNamespace([[maybe_unused]] const Context& ctx) {
   // The default namespace here only links to other namespaces, in particular
   // "art" where the real library loading takes place. Any outgoing links from
   // "art" also need to be present here.
-  ns.GetLink("com.android.art").AllowAllSharedLibs();
+  ns.GetLink("com_android_art").AllowAllSharedLibs();
   ns.GetLink("system").AllowAllSharedLibs();
   ns.AddRequires(std::vector{"libadbconnection_client.so"});
 

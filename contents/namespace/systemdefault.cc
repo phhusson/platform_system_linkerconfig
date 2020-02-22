@@ -31,8 +31,8 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
   bool is_fully_treblelized = ctx.IsDefaultConfig();
-  std::string product = Var("PRODUCT", "product");
-  std::string system_ext = Var("SYSTEM_EXT", "system_ext");
+  std::string product = Var("PRODUCT");
+  std::string system_ext = Var("SYSTEM_EXT");
 
   // Visible to allow links to be created at runtime, e.g. through
   // android_link_namespaces in libnativeloader.
@@ -41,11 +41,11 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
                /*is_visible=*/true);
 
   ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/" + system_ext + "/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath(system_ext + "/${LIB}", AsanPath::WITH_DATA_ASAN);
   if (!IsProductVndkVersionDefined() || !is_fully_treblelized) {
     // System processes can search product libs only if product VNDK is not
     // enforced.
-    ns.AddSearchPath("/" + product + "/${LIB}", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath(product + "/${LIB}", AsanPath::WITH_DATA_ASAN);
   }
   if (!is_fully_treblelized) {
     ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
@@ -64,7 +64,7 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
         "/system/${LIB}/drm",
         "/system/${LIB}/extractors",
         "/system/${LIB}/hw",
-        "/" + system_ext + "/${LIB}",
+        system_ext + "/${LIB}",
 
         // These are where odex files are located. libart has to be able to
         // dlopen the files
@@ -72,9 +72,9 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
 
         "/system/app",
         "/system/priv-app",
-        "/" + system_ext + "/framework",
-        "/" + system_ext + "/app",
-        "/" + system_ext + "/priv-app",
+        system_ext + "/framework",
+        system_ext + "/app",
+        system_ext + "/priv-app",
         "/vendor/framework",
         "/vendor/app",
         "/vendor/priv-app",
@@ -85,9 +85,9 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
         "/odm/app",
         "/odm/priv-app",
         "/oem/app",
-        "/" + product + "/framework",
-        "/" + product + "/app",
-        "/" + product + "/priv-app",
+        product + "/framework",
+        product + "/app",
+        product + "/priv-app",
         "/data",
         "/mnt/expand",
         "/apex/com.android.runtime/${LIB}/bionic",
@@ -98,7 +98,7 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
     }
     if (!IsProductVndkVersionDefined()) {
       // System processes can use product libs only if product VNDK is not enforced.
-      ns.AddPermittedPath("/" + product + "/${LIB}", AsanPath::SAME_PATH);
+      ns.AddPermittedPath(product + "/${LIB}", AsanPath::SAME_PATH);
     }
   }
 
@@ -123,6 +123,10 @@ Namespace BuildSystemDefaultNamespace([[maybe_unused]] const Context& ctx) {
       // statsd
       "libstatspull.so",
       "libstatssocket.so",
+      // adbd
+      "libadb_pairing_auth.so",
+      "libadb_pairing_connection.so",
+      "libadb_pairing_server.so",
   });
 
   ns.AddProvides(GetSystemStubLibraries());

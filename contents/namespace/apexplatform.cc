@@ -46,6 +46,10 @@ std::vector<std::string> required_libs = {
     // statsd
     "libstatspull.so",
     "libstatssocket.so",
+    // adbd
+    "libadb_pairing_auth.so",
+    "libadb_pairing_connection.so",
+    "libadb_pairing_server.so",
 };
 }  // namespace
 
