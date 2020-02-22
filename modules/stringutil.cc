@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "linkerconfig/stringutil.h"
 
-#include "linkerconfig/namespacebuilder.h"
-
-using android::linkerconfig::modules::AsanPath;
-using android::linkerconfig::modules::Namespace;
+#include <android-base/strings.h>
 
 namespace android {
 namespace linkerconfig {
-namespace contents {
-Namespace BuildPostInstallNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("default", /*is_isolated=*/false,
-               /*is_visible=*/false);
-  ns.AddSearchPath("/system/${LIB}", AsanPath::NONE);
-  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}", AsanPath::NONE);
-  ns.AddSearchPath(Var("PRODUCT") + "/${LIB}", AsanPath::NONE);
-
-  return ns;
+namespace modules {
+std::string TrimPrefix(const std::string& s, const std::string& prefix) {
+  if (android::base::StartsWith(s, prefix)) {
+    return s.substr(prefix.size());
+  }
+  return s;
 }
-}  // namespace contents
+}  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android

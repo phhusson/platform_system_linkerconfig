@@ -96,11 +96,11 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
 
 TEST_F(ApexTest, scan_apex_dir) {
   PrepareApex("foo", {}, {"bar.so"});
-  WriteFile("foo/bin/foo", "");
+  WriteFile("/apex/foo/bin/foo", "");
   PrepareApex("bar", {"bar.so"}, {});
-  WriteFile("bar/lib64/bar.so", "");
+  WriteFile("/apex/bar/lib64/bar.so", "");
 
-  auto apexes = ScanActiveApexes(apex_root);
+  auto apexes = ScanActiveApexes(root);
   ASSERT_EQ(2U, apexes.size());
 
   ASSERT_THAT(apexes["foo"].require_libs, Contains("bar.so"));
