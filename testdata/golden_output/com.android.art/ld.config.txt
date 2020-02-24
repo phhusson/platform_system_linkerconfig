@@ -1,4 +1,4 @@
-dir.com.android.art = /apex/com.android.art.debug/bin
+dir.com.android.art = /apex/com.android.art/bin
 [com.android.art]
 additional.namespaces = com_android_adbd,com_android_art,com_android_conscrypt,com_android_neuralnetworks,system
 namespace.default.isolated = true
