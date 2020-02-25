@@ -2,6 +2,8 @@
   "name": "com.android.art",
   "version": 1,
   "provideNativeLibs": [
+    "libicui18n.so",
+    "libicuuc.so",
     "libandroidicu.so",
     "libandroidio.so",
     "libdexfile_external.so",
@@ -12,6 +14,7 @@
     "libpac.so"
   ],
   "requireNativeLibs": [
+    "libneuralnetworks.so",
     "libadbconnection_client.so",
     "libc.so",
     "libdl.so",
