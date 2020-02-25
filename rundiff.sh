@@ -19,6 +19,8 @@ if [ -z $ANDROID_BUILD_TOP ]; then
   exit 1
 fi
 
+set -e
+
 $ANDROID_BUILD_TOP/build/soong/soong_ui.bash --make-mode linkerconfig conv_apex_manifest
 
 LINKERCONFIG_DIR=$ANDROID_BUILD_TOP/system/linkerconfig
