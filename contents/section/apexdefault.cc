@@ -43,7 +43,10 @@ Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
   // namespace(s)
   if (apex_info.name == "com.android.media.swcodec") {
     namespaces.emplace_back(BuildSphalNamespace(ctx));
-    namespaces.emplace_back(BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
+    if (ctx.IsVndkAvailable()) {
+      namespaces.emplace_back(
+          BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
+    }
   }
 
   return BuildSection(ctx, apex_info.name, std::move(namespaces), {});
