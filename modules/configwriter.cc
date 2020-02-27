@@ -16,9 +16,6 @@
 
 #include "linkerconfig/configwriter.h"
 
-#include <cstdarg>
-#include <cstdio>
-
 #include "linkerconfig/log.h"
 #include "linkerconfig/variables.h"
 
@@ -26,45 +23,17 @@ namespace android {
 namespace linkerconfig {
 namespace modules {
 
-void ConfigWriter::SetPrefix(const std::string& prefix) {
-  prefix_ = prefix;
-}
-
-void ConfigWriter::ResetPrefix() {
-  prefix_ = "";
-}
-
-void ConfigWriter::WriteLine(const char* format, ...) {
-  va_list args_for_length, args;
-
-  va_start(args, format);
-  va_copy(args_for_length, args);
-
-  int length = vsnprintf(nullptr, 0, format, args_for_length);
-  va_end(args_for_length);
-
-  if (length < 0) {
-    LOG(ERROR) << "Failed to get length of the string with format " << format;
-    va_end(args);
-    return;
+void ConfigWriter::WriteVars(const std::string& var,
+                             const std::vector<std::string>& values) {
+  bool is_first = true;
+  for (const auto& value : values) {
+    WriteLine(var + (is_first ? " = " : " += ") + value);
+    is_first = false;
   }
-
-  std::unique_ptr<char[]> formatted_string(new char[length + 1]);
-
-  int res = vsnprintf(formatted_string.get(), length + 1, format, args);
-  va_end(args);
-
-  if (res < 0) {
-    LOG(ERROR) << "Failed to write a string with format " << format;
-    return;
-  }
-
-  WriteLine(std::string(formatted_string.get()));
 }
 
 void ConfigWriter::WriteLine(const std::string& line) {
-  auto resolved_line = Variables::ResolveVariables(prefix_ + line);
-  content_ << resolved_line << std::endl;
+  content_ << line << '\n';
 }
 
 std::string ConfigWriter::ToString() {

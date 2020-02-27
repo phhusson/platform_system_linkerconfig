@@ -32,6 +32,7 @@ Namespace BuildApexDefaultNamespace([[maybe_unused]] const Context& ctx,
 
   ns.AddSearchPath(apex_info.path + "/${LIB}", AsanPath::SAME_PATH);
   ns.AddPermittedPath(apex_info.path + "/${LIB}", AsanPath::SAME_PATH);
+  ns.AddPermittedPath("/system/${LIB}");
 
   ns.AddRequires(apex_info.require_libs);
   ns.AddProvides(apex_info.provide_libs);

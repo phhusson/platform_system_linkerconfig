@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <functional>
+#include <map>
 #include <optional>
 #include <string>
 
@@ -23,6 +25,10 @@
 namespace android {
 namespace linkerconfig {
 namespace contents {
+
+class Context;
+using ApexNamespaceBuilder =
+    std::function<modules::Namespace(const Context&, const modules::ApexInfo&)>;
 
 enum class SectionType {
   System,
@@ -36,6 +42,7 @@ enum class LinkerConfigType {
   Legacy,
   Vndklite,
   Recovery,
+  ApexBinary,
 };
 
 class Context : public modules::BaseContext {
@@ -52,17 +59,32 @@ class Context : public modules::BaseContext {
   bool IsLegacyConfig() const;
   bool IsVndkliteConfig() const;
   bool IsRecoveryConfig() const;
+  bool IsApexBinaryConfig() const;
 
   void SetCurrentSection(SectionType value);
   void SetCurrentLinkerConfigType(LinkerConfigType value);
 
+  // Returns true if vndk apex is available
+  bool IsVndkAvailable() const;
+
   // Returns the namespace that covers /system/${LIB}.
   std::string GetSystemNamespaceName() const;
 
+  modules::Namespace BuildApexNamespace(const modules::ApexInfo& apex_info,
+                                        bool visible) const override;
+  void RegisterApexNamespaceBuilder(const std::string& name,
+                                    ApexNamespaceBuilder builder);
+
  private:
+  std::map<std::string, ApexNamespaceBuilder> builders_;
+
   SectionType current_section_;
   LinkerConfigType current_linkerconfig_type_;
 };
+
+std::string Var(const std::string& name);
+
+std::string Var(const std::string& name, const std::string& default_value);
 
 }  // namespace contents
 }  // namespace linkerconfig

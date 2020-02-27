@@ -26,8 +26,8 @@ Namespace BuildPostInstallNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/false,
                /*is_visible=*/false);
   ns.AddSearchPath("/system/${LIB}", AsanPath::NONE);
-  ns.AddSearchPath("/@{SYSTEM_EXT:system_ext}/${LIB}", AsanPath::NONE);
-  ns.AddSearchPath("/@{PRODUCT:product}/${LIB}", AsanPath::NONE);
+  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}", AsanPath::NONE);
+  ns.AddSearchPath(Var("PRODUCT") + "/${LIB}", AsanPath::NONE);
 
   return ns;
 }

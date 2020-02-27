@@ -91,6 +91,14 @@ cc_binary {
         "main.cc",
     ],
     static_executable: true,
+    required: [
+        // files from /system/etc
+        "sanitizer.libraries.txt",
+        "vndkcorevariant.libraries.txt",
+        // Note that even thought linkerconfig requires at least one version of VNDK APEXes,
+        // we can't list it here because the exact version is unknown at build-time. It is decided
+        // at runtime according to ro.vndk.version (or ro.product.vndk.version)
+    ],
 }
 
 cc_test {

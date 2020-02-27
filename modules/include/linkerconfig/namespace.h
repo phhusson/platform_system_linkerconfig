@@ -22,7 +22,6 @@
 #include "linkerconfig/apex.h"
 #include "linkerconfig/configwriter.h"
 #include "linkerconfig/link.h"
-#include "linkerconfig/log.h"
 
 namespace android {
 namespace linkerconfig {
@@ -48,14 +47,6 @@ class Namespace {
       : is_isolated_(is_isolated),
         is_visible_(is_visible),
         name_(std::move(name)) {
-  }
-
-  explicit Namespace(const ApexInfo& apex_info)
-      : is_isolated_(true), is_visible_(false), name_(apex_info.name) {
-    AddSearchPath(apex_info.path + "/${LIB}");
-    AddPermittedPath("/system/${LIB}");
-    AddProvides(apex_info.provide_libs);
-    AddRequires(apex_info.require_libs);
   }
 
   Namespace(const Namespace& ns) = delete;
@@ -108,6 +99,10 @@ class Namespace {
   void AddWhitelisted(const std::string& path);
 
   std::string GetName() const;
+
+  void SetVisible(bool visible) {
+    is_visible_ = visible;
+  }
 
   // For test usage
   const std::vector<Link>& Links() const {

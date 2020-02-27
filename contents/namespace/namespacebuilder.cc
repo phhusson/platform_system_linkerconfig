@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,14 @@
  * limitations under the License.
  */
 
-// Currently, the runtime namespace is only to isolate
-// libc_malloc_hooks/debug.so in the Runtime APEX. libc/l/d are loaded in the
-// default namespace.
-
 #include "linkerconfig/namespacebuilder.h"
-
-using android::linkerconfig::modules::AsanPath;
-using android::linkerconfig::modules::Namespace;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
 
-Namespace BuildRuntimeNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("runtime",
-               /*is_isolated=*/true,
-               /*is_visible=*/true);
-
-  ns.AddSearchPath("/apex/com.android.runtime/${LIB}", AsanPath::SAME_PATH);
-  ns.AddPermittedPath("/system/${LIB}");
-
-  return ns;
+void RegisterApexNamespaceBuilders(Context& ctx) {
+  ctx.RegisterApexNamespaceBuilder("com.android.art", BuildArtNamespace);
 }
 
 }  // namespace contents

@@ -19,7 +19,6 @@
 namespace android {
 namespace linkerconfig {
 namespace modules {
-
 BaseContext::BaseContext() : strict_(false) {
 }
 
@@ -37,6 +36,15 @@ void BaseContext::SetStrictMode(bool strict) {
 
 bool BaseContext::IsStrictMode() const {
   return strict_;
+}
+
+Namespace BaseContext::BuildApexNamespace(const ApexInfo& apex_info,
+                                          bool visible) const {
+  Namespace ns(apex_info.namespace_name,
+               /*is_isolated=*/true,
+               visible);
+  InitializeWithApex(ns, apex_info);
+  return ns;
 }
 
 }  // namespace modules

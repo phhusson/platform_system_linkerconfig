@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/sectionbuilder.h"
-
 #include "linkerconfig/common.h"
 #include "linkerconfig/context.h"
+#include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
+#include "linkerconfig/sectionbuilder.h"
 
 using android::linkerconfig::contents::SectionType;
 using android::linkerconfig::modules::Namespace;
@@ -33,17 +33,27 @@ Section BuildSystemSection(Context& ctx) {
   std::vector<Namespace> namespaces;
 
   namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildArtNamespace(ctx));
-  namespaces.emplace_back(BuildMediaNamespace(ctx));
-  namespaces.emplace_back(BuildConscryptNamespace(ctx));
-  namespaces.emplace_back(BuildCronetNamespace(ctx));
-  namespaces.emplace_back(BuildSphalNamespace(ctx));
-  namespaces.emplace_back(BuildRsNamespace(ctx));
-  namespaces.emplace_back(BuildVndkNamespace(ctx));
-  namespaces.emplace_back(BuildNeuralNetworksNamespace(ctx));
-  namespaces.emplace_back(BuildRuntimeNamespace(ctx));
-
-  return BuildSection(ctx, "system", std::move(namespaces));
+  if (ctx.IsVndkAvailable()) {
+    namespaces.emplace_back(BuildSphalNamespace(ctx));
+    namespaces.emplace_back(BuildRsNamespace(ctx));
+    namespaces.emplace_back(BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
+    if (android::linkerconfig::modules::IsProductVndkVersionDefined()) {
+      namespaces.emplace_back(
+          BuildVndkNamespace(ctx, VndkUserPartition::Product));
+    }
+  }
+  return BuildSection(ctx,
+                      "system",
+                      std::move(namespaces),
+                      {
+                          "com.android.art",
+                          "com.android.neuralnetworks",
+                          "com.android.runtime",
+                          "com.android.cronet",
+                          "com.android.media",
+                          "com.android.conscrypt",
+                          "com.android.os.statsd",
+                      });
 }
 }  // namespace contents
 }  // namespace linkerconfig

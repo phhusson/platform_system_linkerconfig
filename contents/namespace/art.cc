@@ -19,6 +19,7 @@
 
 #include "linkerconfig/namespacebuilder.h"
 
+using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
@@ -26,16 +27,27 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 
-Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
+Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx,
+                            [[maybe_unused]] const ApexInfo& apex) {
   // Make the namespace visible to allow links to be created at runtime, e.g.
   // through android_link_namespaces in libnativeloader. That is not applicable
   // to the vendor section.
-  Namespace ns("art",
+  Namespace ns(apex.namespace_name,
                /*is_isolated=*/true,
                /*is_visible=*/!ctx.IsVendorSection());
+  InitializeWithApex(ns, apex);
 
-  ns.AddSearchPath("/apex/com.android.art/${LIB}", AsanPath::SAME_PATH);
-  ns.AddPermittedPath("/system/${LIB}");
+  if (ctx.IsApexBinaryConfig()) {
+    // JVMTI libraries used in ART testing are located under /data; dalvikvm has
+    // to be able to dlopen them.
+    // TODO(b/129534335): Move this to the linker configuration of the Test ART
+    // APEX when it is available.
+    ns.AddPermittedPath("/data");
+
+    // odex files are in /system/framework and /apex/com.android.art/javalib.
+    // dalvikvm has to be able to dlopen the files for CTS.
+    ns.AddPermittedPath("/system/framework");
+  }
 
   // Primary boot image is loaded through dlopen, so pass the primary boot image
   // to the list of paths.
@@ -47,31 +59,6 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx) {
   // classloader-namespace for oat files, and tighten this up.
   ns.GetLink(ctx.GetSystemNamespaceName()).AllowAllSharedLibs();
 
-  ns.AddProvides(std::vector{
-      "libandroidicu.so",
-      "libandroidio.so",
-      "libdexfile_external.so",
-      "libdexfiled_external.so",
-      "libnativebridge.so",
-      "libnativehelper.so",
-      "libnativeloader.so",
-      // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
-      "libpac.so",
-      // TODO(b/120786417 or b/134659294): libicuuc.so
-      // and libicui18n.so are kept for app compat.
-      "libicui18n.so",
-      "libicuuc.so",
-  });
-  ns.AddRequires(std::vector{
-      "libadbconnection_client.so",
-      "libc.so",
-      "libdl.so",
-      "libdl_android.so",
-      "liblog.so",
-      "libm.so",
-      // not listed in the manifest, but add here to preserve original configuration
-      "libneuralnetworks.so",
-  });
   return ns;
 }
 

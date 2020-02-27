@@ -64,3 +64,13 @@ inline void MockVndkUsingCoreVariant() {
 inline void MockVnkdLite() {
   android::linkerconfig::modules::Variables::AddValue("ro.vndk.lite", "true");
 }
+
+inline android::linkerconfig::contents::Context GenerateContextWithVndk() {
+  android::linkerconfig::modules::ApexInfo vndk_apex;
+  vndk_apex.name = "com.android.vndk.v99";
+
+  android::linkerconfig::contents::Context ctx;
+  ctx.AddApexModule(vndk_apex);
+
+  return ctx;
+}
