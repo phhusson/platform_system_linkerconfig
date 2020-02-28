@@ -20,7 +20,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "apex_testbase.h"
+#include "linkerconfig/apex.h"
 #include "linkerconfig/basecontext.h"
 #include "linkerconfig/configwriter.h"
 #include "modules_testbase.h"
@@ -210,11 +210,11 @@ TEST(linkerconfig_section, ignore_unmet_requirements) {
       writer.ToString());
 }
 
-TEST_F(ApexTest, resolve_section_with_apex) {
+TEST(linkerconfig_section, resolve_section_with_apex) {
   BaseContext ctx;
-  ctx.AddApexModule(PrepareApex("foo", {"a.so"}, {"b.so"}));
-  ctx.AddApexModule(PrepareApex("bar", {"b.so"}, {}));
-  ctx.AddApexModule(PrepareApex("baz", {"c.so"}, {"a.so"}));
+  ctx.AddApexModule(ApexInfo("foo", "", {"a.so"}, {"b.so"}, {}, true, true));
+  ctx.AddApexModule(ApexInfo("bar", "", {"b.so"}, {}, {}, true, true));
+  ctx.AddApexModule(ApexInfo("baz", "", {"c.so"}, {"a.so"}, {}, true, true));
 
   std::vector<Namespace> namespaces;
   Namespace& default_ns = namespaces.emplace_back("default");
