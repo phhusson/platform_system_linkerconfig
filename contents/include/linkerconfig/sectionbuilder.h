@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -34,7 +35,7 @@ namespace linkerconfig {
 namespace contents {
 modules::Section BuildSection(const Context& ctx, const std::string& name,
                               std::vector<modules::Namespace>&& namespaces,
-                              const std::vector<std::string>& visible_apexes);
+                              const std::set<std::string>& visible_apexes);
 SectionBuilder BuildSystemSection;
 SectionBuilder BuildVendorSection;
 SectionBuilder BuildProductSection;
