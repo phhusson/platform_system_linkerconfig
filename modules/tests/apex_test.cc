@@ -45,8 +45,9 @@ TEST(apex_namespace, build_namespace) {
   InitializeWithApex(ns,
                      ApexInfo("com.android.foo",
                               "/apex/com.android.foo",
-                              {},
-                              {},
+                              /*provide_libs=*/{},
+                              /*require_libs=*/{},
+                              /*jni_libs=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true));
 
@@ -69,15 +70,17 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
   InitializeWithApex(foo,
                      ApexInfo("com.android.foo",
                               "/apex/com.android.foo",
-                              {"foo.so"},
-                              {"bar.so"},
+                              /*provide_libs=*/{"foo.so"},
+                              /*require_libs=*/{"bar.so"},
+                              /*jni_libs=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true));
   InitializeWithApex(bar,
                      ApexInfo("com.android.bar",
                               "/apex/com.android.bar",
-                              {"bar.so"},
-                              {},
+                              /*provide_libs=*/{"bar.so"},
+                              /*require_libs=*/{},
+                              /*jni_libs=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true));
 
@@ -95,13 +98,15 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
 }
 
 TEST_F(ApexTest, scan_apex_dir) {
-  PrepareApex("foo", {}, {"bar.so"});
+  PrepareApex("foo", {}, {"bar.so"}, {});
   WriteFile("/apex/foo/bin/foo", "");
-  PrepareApex("bar", {"bar.so"}, {});
+  PrepareApex("bar", {"bar.so"}, {}, {});
   WriteFile("/apex/bar/lib64/bar.so", "");
+  PrepareApex("baz", {}, {}, {"baz.so"});
+  WriteFile("/apex/baz/lib64/baz.so", "");
 
   auto apexes = ScanActiveApexes(root);
-  ASSERT_EQ(2U, apexes.size());
+  ASSERT_EQ(3U, apexes.size());
 
   ASSERT_THAT(apexes["foo"].require_libs, Contains("bar.so"));
   ASSERT_TRUE(apexes["foo"].has_bin);
@@ -110,4 +115,8 @@ TEST_F(ApexTest, scan_apex_dir) {
   ASSERT_THAT(apexes["bar"].provide_libs, Contains("bar.so"));
   ASSERT_FALSE(apexes["bar"].has_bin);
   ASSERT_TRUE(apexes["bar"].has_lib);
+
+  ASSERT_THAT(apexes["baz"].jni_libs, Contains("baz.so"));
+  ASSERT_FALSE(apexes["baz"].has_bin);
+  ASSERT_TRUE(apexes["baz"].has_lib);
 }
