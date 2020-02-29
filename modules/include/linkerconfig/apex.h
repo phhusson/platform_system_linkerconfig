@@ -29,17 +29,20 @@ struct ApexInfo {
   std::string path;
   std::vector<std::string> provide_libs;
   std::vector<std::string> require_libs;
+  std::vector<std::string> jni_libs;
   bool has_bin;
   bool has_lib;
 
   ApexInfo() = default;  // for std::map::operator[]
   ApexInfo(std::string name, std::string path,
            std::vector<std::string> provide_libs,
-           std::vector<std::string> require_libs, bool has_bin, bool has_lib)
+           std::vector<std::string> require_libs,
+           std::vector<std::string> jni_libs, bool has_bin, bool has_lib)
       : name(std::move(name)),
         path(std::move(path)),
         provide_libs(std::move(provide_libs)),
         require_libs(std::move(require_libs)),
+        jni_libs(std::move(jni_libs)),
         has_bin(has_bin),
         has_lib(has_lib) {
     this->namespace_name = this->name;

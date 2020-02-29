@@ -45,6 +45,7 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
                    manifest.providenativelibs().end()},
                   {manifest.requirenativelibs().begin(),
                    manifest.requirenativelibs().end()},
+                  {manifest.jnilibs().begin(), manifest.jnilibs().end()},
                   has_bin,
                   has_lib);
     apexes.emplace(manifest.name(), std::move(info));
