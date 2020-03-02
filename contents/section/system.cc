@@ -47,7 +47,6 @@ Section BuildSystemSection(Context& ctx) {
       "com.android.art",
       "com.android.neuralnetworks",
       "com.android.runtime",
-      "com.android.cronet",
       "com.android.media",
       "com.android.conscrypt",
       "com.android.os.statsd",
