@@ -39,17 +39,24 @@ Section BuildUnrestrictedSection(Context& ctx) {
 
   namespaces.emplace_back(BuildUnrestrictedDefaultNamespace(ctx));
 
-  return BuildSection(ctx,
-                      "unrestricted",
-                      std::move(namespaces),
-                      {
-                          "com.android.art",
-                          "com.android.neuralnetworks",
-                          "com.android.runtime",
-                          "com.android.cronet",
-                          "com.android.media",
-                          "com.android.conscrypt",
-                      });
+  std::set<std::string> visible_apexes{
+      "com.android.art",
+      "com.android.neuralnetworks",
+      "com.android.runtime",
+      "com.android.media",
+      "com.android.conscrypt",
+      "com.android.os.statsd",
+  };
+
+  // APEXes with JNI libs should be visible
+  for (const auto& apex : ctx.GetApexModules()) {
+    if (apex.jni_libs.size() > 0) {
+      visible_apexes.insert(apex.name);
+    }
+  }
+
+  return BuildSection(
+      ctx, "unrestricted", std::move(namespaces), visible_apexes);
 }
 }  // namespace contents
 }  // namespace linkerconfig
