@@ -71,6 +71,7 @@ std::vector<std::string> stub_libraries = {
     "libsync.so",
     "libvndksupport.so",
     "libvulkan.so",
+    "libselinux.so",
 };
 
 void LoadVndkVersionVariable() {
