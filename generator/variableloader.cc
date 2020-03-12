@@ -67,7 +67,6 @@ std::vector<std::string> stub_libraries = {
     "libmediandk.so",
     "libnativewindow.so",
     "libneuralnetworks_packageinfo.so",
-    "libstatssocket.so",
     "libsync.so",
     "libvndksupport.so",
     "libvulkan.so",
