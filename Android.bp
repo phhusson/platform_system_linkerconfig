@@ -170,33 +170,3 @@ genrule {
     tools: ["linkerconfig"],
     cmd: "$(location linkerconfig) --recovery --target $(genDir)",
 }
-
-// TODO(b/152115623): workaround to use host tools in continuous testing environment
-genrule {
-    name: "linkerconfig_diff_test_host_tools",
-    out: ["linkerconfig_diff_test_host_tools.zip"],
-    tools: ["conv_apex_manifest", "linkerconfig", "soong_zip"],
-    cmd: "cp $(location conv_apex_manifest) $(genDir) && " +
-         "cp $(location linkerconfig) $(genDir) && " +
-         "$(location soong_zip) -C $(genDir) -D $(genDir) -o $(out)",
-}
-
-sh_test_host {
-    name: "linkerconfig_diff_test",
-    src: "rundiff.sh",
-    // use a different name to distinguish running environment
-    filename: "linkerconfig_diff_test.sh",
-    test_suites: ["general-tests"],
-    test_config: "linkerconfig_diff_test.xml",
-    data: [
-        "testdata/**/*",
-        "testdata/**/.*", // copy .keep files
-        ":linkerconfig_diff_test_host_tools",
-    ],
-    required: ["conv_apex_manifest", "linkerconfig"],
-    target: {
-        windows: {
-            compile_multilib: "32",
-        },
-    },
-}
