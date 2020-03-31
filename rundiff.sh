@@ -14,42 +14,57 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if [ -z $ANDROID_BUILD_TOP ]; then
-  echo "You need to source and lunch before you can use this script"
-  exit 1
-fi
-
 set -e
 
-$ANDROID_BUILD_TOP/build/soong/soong_ui.bash --make-mode linkerconfig conv_apex_manifest
+# to use relative paths
+cd $(dirname $0)
 
-LINKERCONFIG_DIR=$ANDROID_BUILD_TOP/system/linkerconfig
-LINKERCONFIG_BIN=$ANDROID_HOST_OUT/bin/linkerconfig
-CONV_APEX_BIN=$ANDROID_HOST_OUT/bin/conv_apex_manifest
+# when executed directly from commandline, build dependencies
+if [[ $(basename $0) == "rundiff.sh" ]]; then
+  if [ -z $ANDROID_BUILD_TOP ]; then
+    echo "You need to source and lunch before you can use this script"
+    exit 1
+  fi
+  $ANDROID_BUILD_TOP/build/soong/soong_ui.bash --make-mode linkerconfig conv_apex_manifest
+fi
 
-GOLDEN_OUT=$LINKERCONFIG_DIR/testdata/golden_output
-TEST_OUT=$LINKERCONFIG_DIR/testdata/output
 
-echo "Running linkerconfig "
+# $1: target output directory
+function run_linkerconfig_to {
+  # prepare testdata root
+  TMP_ROOT=$(mktemp -d -t linkerconfig-root-XXXXXXXX)
+  cp -R ./testdata/root/* $TMP_ROOT
+  find $TMP_ROOT -name apex_manifest.json -exec sh -c '$2 proto $1 -o ${1%.json}.pb' sh  {} conv_apex_manifest \;
+  find $TMP_ROOT -name apex_manifest.json -exec sh -c 'mkdir `dirname $1`/lib' sh  {}  \;
 
-TMP_ROOT=$(mktemp -d -t linkerconfig-XXXXXXXX)
+  # run linkerconfig
+  rm -rf $1
 
-cp -R $LINKERCONFIG_DIR/testdata/root/* $TMP_ROOT
+  mkdir -p $1
+  linkerconfig -v R -r $TMP_ROOT -t $1
 
-find $TMP_ROOT -name apex_manifest.json -exec sh -c '$2 proto $1 -o ${1%.json}.pb' sh  {} $CONV_APEX_BIN \;
-find $TMP_ROOT -name apex_manifest.json -exec sh -c 'mkdir `dirname $1`/lib' sh  {}  \;
+  # clean up testdata root
+  rm -rf $TMP_ROOT
+}
 
-rm -rf $TEST_OUT
-mkdir -p $TEST_OUT
-$LINKERCONFIG_BIN -v R -r $TMP_ROOT -t $TEST_OUT
-rm -rf $TMP_ROOT
+# update golden_output
+if [[ $1 == "--update" ]]; then
+  run_linkerconfig_to ./testdata/golden_output
+  echo "Updated"
+  exit 0
+fi
 
-if diff -ruN $GOLDEN_OUT $TEST_OUT ; then
-  echo "no changes"
+echo "Running linkerconfig diff test..."
+
+run_linkerconfig_to ./testdata/output
+if diff -ruN ./testdata/golden_output ./testdata/output ; then
+  echo "No changes."
 else
   echo
   echo "------------------------------------------------------------------------------------------"
   echo "if change looks fine, run following:"
-  echo "  rm -iRf $GOLDEN_OUT && cp -R $TEST_OUT $GOLDEN_OUT"
+  echo "  \$ANDROID_BUILD_TOP/system/linkerconfig/rundiff.sh --update"
   echo "------------------------------------------------------------------------------------------"
+  # fail
+  exit 1
 fi
