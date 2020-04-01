@@ -25,6 +25,7 @@
 #include <sstream>
 #include <unordered_map>
 
+#include "linkerconfig/environment.h"
 #include "linkerconfig/log.h"
 
 using LibraryList = std::set<std::string>;
@@ -51,6 +52,17 @@ Result<LibraryList> GetLibrariesFromFile(std::string file_path) {
     library_name = android::base::Trim(library_name);
     if (!library_name.empty()) {
       library_list.insert(library_name);
+    }
+  }
+
+  // TODO (b/122954981) : Remove this part when VNDK Lite is deprecated
+  // In case of VNDK-lite devices, libz should be included in LLNDK rather than
+  // VNDK-SP libraries
+  if (android::linkerconfig::modules::IsVndkLiteDevice()) {
+    if (file_path.find("llndk") != std::string::npos) {
+      library_list.insert("libz.so");
+    } else if (file_path.find("vndksp") != std::string::npos) {
+      library_list.erase("libz.so");
     }
   }
 
