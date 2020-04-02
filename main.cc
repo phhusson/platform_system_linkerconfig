@@ -60,7 +60,6 @@ const static struct option program_options[] = {
     {"vndk_lite", no_argument, 0, 'e'},
     {"product_vndk", required_argument, 0, 'p'},
     {"recovery", no_argument, 0, 'y'},
-    {"legacy", no_argument, 0, 'l'},
 #endif
     {"help", no_argument, 0, 'h'},
     {0, 0, 0, 0}};
@@ -73,7 +72,6 @@ struct ProgramArgs {
   bool vndk_lite;
   std::string product_vndk_version;
   bool is_recovery;
-  bool is_legacy;
 };
 
 [[noreturn]] void PrintUsage(int status = EXIT_SUCCESS) {
@@ -85,7 +83,6 @@ struct ProgramArgs {
                " --vndk_lite"
                " --product_vndk <product vndk version>"
                " --recovery"
-               " --legacy"
 #endif
                " [--help]"
             << std::endl;
@@ -126,9 +123,6 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
       case 'y':
         args->is_recovery = true;
         break;
-      case 'l':
-        args->is_legacy = true;
-        break;
       case 'h':
         PrintUsage();
       default:
@@ -145,7 +139,7 @@ bool ParseArgs(int argc, char* argv[], ProgramArgs* args) {
 
 void LoadVariables(ProgramArgs args) {
 #ifndef __ANDROID__
-  if (!args.is_recovery && (args.root == "" || args.vndk_version == "")) {
+  if (!args.is_recovery && args.root == "") {
     PrintUsage();
   }
   android::linkerconfig::modules::Variables::AddValue("ro.vndk.version",
@@ -156,7 +150,6 @@ void LoadVariables(ProgramArgs args) {
     android::linkerconfig::modules::Variables::AddValue("ro.vndk.lite", "true");
   }
 #endif
-
   if (!args.is_recovery) {
     android::linkerconfig::generator::LoadVariables(args.root);
   }
@@ -258,14 +251,6 @@ Result<void> GenerateRecoveryLinkerConfiguration(Context& ctx,
       false);
 }
 
-Result<void> GenerateLegacyLinkerConfiguration(Context& ctx,
-                                               const std::string& dir_path) {
-  return GenerateConfiguration(
-      android::linkerconfig::contents::CreateLegacyConfiguration(ctx),
-      dir_path,
-      false);
-}
-
 Result<void> GenerateApexConfiguration(
     const std::string& base_dir, android::linkerconfig::contents::Context& ctx,
     const android::linkerconfig::modules::ApexInfo& target_apex) {
@@ -353,8 +338,6 @@ int main(int argc, char* argv[]) {
   if (args.is_recovery) {
     ExitOnFailure(
         GenerateRecoveryLinkerConfiguration(ctx, args.target_directory));
-  } else if (args.is_legacy) {
-    ExitOnFailure(GenerateLegacyLinkerConfiguration(ctx, args.target_directory));
   } else {
     ExitOnFailure(GenerateBaseLinkerConfiguration(ctx, args.target_directory));
     GenerateApexConfigurations(ctx, args.target_directory);
