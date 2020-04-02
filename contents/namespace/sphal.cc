@@ -50,10 +50,10 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
           Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR", ""));
       ns.GetLink(ctx.GetSystemNamespaceName())
           .AddSharedLib(Var("LLNDK_LIBRARIES_VENDOR", ""));
+    } else {
+      // Add a link for libz.so which is llndk on devices where VNDK is not enforced.
+      ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("libz.so");
     }
-
-    // Add a link for libz.so which is llndk on devices where VNDK is not enforced.
-    ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("libz.so");
   } else {
     // Once in this namespace, access to libraries in /system/lib is restricted.
     // Only libs listed here can be used. Order is important here as the
