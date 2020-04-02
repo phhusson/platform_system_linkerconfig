@@ -44,15 +44,19 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddPermittedPath("/system/vendor/${LIB}", AsanPath::NONE);
 
+  if (ctx.IsApexBinaryConfig() && !ctx.IsVndkAvailable()) {
+    // If device is legacy, let Sphal libraries access to system lib path for
+    // VNDK-SP libraries
+    ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
+    ns.AddPermittedPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
+  }
+
   if (ctx.IsApexBinaryConfig()) {
     if (ctx.IsVndkAvailable()) {
       ns.GetLink("vndk").AddSharedLib(
           Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR", ""));
       ns.GetLink(ctx.GetSystemNamespaceName())
           .AddSharedLib(Var("LLNDK_LIBRARIES_VENDOR", ""));
-    } else {
-      // Add a link for libz.so which is llndk on devices where VNDK is not enforced.
-      ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib("libz.so");
     }
   } else {
     // Once in this namespace, access to libraries in /system/lib is restricted.
