@@ -37,6 +37,8 @@ const std::vector<std::string> kVndkLiteArtLibs = {
     // and libicui18n.so are kept for app compat.
     "libicui18n.so",
     "libicuuc.so",
+    // Workaround for b/124772622
+    "libandroidicu.so",
 };
 
 }  // namespace
