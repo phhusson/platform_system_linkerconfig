@@ -50,6 +50,7 @@ bool Context::IsLegacyConfig() const {
   return current_linkerconfig_type_ == LinkerConfigType::Legacy;
 }
 
+// TODO(b/153944540) : Remove VNDK Lite supports
 bool Context::IsVndkliteConfig() const {
   return current_linkerconfig_type_ == LinkerConfigType::Vndklite;
 }
