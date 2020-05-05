@@ -35,7 +35,6 @@ Section BuildLegacySection(Context& ctx) {
 
   std::set<std::string> visible_apexes{
       "com.android.art",
-      "com.android.i18n",
       "com.android.neuralnetworks",
       "com.android.runtime",
       "com.android.media",
