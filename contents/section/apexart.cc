@@ -42,6 +42,7 @@ Section BuildApexArtSection(Context& ctx, const ApexInfo& apex_info) {
                       std::move(namespaces),
                       {
                           "com.android.art",
+                          "com.android.i18n",
                           "com.android.conscrypt",
                           "com.android.neuralnetworks",
                       });
