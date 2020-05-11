@@ -63,7 +63,9 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
     // Only libs listed here can be used. Order is important here as the
     // namespaces are tried in this order. rs should be before vndk because both
     // are capable of loading libRS_internal.so
-    ns.GetLink("rs").AddSharedLib("libRS_internal.so");
+    if (ctx.IsSystemSection()) {
+      ns.GetLink("rs").AddSharedLib("libRS_internal.so");
+    }
     ns.GetLink(ctx.GetSystemNamespaceName())
         .AddSharedLib(Var("LLNDK_LIBRARIES_VENDOR", ""));
     ns.GetLink("vndk").AddSharedLib(
