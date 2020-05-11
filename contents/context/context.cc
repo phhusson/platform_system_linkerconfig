@@ -42,6 +42,10 @@ bool Context::IsProductSection() const {
   return current_section_ == SectionType::Product;
 }
 
+bool Context::IsUnrestrictedSection() const {
+  return current_section_ == SectionType::Unrestricted;
+}
+
 bool Context::IsDefaultConfig() const {
   return current_linkerconfig_type_ == LinkerConfigType::Default;
 }
