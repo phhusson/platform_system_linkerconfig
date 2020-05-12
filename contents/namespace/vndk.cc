@@ -27,25 +27,29 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
                              VndkUserPartition vndk_user) {
-  bool is_system_section = ctx.IsSystemSection() || ctx.IsApexBinaryConfig();
+  bool is_system_or_unrestricted_section = ctx.IsSystemSection() ||
+                                           ctx.IsApexBinaryConfig() ||
+                                           ctx.IsUnrestrictedSection();
   bool is_vndklite = ctx.IsVndkliteConfig();
   // In the system section, we need to have an additional vndk namespace for
   // product apps. We must have a different name "vndk_product" for this
   // namespace. "vndk_product" namespace is used only from the native_loader for
   // product apps.
   const char* name;
-  if (is_system_section && vndk_user == VndkUserPartition::Product) {
+  if (is_system_or_unrestricted_section &&
+      vndk_user == VndkUserPartition::Product) {
     name = "vndk_product";
   } else {
     name = "vndk";
   }
 
-  // Isolated but visible when used in the [system] section to allow links to be
-  // created at runtime, e.g. through android_link_namespaces in
-  // libnativeloader. Otherwise it isn't isolated, so visibility doesn't matter.
+  // Isolated but visible when used in the [system] or [unrestricted] section to
+  // allow links to be created at runtime, e.g. through android_link_namespaces
+  // in libnativeloader. Otherwise it isn't isolated, so visibility doesn't
+  // matter.
   Namespace ns(name,
-               /*is_isolated=*/is_system_section,
-               /*is_visible=*/is_system_section);
+               /*is_isolated=*/is_system_or_unrestricted_section,
+               /*is_visible=*/is_system_or_unrestricted_section);
 
   std::vector<std::string> lib_paths;
   std::vector<std::string> vndk_paths;
@@ -61,14 +65,15 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
 
   for (const auto& lib_path : lib_paths) {
     ns.AddSearchPath(lib_path + "vndk-sp", AsanPath::WITH_DATA_ASAN);
-    if (!is_system_section) {
+    if (!is_system_or_unrestricted_section) {
       ns.AddSearchPath(lib_path + "vndk", AsanPath::WITH_DATA_ASAN);
     }
   }
   ns.AddSearchPath("/apex/com.android.vndk.v" + vndk_version + "/${LIB}",
                    AsanPath::SAME_PATH);
 
-  if (is_system_section && vndk_user == VndkUserPartition::Vendor) {
+  if (is_system_or_unrestricted_section &&
+      vndk_user == VndkUserPartition::Vendor) {
     // It is for vendor sp-hal
     ns.AddPermittedPath("/odm/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
     ns.AddPermittedPath("/odm/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
@@ -96,7 +101,7 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
   }
 
   if (!is_vndklite) {
-    if (is_system_section) {
+    if (is_system_or_unrestricted_section) {
       if (vndk_user == VndkUserPartition::Vendor) {
         // The "vndk" namespace links to the system namespace for LLNDK libs above
         // and links to "sphal" namespace for vendor libs. The ordering matters;
