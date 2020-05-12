@@ -34,6 +34,7 @@ enum class SectionType {
   System,
   Vendor,
   Product,
+  Unrestricted,
   Other,
 };
 
@@ -54,6 +55,7 @@ class Context : public modules::BaseContext {
   bool IsSystemSection() const;
   bool IsVendorSection() const;
   bool IsProductSection() const;
+  bool IsUnrestrictedSection() const;
 
   bool IsDefaultConfig() const;
   bool IsLegacyConfig() const;
