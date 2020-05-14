@@ -88,7 +88,8 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
     ns.AddRequires(kVndkLiteArtLibs);
   } else {
     ns.GetLink(ctx.GetSystemNamespaceName())
-        .AddSharedLib(Var("LLNDK_LIBRARIES_VENDOR"));
+        .AddSharedLib(
+            {Var("LLNDK_LIBRARIES_VENDOR"), Var("SANITIZER_DEFAULT_VENDOR")});
     ns.GetLink("vndk").AddSharedLib({Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR"),
                                      Var("VNDK_CORE_LIBRARIES_VENDOR")});
     if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
