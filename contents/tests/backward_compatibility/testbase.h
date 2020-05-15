@@ -27,6 +27,8 @@ inline void MockVndkVariables(std::string partition, std::string vndk_ver) {
   Variables::AddValue("VNDK_SAMEPROCESS_LIBRARIES_" + partition,
                       "vndk_sameprocess_libraries");
   Variables::AddValue("VNDK_CORE_LIBRARIES_" + partition, "vndk_core_libraries");
+  Variables::AddValue("SANITIZER_DEFAULT_" + partition,
+                      "sanitizer_default_libraries");
 }
 
 inline void MockVariables(std::string vndk_ver = "Q") {
