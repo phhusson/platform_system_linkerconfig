@@ -18,6 +18,7 @@
 
 #include <android-base/result.h>
 #include <android-base/strings.h>
+
 #include <climits>
 #include <cstdlib>
 #include <cstring>
@@ -125,6 +126,8 @@ void LoadVndkLibraryListVariables(const std::string& root,
       vndk_path + "/etc/vndkcore.libraries." + vndk_version + ".txt";
   const std::string vndkprivate_libraries_path =
       vndk_path + "/etc/vndkprivate.libraries." + vndk_version + ".txt";
+  const std::string sanitizer_library_path =
+      root + "/system/etc/sanitizer.libraries.txt";
 
   Variables::AddValue("LLNDK_LIBRARIES_" + partition,
                       GetPublicLibrariesString(llndk_libraries_path,
@@ -141,6 +144,10 @@ void LoadVndkLibraryListVariables(const std::string& root,
   Variables::AddValue("VNDK_CORE_LIBRARIES_" + partition,
                       GetPublicLibrariesString(vndkcore_libraries_path,
                                                vndkprivate_libraries_path));
+
+  Variables::AddValue("SANITIZER_DEFAULT_" + partition,
+                      GetPublicLibrariesString(sanitizer_library_path,
+                                               vndkcore_libraries_path));
 
   if (partition == "VENDOR") {
     auto vndkcorevariant_library_path =
