@@ -77,6 +77,8 @@ class Context : public modules::BaseContext {
   void RegisterApexNamespaceBuilder(const std::string& name,
                                     ApexNamespaceBuilder builder);
 
+  bool IsSectionVndkEnabled() const;
+
  private:
   std::map<std::string, ApexNamespaceBuilder> builders_;
 
