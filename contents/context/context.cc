@@ -18,6 +18,7 @@
 
 #include <android-base/strings.h>
 
+#include "linkerconfig/environment.h"
 #include "linkerconfig/log.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/variables.h"
@@ -121,6 +122,21 @@ std::string Var(const std::string& name, const std::string& default_value) {
     return *val;
   }
   return default_value;
+}
+
+bool Context::IsSectionVndkEnabled() const {
+  if (!IsVndkAvailable() || android::linkerconfig::modules::IsVndkLiteDevice()) {
+    return false;
+  }
+  if (IsVendorSection()) {
+    return true;
+  }
+  if (IsProductSection() &&
+      android::linkerconfig::modules::IsProductVndkVersionDefined()) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace contents
