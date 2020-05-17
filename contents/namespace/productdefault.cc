@@ -34,7 +34,8 @@ Namespace BuildProductDefaultNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath(Var("PRODUCT", "product"), AsanPath::WITH_DATA_ASAN);
 
   ns.GetLink(ctx.GetSystemNamespaceName())
-      .AddSharedLib(Var("LLNDK_LIBRARIES_PRODUCT"));
+      .AddSharedLib(
+          {Var("LLNDK_LIBRARIES_PRODUCT"), Var("SANITIZER_DEFAULT_PRODUCT")});
   ns.GetLink("vndk").AddSharedLib({Var("VNDK_SAMEPROCESS_LIBRARIES_PRODUCT"),
                                    Var("VNDK_CORE_LIBRARIES_PRODUCT")});
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {

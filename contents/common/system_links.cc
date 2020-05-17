@@ -32,12 +32,15 @@ using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
 void AddStandardSystemLinks(const Context& ctx, Section* section) {
-  std::string system_ns_name = ctx.GetSystemNamespaceName();
-  section->ForEachNamespaces([system_ns_name](Namespace& ns) {
+  const std::string system_ns_name = ctx.GetSystemNamespaceName();
+  const bool is_section_vndk_enabled = ctx.IsSectionVndkEnabled();
+  section->ForEachNamespaces([&](Namespace& ns) {
     if (ns.GetName() != system_ns_name) {
-      ns.GetLink(system_ns_name)
-          .AddSharedLib(Var("STUB_LIBRARIES"),
-                        Var("SANITIZER_RUNTIME_LIBRARIES"));
+      if (!is_section_vndk_enabled || ns.GetName() != "default") {
+        ns.GetLink(system_ns_name)
+            .AddSharedLib(Var("STUB_LIBRARIES"),
+                          Var("SANITIZER_RUNTIME_LIBRARIES"));
+      }
     }
   });
 }
