@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include <android-base/properties.h>
 #include <android-base/strings.h>
 
 #include "linkerconfig/context.h"
@@ -41,6 +42,7 @@ using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
 void AddStandardSystemLinks(const Context& ctx, Section* section) {
+  const bool debuggable = android::base::GetBoolProperty("ro.debuggable", false);
   const std::string system_ns_name = ctx.GetSystemNamespaceName();
   const bool is_section_vndk_enabled = ctx.IsSectionVndkEnabled();
   section->ForEachNamespaces([&](Namespace& ns) {
@@ -49,6 +51,10 @@ void AddStandardSystemLinks(const Context& ctx, Section* section) {
       if (!is_section_vndk_enabled || ns.GetName() != "default") {
         ns.GetLink(system_ns_name)
             .AddSharedLib(Var("SANITIZER_RUNTIME_LIBRARIES"));
+      }
+      if (debuggable) {
+        // Library on the system image that can be dlopened for debugging purposes.
+        ns.GetLink(system_ns_name).AddSharedLib("libfdtrack.so");
       }
     }
   });
