@@ -41,6 +41,7 @@ Section BuildUnrestrictedSection(Context& ctx) {
   if (ctx.IsVndkAvailable()) {
     namespaces.emplace_back(BuildSphalNamespace(ctx));
     namespaces.emplace_back(BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
+    namespaces.emplace_back(BuildRsNamespace(ctx));
   }
 
   std::set<std::string> visible_apexes{
