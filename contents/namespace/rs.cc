@@ -28,7 +28,8 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildRsNamespace([[maybe_unused]] const Context& ctx) {
-  Namespace ns("rs", /*is_isolated=*/true, /*is_visible=*/true);
+  Namespace ns(
+      "rs", /*is_isolated=*/!ctx.IsUnrestrictedSection(), /*is_visible=*/true);
 
   ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
