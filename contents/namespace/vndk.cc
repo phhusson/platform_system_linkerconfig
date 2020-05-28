@@ -48,7 +48,7 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
   // in libnativeloader. Otherwise it isn't isolated, so visibility doesn't
   // matter.
   Namespace ns(name,
-               /*is_isolated=*/is_system_or_unrestricted_section,
+               /*is_isolated=*/ctx.IsSystemSection() || ctx.IsApexBinaryConfig(),
                /*is_visible=*/is_system_or_unrestricted_section);
 
   std::vector<std::string> lib_paths;
