@@ -1,0 +1,6 @@
+{
+  "name"   : "com.android.os.statsd" ,
+  "version": 300000000,
+  "provideNativeLibs": [ "libstatspull.so", "libstatssocket.so" ],
+  "requireNativeLibs": [ "libbinder_ndk.so", "libc.so", "libdl.so", "libincident.so", "liblog.so", "libm.so", "libnativehelper.so" ]
+}
