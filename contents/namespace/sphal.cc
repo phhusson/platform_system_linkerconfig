@@ -35,7 +35,9 @@ namespace contents {
 Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
   // Visible to allow use with android_dlopen_ext, and with
   // android_link_namespaces in libnativeloader.
-  Namespace ns("sphal", /*is_isolated=*/true, /*is_visible=*/true);
+  Namespace ns("sphal",
+               /*is_isolated=*/!ctx.IsUnrestrictedSection(),
+               /*is_visible=*/true);
   ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
   ns.AddSearchPath("/vendor/${LIB}/hw", AsanPath::NONE);
@@ -63,7 +65,7 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
     // Only libs listed here can be used. Order is important here as the
     // namespaces are tried in this order. rs should be before vndk because both
     // are capable of loading libRS_internal.so
-    if (ctx.IsSystemSection()) {
+    if (ctx.IsSystemSection() || ctx.IsUnrestrictedSection()) {
       ns.GetLink("rs").AddSharedLib("libRS_internal.so");
     }
     ns.GetLink(ctx.GetSystemNamespaceName())
