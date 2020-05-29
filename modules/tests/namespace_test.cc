@@ -81,8 +81,7 @@ namespace.test_namespace.asan.search.paths += /search_path2
 namespace.test_namespace.asan.permitted.paths = /data/asan/permitted_path1
 namespace.test_namespace.asan.permitted.paths += /permitted_path1
 namespace.test_namespace.asan.permitted.paths += /permitted_path2
-namespace.test_namespace.whitelisted = whitelisted_path1
-namespace.test_namespace.whitelisted += whitelisted_path2
+namespace.test_namespace.whitelisted = whitelisted_path1:whitelisted_path2
 )";
 
 TEST(linkerconfig_namespace, simple_namespace) {
