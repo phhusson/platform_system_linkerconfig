@@ -72,7 +72,9 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
   writer.WriteVars(prefix + "permitted.paths", permitted_paths_);
   writer.WriteVars(prefix + "asan.search.paths", asan_search_paths_);
   writer.WriteVars(prefix + "asan.permitted.paths", asan_permitted_paths_);
-  writer.WriteVars(prefix + "whitelisted", whitelisted_);
+  if (!whitelisted_.empty()) {
+    writer.WriteLine(prefix + "whitelisted = " + base::Join(whitelisted_, ":"));
+  }
 
   if (!links_.empty()) {
     std::vector<std::string> link_list;

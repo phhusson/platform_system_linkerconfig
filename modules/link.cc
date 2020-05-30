@@ -16,11 +16,26 @@
 
 #include "linkerconfig/link.h"
 
+#include <android-base/strings.h>
+#include <set>
+
 #include "linkerconfig/log.h"
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
+
+namespace {
+std::vector<std::string> DedupLibs(const std::vector<std::string>& listOfLibs) {
+  std::set<std::string> uniq;
+  for (const auto& libs : listOfLibs) {
+    for (const auto& lib : base::Split(libs, ":")) {
+      uniq.insert(lib);
+    }
+  }
+  return {uniq.begin(), uniq.end()};
+}
+}  // namespace
 
 void Link::AddSharedLib(const std::vector<std::string>& lib_names) {
   if (!allow_all_shared_libs_) {
@@ -41,7 +56,7 @@ void Link::WriteConfig(ConfigWriter& writer) const {
   if (allow_all_shared_libs_) {
     writer.WriteLine(prefix + "allow_all_shared_libs = true");
   } else if (!shared_libs_.empty()) {
-    writer.WriteVars(prefix + "shared_libs", shared_libs_);
+    writer.WriteVars(prefix + "shared_libs", DedupLibs(shared_libs_));
   } else {
     LOG(WARNING) << "Ignored empty shared libs link from " << origin_namespace_
                  << " to " << target_namespace_;
