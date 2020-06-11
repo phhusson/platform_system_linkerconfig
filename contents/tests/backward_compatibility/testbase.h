@@ -15,6 +15,9 @@
  */
 #pragma once
 
+#include <android-base/strings.h>
+
+#include "linkerconfig/namespace.h"
 #include "linkerconfig/variables.h"
 
 inline void MockVndkVariables(std::string partition, std::string vndk_ver) {
@@ -52,4 +55,57 @@ inline void MockVariables(std::string vndk_ver = "Q") {
 
 inline void MockVnkdLite() {
   android::linkerconfig::modules::Variables::AddValue("ro.vndk.lite", "true");
+}
+
+inline bool ContainsPath(const std::vector<std::string>& path_list,
+                         const std::string& path) {
+  for (auto item : path_list) {
+    if (item == path) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+inline bool ContainsSearchPath(
+    const android::linkerconfig::modules::Namespace* ns,
+    const std::string& path) {
+  if (!ContainsPath(ns->SearchPaths(), path)) {
+    return false;
+  }
+
+  auto asan_search_path = ns->AsanSearchPaths();
+
+  if (!ContainsPath(asan_search_path, path)) {
+    return false;
+  }
+
+  if (!android::base::StartsWith(path, "/apex") &&
+      !ContainsPath(asan_search_path, "/data/asan" + path)) {
+    return false;
+  }
+
+  return true;
+}
+
+inline bool ContainsPermittedPath(
+    const android::linkerconfig::modules::Namespace* ns,
+    const std::string& path) {
+  if (!ContainsPath(ns->PermittedPaths(), path)) {
+    return false;
+  }
+
+  auto asan_search_path = ns->AsanPermittedPaths();
+
+  if (!ContainsPath(asan_search_path, path)) {
+    return false;
+  }
+
+  if (!android::base::StartsWith(path, "/apex") &&
+      !ContainsPath(asan_search_path, "/data/asan" + path)) {
+    return false;
+  }
+
+  return true;
 }
