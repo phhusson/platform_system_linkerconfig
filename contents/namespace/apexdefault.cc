@@ -20,7 +20,6 @@
 #include "linkerconfig/namespace.h"
 
 using android::linkerconfig::modules::ApexInfo;
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -30,8 +29,8 @@ Namespace BuildApexDefaultNamespace([[maybe_unused]] const Context& ctx,
                                     const ApexInfo& apex_info) {
   Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/false);
 
-  ns.AddSearchPath(apex_info.path + "/${LIB}", AsanPath::SAME_PATH);
-  ns.AddPermittedPath(apex_info.path + "/${LIB}", AsanPath::SAME_PATH);
+  ns.AddSearchPath(apex_info.path + "/${LIB}");
+  ns.AddPermittedPath(apex_info.path + "/${LIB}");
   ns.AddPermittedPath("/system/${LIB}");
 
   ns.AddRequires(apex_info.require_libs);

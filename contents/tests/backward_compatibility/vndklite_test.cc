@@ -23,7 +23,6 @@
 
 using android::linkerconfig::contents::Context;
 using android::linkerconfig::modules::ApexInfo;
-using android::linkerconfig::modules::AsanPath;
 
 struct linkerconfig_vndklite_backward_compatibility : ::testing::Test {
   void SetUp() override {
@@ -45,63 +44,42 @@ TEST_F(linkerconfig_vndklite_backward_compatibility, system_section) {
   auto default_namespace = system_section->GetNamespace("default");
   ASSERT_TRUE(default_namespace);
 
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}",
-                                                    AsanPath::WITH_DATA_ASAN));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}"));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/odm/${LIB}"));
 
   auto sphal_namespace = system_section->GetNamespace("sphal");
   ASSERT_TRUE(sphal_namespace);
 
-  EXPECT_TRUE(sphal_namespace->ContainsSearchPath("/odm/${LIB}",
-                                                  AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(sphal_namespace->ContainsSearchPath("/vendor/${LIB}",
-                                                  AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(
-      sphal_namespace->ContainsSearchPath("/vendor/${LIB}/hw", AsanPath::NONE));
+  EXPECT_TRUE(ContainsSearchPath(sphal_namespace, "/odm/${LIB}"));
+  EXPECT_TRUE(ContainsSearchPath(sphal_namespace, "/vendor/${LIB}"));
+  EXPECT_TRUE(ContainsSearchPath(sphal_namespace, "/vendor/${LIB}/hw"));
 
-  EXPECT_TRUE(sphal_namespace->ContainsPermittedPath("/odm/${LIB}",
-                                                     AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(sphal_namespace->ContainsPermittedPath("/vendor/${LIB}",
-                                                     AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(sphal_namespace->ContainsPermittedPath("/system/vendor/${LIB}",
-                                                     AsanPath::NONE));
+  EXPECT_TRUE(ContainsPermittedPath(sphal_namespace, "/odm/${LIB}"));
+  EXPECT_TRUE(ContainsPermittedPath(sphal_namespace, "/vendor/${LIB}"));
+  EXPECT_TRUE(ContainsPermittedPath(sphal_namespace, "/system/vendor/${LIB}"));
 
   auto rs_namespace = system_section->GetNamespace("rs");
   ASSERT_TRUE(rs_namespace);
 
-  EXPECT_TRUE(rs_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp",
-                                               AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(rs_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp",
-                                               AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(rs_namespace->ContainsSearchPath("/odm/${LIB}",
-                                               AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(rs_namespace->ContainsSearchPath("/vendor/${LIB}",
-                                               AsanPath::WITH_DATA_ASAN));
+  EXPECT_TRUE(ContainsSearchPath(rs_namespace, "/odm/${LIB}/vndk-sp"));
+  EXPECT_TRUE(ContainsSearchPath(rs_namespace, "/vendor/${LIB}/vndk-sp"));
+  EXPECT_TRUE(ContainsSearchPath(rs_namespace, "/odm/${LIB}"));
+  EXPECT_TRUE(ContainsSearchPath(rs_namespace, "/vendor/${LIB}"));
 
-  EXPECT_TRUE(rs_namespace->ContainsPermittedPath("/odm/${LIB}",
-                                                  AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(rs_namespace->ContainsPermittedPath("/vendor/${LIB}",
-                                                  AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(rs_namespace->ContainsPermittedPath("/system/vendor/${LIB}",
-                                                  AsanPath::NONE));
+  EXPECT_TRUE(ContainsPermittedPath(rs_namespace, "/odm/${LIB}"));
+  EXPECT_TRUE(ContainsPermittedPath(rs_namespace, "/vendor/${LIB}"));
+  EXPECT_TRUE(ContainsPermittedPath(rs_namespace, "/system/vendor/${LIB}"));
 
   auto vndk_namespace = system_section->GetNamespace("vndk");
   ASSERT_TRUE(vndk_namespace);
 
-  EXPECT_TRUE(vndk_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp",
-                                                 AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(vndk_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp",
-                                                 AsanPath::WITH_DATA_ASAN));
+  EXPECT_TRUE(ContainsSearchPath(vndk_namespace, "/odm/${LIB}/vndk-sp"));
+  EXPECT_TRUE(ContainsSearchPath(vndk_namespace, "/vendor/${LIB}/vndk-sp"));
 
-  EXPECT_TRUE(vndk_namespace->ContainsPermittedPath("/odm/${LIB}/hw",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(vndk_namespace->ContainsPermittedPath("/odm/${LIB}/egl",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(vndk_namespace->ContainsPermittedPath("/vendor/${LIB}/hw",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(vndk_namespace->ContainsPermittedPath("/vendor/${LIB}/egl",
-                                                    AsanPath::WITH_DATA_ASAN));
+  EXPECT_TRUE(ContainsPermittedPath(vndk_namespace, "/odm/${LIB}/hw"));
+  EXPECT_TRUE(ContainsPermittedPath(vndk_namespace, "/odm/${LIB}/egl"));
+  EXPECT_TRUE(ContainsPermittedPath(vndk_namespace, "/vendor/${LIB}/hw"));
+  EXPECT_TRUE(ContainsPermittedPath(vndk_namespace, "/vendor/${LIB}/egl"));
 }
 
 TEST_F(linkerconfig_vndklite_backward_compatibility, vendor_section) {
@@ -113,18 +91,12 @@ TEST_F(linkerconfig_vndklite_backward_compatibility, vendor_section) {
   auto default_namespace = vendor_section->GetNamespace("default");
   ASSERT_TRUE(default_namespace);
 
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}/vndk",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}/vndk-sp",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}/vndk",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}/vndk-sp",
-                                                    AsanPath::WITH_DATA_ASAN));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/odm/${LIB}"));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/odm/${LIB}/vndk"));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/odm/${LIB}/vndk-sp"));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}"));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}/vndk"));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}/vndk-sp"));
 }
 
 TEST_F(linkerconfig_vndklite_backward_compatibility, unrestricted_section) {
@@ -136,8 +108,6 @@ TEST_F(linkerconfig_vndklite_backward_compatibility, unrestricted_section) {
   auto default_namespace = unrestricted_section->GetNamespace("default");
   ASSERT_TRUE(default_namespace);
 
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/odm/${LIB}",
-                                                    AsanPath::WITH_DATA_ASAN));
-  EXPECT_TRUE(default_namespace->ContainsSearchPath("/vendor/${LIB}",
-                                                    AsanPath::WITH_DATA_ASAN));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/odm/${LIB}"));
+  EXPECT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}"));
 }
