@@ -22,12 +22,10 @@ using namespace android::linkerconfig::modules;
 inline Namespace CreateNamespaceWithPaths(std::string name, bool is_isolated,
                                           bool is_visible) {
   Namespace ns(name, is_isolated, is_visible);
-  ns.AddSearchPath("/search_path1", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/search_path2", AsanPath::SAME_PATH);
-  ns.AddSearchPath("/search_path3", AsanPath::NONE);
-  ns.AddPermittedPath("/permitted_path1", AsanPath::WITH_DATA_ASAN);
-  ns.AddPermittedPath("/permitted_path2", AsanPath::SAME_PATH);
-  ns.AddPermittedPath("/permitted_path3", AsanPath::NONE);
+  ns.AddSearchPath("/search_path1");
+  ns.AddSearchPath("/apex/search_path2");
+  ns.AddPermittedPath("/permitted_path1");
+  ns.AddPermittedPath("/apex/permitted_path2");
 
   return ns;
 }

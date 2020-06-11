@@ -24,7 +24,6 @@
 #include "linkerconfig/namespace.h"
 
 using android::linkerconfig::modules::ApexInfo;
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
@@ -59,9 +58,8 @@ namespace contents {
 Namespace BuildApexPlatformNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("system", /*is_isolated=*/true, /*is_visible=*/true);
 
-  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddPermittedPath("/apex/com.android.runtime/${LIB}/bionic",
-                      AsanPath::SAME_PATH);
+  ns.AddSearchPath("/system/${LIB}");
+  ns.AddPermittedPath("/apex/com.android.runtime/${LIB}/bionic");
 
   ns.AddProvides(GetSystemStubLibraries());
   ns.AddRequires(required_libs);

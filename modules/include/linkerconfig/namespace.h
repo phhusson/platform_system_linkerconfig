@@ -27,19 +27,6 @@ namespace android {
 namespace linkerconfig {
 namespace modules {
 
-/**
- * Explains if the path should be also added for ASAN
- *
- * NONE : the path should not be added for ASAN
- * SAME_PATH : the path should be added for ASAN
- * WITH_DATA_ASAN : the path and /data/asan/<path> should be added for ASAN
- */
-enum class AsanPath {
-  NONE,
-  SAME_PATH,
-  WITH_DATA_ASAN,
-};
-
 class Namespace {
  public:
   explicit Namespace(std::string name, bool is_isolated = false,
@@ -54,42 +41,10 @@ class Namespace {
   Namespace& operator=(Namespace&& ns) = default;
 
   // Add path to search path
-  // This function will add path to namespace.<<namespace>>.search.paths
-  // If path_from_asan is SAME_PATH, this will add path also to
-  // namespace.<<namespace>>.asan.search.paths
-  // If path_from_asan is WITH_DATA_ASAN,
-  // this will also add asan path starts with /data/asan
-  //
-  // AddSearchPath("/system/${LIB}", AsanPath::NONE) :
-  //    namespace.xxx.search.paths += /system/${LIB}
-  // AddSearchPath("/system/${LIB}", AsanPath::SAME_PATH) :
-  //    namespace.xxx.search.paths += /system/${LIB}
-  //    namespace.xxx.asan.search.paths += /system/${LIB}
-  // AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN) :
-  //    namespace.xxx.search.paths += /system/${LIB}
-  //    namespace.xxx.asan.search.paths += /data/asan/system/${LIB}
-  //    namespace.xxx.asan.search.paths += /system/${LIB}
-  void AddSearchPath(const std::string& path,
-                     AsanPath path_from_asan = AsanPath::SAME_PATH);
+  void AddSearchPath(const std::string& path);
 
   // Add path to permitted path
-  // This function will add path to namespace.<<namespace>>.permitted.paths
-  // If path_from_asan is SAME_PATH, this will add path also to
-  // namespace.<<namespace>>.asan.permitted.paths
-  // If path_from_asan is WITH_DATA_ASAN,
-  // this will also add asan path starts with /data/asan
-  //
-  // AddSearchPath("/system/${LIB}", AsanPath::NONE) :
-  //    namespace.xxx.permitted.paths += /system/${LIB}
-  // AddSearchPath("/system/${LIB}", AsanPath::SAME_PATH) :
-  //    namespace.xxx.permitted.paths += /system/${LIB}
-  //    namespace.xxx.asan.permitted.paths += /system/${LIB}
-  // AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN) :
-  //    namespace.xxx.permitted.paths += /system/${LIB}
-  //    namespace.xxx.asan.permitted.paths += /data/asan/system/${LIB}
-  //    namespace.xxx.asan.permitted.paths += /system/${LIB}
-  void AddPermittedPath(const std::string& path,
-                        AsanPath path_from_asan = AsanPath::SAME_PATH);
+  void AddPermittedPath(const std::string& path);
 
   // Returns a link from this namespace to the given one. If one already exists
   // it is returned, otherwise one is created and pushed back to tail.
@@ -114,8 +69,15 @@ class Namespace {
   std::vector<std::string> SearchPaths() const {
     return search_paths_;
   }
-  bool ContainsSearchPath(const std::string& path, AsanPath path_from_asan);
-  bool ContainsPermittedPath(const std::string& path, AsanPath path_from_asan);
+  std::vector<std::string> PermittedPaths() const {
+    return permitted_paths_;
+  }
+  std::vector<std::string> AsanSearchPaths() const {
+    return asan_search_paths_;
+  }
+  std::vector<std::string> AsanPermittedPaths() const {
+    return asan_permitted_paths_;
+  }
 
   template <typename Vec>
   void AddProvides(const Vec& list) {
@@ -147,6 +109,8 @@ class Namespace {
 
   void WritePathString(ConfigWriter& writer, const std::string& path_type,
                        const std::vector<std::string>& path_list);
+  bool RequiresAsanPath(const std::string& path);
+  const std::string CreateAsanPath(const std::string& path);
 };
 
 void InitializeWithApex(Namespace& ns, const ApexInfo& apex_info);

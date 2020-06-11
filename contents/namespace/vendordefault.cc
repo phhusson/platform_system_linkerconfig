@@ -22,7 +22,6 @@
 #include "linkerconfig/common.h"
 #include "linkerconfig/environment.h"
 
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::GetVendorVndkVersion;
 using android::linkerconfig::modules::Namespace;
 
@@ -67,39 +66,38 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns(
       "default", /*is_isolated=*/!is_vndklite, /*is_visible=*/!is_vndklite);
 
-  ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/odm/${LIB}");
   // Allow loosen restriction between vndk and private platform libraries
   if (is_vndklite) {
-    ns.AddSearchPath("/odm/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/odm/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/odm/${LIB}/vndk");
+    ns.AddSearchPath("/odm/${LIB}/vndk-sp");
   }
 
-  ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/vendor/${LIB}");
   // Allow loosen restriction between vndk and private platform libraries
   if (is_vndklite) {
-    ns.AddSearchPath("/vendor/${LIB}/vndk", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/vendor/${LIB}/vndk-sp", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/vendor/${LIB}/vndk");
+    ns.AddSearchPath("/vendor/${LIB}/vndk-sp");
   }
 
   // VNDK-Lite devices require broader access from vendor to system/product partition
   if (is_vndklite) {
-    ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/system/${LIB}");
+    ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}");
+    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}");
     // Put system vndk at the last search order in vndk_lite for GSI
-    ns.AddSearchPath(
-        "/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") + "/${LIB}",
-        AsanPath::SAME_PATH);
+    ns.AddSearchPath("/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") +
+                     "/${LIB}");
   }
 
   if (ctx.IsDefaultConfig() && GetVendorVndkVersion() == "27") {
-    ns.AddSearchPath("/vendor/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/vendor/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath("/vendor/${LIB}/hw");
+    ns.AddSearchPath("/vendor/${LIB}/egl");
   }
 
-  ns.AddPermittedPath("/odm", AsanPath::WITH_DATA_ASAN);
-  ns.AddPermittedPath("/vendor", AsanPath::WITH_DATA_ASAN);
-  ns.AddPermittedPath("/system/vendor", AsanPath::NONE);
+  ns.AddPermittedPath("/odm");
+  ns.AddPermittedPath("/vendor");
+  ns.AddPermittedPath("/system/vendor");
 
   if (is_vndklite) {
     // Because vendor-default NS works like system-default NS for VNDK-lite
