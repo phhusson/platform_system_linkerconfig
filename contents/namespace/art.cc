@@ -20,7 +20,6 @@
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::ApexInfo;
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -51,7 +50,7 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx,
 
   // Primary boot image is loaded through dlopen, so pass the primary boot image
   // to the list of paths.
-  ns.AddPermittedPath("/apex/com.android.art/javalib", AsanPath::SAME_PATH);
+  ns.AddPermittedPath("/apex/com.android.art/javalib");
 
   // Need allow_all_shared_libs to let libart.so dlopen oat files in
   // /system/framework and /data.

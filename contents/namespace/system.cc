@@ -21,7 +21,6 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::IsProductVndkVersionDefined;
 using android::linkerconfig::modules::Namespace;
 
@@ -30,10 +29,10 @@ namespace linkerconfig {
 namespace contents {
 Namespace BuildSystemNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("system", /*is_isolated=*/false, /*is_visible=*/false);
-  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/system/${LIB}");
+  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}");
   if (!IsProductVndkVersionDefined()) {
-    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}");
   }
 
   ns.AddRequires(std::vector{"libdexfile_external.so",

@@ -19,7 +19,6 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespacebuilder.h"
 
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -64,30 +63,28 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
   }
 
   for (const auto& lib_path : lib_paths) {
-    ns.AddSearchPath(lib_path + "vndk-sp", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath(lib_path + "vndk-sp");
     if (!is_system_or_unrestricted_section) {
-      ns.AddSearchPath(lib_path + "vndk", AsanPath::WITH_DATA_ASAN);
+      ns.AddSearchPath(lib_path + "vndk");
     }
   }
-  ns.AddSearchPath("/apex/com.android.vndk.v" + vndk_version + "/${LIB}",
-                   AsanPath::SAME_PATH);
+  ns.AddSearchPath("/apex/com.android.vndk.v" + vndk_version + "/${LIB}");
 
   if (is_system_or_unrestricted_section &&
       vndk_user == VndkUserPartition::Vendor) {
     // It is for vendor sp-hal
-    ns.AddPermittedPath("/odm/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
-    ns.AddPermittedPath("/odm/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
-    ns.AddPermittedPath("/vendor/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
-    ns.AddPermittedPath("/vendor/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
+    ns.AddPermittedPath("/odm/${LIB}/hw");
+    ns.AddPermittedPath("/odm/${LIB}/egl");
+    ns.AddPermittedPath("/vendor/${LIB}/hw");
+    ns.AddPermittedPath("/vendor/${LIB}/egl");
     if (!is_vndklite) {
-      ns.AddPermittedPath("/system/vendor/${LIB}/hw", AsanPath::NONE);
+      ns.AddPermittedPath("/system/vendor/${LIB}/hw");
     }
-    ns.AddPermittedPath("/system/vendor/${LIB}/egl", AsanPath::NONE);
+    ns.AddPermittedPath("/system/vendor/${LIB}/egl");
 
     // This is exceptionally required since android.hidl.memory@1.0-impl.so is here
-    ns.AddPermittedPath(
-        "/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") + "/${LIB}/hw",
-        AsanPath::SAME_PATH);
+    ns.AddPermittedPath("/apex/com.android.vndk.v" +
+                        Var("VENDOR_VNDK_VERSION") + "/${LIB}/hw");
   }
 
   // For the non-system section, the links should be identical to that of the

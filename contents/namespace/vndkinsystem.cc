@@ -29,7 +29,6 @@
 
 #include "linkerconfig/environment.h"
 
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::IsProductVndkVersionDefined;
 using android::linkerconfig::modules::Namespace;
 
@@ -41,10 +40,10 @@ Namespace BuildVndkInSystemNamespace([[maybe_unused]] const Context& ctx) {
                /*is_visible=*/true);
 
   // The search paths here should be kept the same as that of the 'system' namespace.
-  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/system/${LIB}");
+  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}");
   if (!IsProductVndkVersionDefined()) {
-    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}", AsanPath::WITH_DATA_ASAN);
+    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}");
   }
 
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
