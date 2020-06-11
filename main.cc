@@ -330,10 +330,10 @@ int main(int argc, char* argv[]) {
   LoadVariables(args);
   Context ctx = GetContext(args);
 
-  // when exec'ed from init, this is 0x0077, which makes the subdirectories
-  // inaccessible for others. set umask to 0x0022 so that they can be
+  // when exec'ed from init, this is 077, which makes the subdirectories
+  // inaccessible for others. set umask to 022 so that they can be
   // accessible.
-  umask(0x0022);
+  umask(022);
 
   if (args.is_recovery) {
     ExitOnFailure(
