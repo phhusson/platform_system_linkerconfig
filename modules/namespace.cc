@@ -22,20 +22,7 @@
 #include "linkerconfig/log.h"
 
 namespace {
-
 constexpr const char* kDataAsanPath = "/data/asan";
-
-bool FindFromPathList(const std::vector<std::string>& list,
-                      const std::string& path) {
-  for (auto& path_member : list) {
-    for (auto& path_item : android::base::Split(path_member, ":")) {
-      if (path_item == path) return true;
-    }
-  }
-
-  return false;
-}
-
 }  // namespace
 
 namespace android {
@@ -88,37 +75,22 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
   }
 }
 
-void Namespace::AddSearchPath(const std::string& path, AsanPath path_from_asan) {
+void Namespace::AddSearchPath(const std::string& path) {
   search_paths_.push_back(path);
 
-  switch (path_from_asan) {
-    case AsanPath::NONE:
-      break;
-    case AsanPath::SAME_PATH:
-      asan_search_paths_.push_back(path);
-      break;
-    case AsanPath::WITH_DATA_ASAN:
-      asan_search_paths_.push_back(kDataAsanPath + path);
-      asan_search_paths_.push_back(path);
-      break;
+  if (RequiresAsanPath(path)) {
+    asan_search_paths_.push_back(CreateAsanPath(path));
   }
+  asan_search_paths_.push_back(path);
 }
 
-void Namespace::AddPermittedPath(const std::string& path,
-                                 AsanPath path_from_asan) {
+void Namespace::AddPermittedPath(const std::string& path) {
   permitted_paths_.push_back(path);
 
-  switch (path_from_asan) {
-    case AsanPath::NONE:
-      break;
-    case AsanPath::SAME_PATH:
-      asan_permitted_paths_.push_back(path);
-      break;
-    case AsanPath::WITH_DATA_ASAN:
-      asan_permitted_paths_.push_back(kDataAsanPath + path);
-      asan_permitted_paths_.push_back(path);
-      break;
+  if (RequiresAsanPath(path)) {
+    asan_permitted_paths_.push_back(CreateAsanPath(path));
   }
+  asan_permitted_paths_.push_back(path);
 }
 
 void Namespace::AddWhitelisted(const std::string& path) {
@@ -129,22 +101,12 @@ std::string Namespace::GetName() const {
   return name_;
 }
 
-bool Namespace::ContainsSearchPath(const std::string& path,
-                                   AsanPath path_from_asan) {
-  return FindFromPathList(search_paths_, path) &&
-         (path_from_asan == AsanPath::NONE ||
-          FindFromPathList(asan_search_paths_, path)) &&
-         (path_from_asan != AsanPath::WITH_DATA_ASAN ||
-          FindFromPathList(asan_search_paths_, kDataAsanPath + path));
+bool Namespace::RequiresAsanPath(const std::string& path) {
+  return !android::base::StartsWith(path, "/apex");
 }
 
-bool Namespace::ContainsPermittedPath(const std::string& path,
-                                      AsanPath path_from_asan) {
-  return FindFromPathList(permitted_paths_, path) &&
-         (path_from_asan == AsanPath::NONE ||
-          FindFromPathList(asan_permitted_paths_, path)) &&
-         (path_from_asan != AsanPath::WITH_DATA_ASAN ||
-          FindFromPathList(asan_permitted_paths_, kDataAsanPath + path));
+const std::string Namespace::CreateAsanPath(const std::string& path) {
+  return kDataAsanPath + path;
 }
 
 }  // namespace modules

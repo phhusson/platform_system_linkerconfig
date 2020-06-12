@@ -20,7 +20,6 @@
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
 
-using android::linkerconfig::modules::AsanPath;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -29,9 +28,9 @@ namespace contents {
 Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("default", /*is_isolated=*/false, /*is_visible=*/true);
 
-  ns.AddSearchPath("/system/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/odm/${LIB}", AsanPath::WITH_DATA_ASAN);
-  ns.AddSearchPath("/vendor/${LIB}", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/system/${LIB}");
+  ns.AddSearchPath("/odm/${LIB}");
+  ns.AddSearchPath("/vendor/${LIB}");
 
   ns.AddRequires(std::vector{
       // Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
