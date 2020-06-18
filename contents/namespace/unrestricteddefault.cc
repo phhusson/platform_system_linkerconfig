@@ -29,8 +29,10 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
   Namespace ns("default", /*is_isolated=*/false, /*is_visible=*/true);
 
   ns.AddSearchPath("/system/${LIB}");
+  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}");
   ns.AddSearchPath("/odm/${LIB}");
   ns.AddSearchPath("/vendor/${LIB}");
+  ns.AddSearchPath(Var("PRODUCT") + "/${LIB}");
 
   ns.AddRequires(std::vector{
       // Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
