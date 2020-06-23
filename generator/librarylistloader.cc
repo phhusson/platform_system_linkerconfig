@@ -55,17 +55,6 @@ Result<LibraryList> GetLibrariesFromFile(std::string file_path) {
     }
   }
 
-  // TODO (b/122954981) : Remove this part when VNDK Lite is deprecated
-  // In case of VNDK-lite devices, libz should be included in LLNDK rather than
-  // VNDK-SP libraries
-  if (android::linkerconfig::modules::IsVndkLiteDevice()) {
-    if (file_path.find("llndk") != std::string::npos) {
-      library_list.insert("libz.so");
-    } else if (file_path.find("vndksp") != std::string::npos) {
-      library_list.erase("libz.so");
-    }
-  }
-
   library_file_cache.insert({file_path, library_list});
 
   return library_list;

@@ -34,16 +34,9 @@ Section BuildVendorSection(Context& ctx) {
   ctx.SetCurrentSection(SectionType::Vendor);
   std::vector<Namespace> namespaces;
 
-  bool is_vndklite = ctx.IsVndkliteConfig();
-
   namespaces.emplace_back(BuildVendorDefaultNamespace(ctx));
-  // VNDK-Lite devices does not contain VNDK and System namespace in vendor
-  // section. Instead they (except libraries from APEX) will be loaded from
-  // default namespace, so VNDK libraries can access private platform libraries.
-  if (!is_vndklite) {
-    namespaces.emplace_back(BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
-    namespaces.emplace_back(BuildSystemNamespace(ctx));
-  }
+  namespaces.emplace_back(BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
+  namespaces.emplace_back(BuildSystemNamespace(ctx));
 
   if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
     namespaces.emplace_back(BuildVndkInSystemNamespace(ctx));
