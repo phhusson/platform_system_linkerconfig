@@ -25,70 +25,14 @@
 using android::linkerconfig::modules::GetVendorVndkVersion;
 using android::linkerconfig::modules::Namespace;
 
-namespace {
-
-// Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
-const std::vector<std::string> kVndkLiteVendorRequires = {
-    // Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
-    "libdexfile_external.so",
-    "libdexfiled_external.so",
-    "libnativebridge.so",
-    "libnativehelper.so",
-    "libnativeloader.so",
-    "libandroidicu.so",
-    // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
-    "libpac.so",
-    // TODO(b/120786417 or b/134659294): libicuuc.so
-    // and libicui18n.so are kept for app compat.
-    "libicui18n.so",
-    "libicuuc.so",
-    // resolv
-    "libnetd_resolv.so",
-    // nn
-    "libneuralnetworks.so",
-    // statsd
-    "libstatspull.so",
-    "libstatssocket.so",
-    // adbd
-    "libadb_pairing_auth.so",
-    "libadb_pairing_connection.so",
-    "libadb_pairing_server.so",
-};
-
-}  // namespace
-
 namespace android {
 namespace linkerconfig {
 namespace contents {
 Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
-  bool is_vndklite = ctx.IsVndkliteConfig();
-
-  Namespace ns(
-      "default", /*is_isolated=*/!is_vndklite, /*is_visible=*/!is_vndklite);
+  Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/true);
 
   ns.AddSearchPath("/odm/${LIB}");
-  // Allow loosen restriction between vndk and private platform libraries
-  if (is_vndklite) {
-    ns.AddSearchPath("/odm/${LIB}/vndk");
-    ns.AddSearchPath("/odm/${LIB}/vndk-sp");
-  }
-
   ns.AddSearchPath("/vendor/${LIB}");
-  // Allow loosen restriction between vndk and private platform libraries
-  if (is_vndklite) {
-    ns.AddSearchPath("/vendor/${LIB}/vndk");
-    ns.AddSearchPath("/vendor/${LIB}/vndk-sp");
-  }
-
-  // VNDK-Lite devices require broader access from vendor to system/product partition
-  if (is_vndklite) {
-    ns.AddSearchPath("/system/${LIB}");
-    ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}");
-    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}");
-    // Put system vndk at the last search order in vndk_lite for GSI
-    ns.AddSearchPath("/apex/com.android.vndk.v" + Var("VENDOR_VNDK_VERSION") +
-                     "/${LIB}");
-  }
 
   if (ctx.IsDefaultConfig() && GetVendorVndkVersion() == "27") {
     ns.AddSearchPath("/vendor/${LIB}/hw");
@@ -99,22 +43,16 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
   ns.AddPermittedPath("/vendor");
   ns.AddPermittedPath("/system/vendor");
 
-  if (is_vndklite) {
-    // Because vendor-default NS works like system-default NS for VNDK-lite
-    // devices the requires/provides are added just like system-default.
-    ns.AddRequires(kVndkLiteVendorRequires);
-    ns.AddProvides(GetSystemStubLibraries());
-  } else {
-    ns.GetLink(ctx.GetSystemNamespaceName())
-        .AddSharedLib(
-            {Var("LLNDK_LIBRARIES_VENDOR"), Var("SANITIZER_DEFAULT_VENDOR")});
-    ns.GetLink("vndk").AddSharedLib({Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR"),
-                                     Var("VNDK_CORE_LIBRARIES_VENDOR")});
-    if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
-      ns.GetLink("vndk_in_system")
-          .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
-    }
+  ns.GetLink(ctx.GetSystemNamespaceName())
+      .AddSharedLib(
+          {Var("LLNDK_LIBRARIES_VENDOR"), Var("SANITIZER_DEFAULT_VENDOR")});
+  ns.GetLink("vndk").AddSharedLib({Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR"),
+                                   Var("VNDK_CORE_LIBRARIES_VENDOR")});
+  if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
+    ns.GetLink("vndk_in_system")
+        .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
   }
+
   ns.AddRequires(std::vector{"libneuralnetworks.so"});
   return ns;
 }

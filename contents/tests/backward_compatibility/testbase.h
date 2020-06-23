@@ -53,10 +53,6 @@ inline void MockVariables(std::string vndk_ver = "Q") {
                       "sanitizer_runtime_libraries");
 }
 
-inline void MockVnkdLite() {
-  android::linkerconfig::modules::Variables::AddValue("ro.vndk.lite", "true");
-}
-
 inline bool ContainsPath(const std::vector<std::string>& path_list,
                          const std::string& path) {
   for (auto item : path_list) {
