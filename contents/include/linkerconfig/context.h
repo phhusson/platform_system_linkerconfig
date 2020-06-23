@@ -41,7 +41,6 @@ enum class SectionType {
 enum class LinkerConfigType {
   Default,
   Legacy,
-  Vndklite,
   Recovery,
   ApexBinary,
 };
@@ -59,7 +58,6 @@ class Context : public modules::BaseContext {
 
   bool IsDefaultConfig() const;
   bool IsLegacyConfig() const;
-  bool IsVndkliteConfig() const;
   bool IsRecoveryConfig() const;
   bool IsApexBinaryConfig() const;
 

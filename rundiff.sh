@@ -77,9 +77,6 @@ function run_linkerconfig_to {
   mkdir -p $1/product-enabled
   linkerconfig -v R -p R -r $TMP_ROOT -t $1/product-enabled
 
-  mkdir -p $1/vndk-lite
-  linkerconfig -v R -e -r $TMP_ROOT -t $1/vndk-lite
-
   rm -iRf $TMP_ROOT/apex/com.android.vndk.vR
   mkdir -p $1/legacy
   linkerconfig -r $TMP_ROOT -t $1/legacy
