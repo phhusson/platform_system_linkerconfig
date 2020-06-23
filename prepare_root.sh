@@ -16,13 +16,104 @@
 
 set -e
 
-ROOT_OUT=$(realpath $(pwd)/$1)
+bootstrap=
+all=
+in=
+out=
+
+function usage() {
+  echo "usage: $0 [--bootstrap|--all] --in in --out out" && exit 1
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --bootstrap)
+      bootstrap=yes
+      shift
+      ;;
+    --all)
+      all=yes
+      shift
+      ;;
+    --in)
+      in=$2
+      shift
+      shift
+      ;;
+    --out)
+      out=$2
+      shift
+      shift
+      ;;
+    *)
+      usage
+  esac
+done
+
+if [ -z $in ] || [ -z $out ]; then
+  usage
+fi
+
+if [ ! -z $bootstrap ] && [ ! -z $all ]; then
+  usage
+fi
+
+activate_level=0
+if [ ! -z $bootstrap ]; then
+  activate_level=1
+elif [ ! -z $all ]; then
+  activate_level=2
+fi
+
+function get_level() {
+  case $1 in
+    com.android.art|com.android.runtime|com.android.i18n|com.android.tzdata|com.android.vndk.vR)
+      echo 1 ;;
+    *)
+      echo 2 ;;
+  esac
+}
+
+function abs() {
+  if [[ $1 = /* ]]; then
+    echo $1
+  else
+    echo $(realpath $(pwd)/$1)
+  fi
+}
+
+ROOT_IN=$(abs $in)
+ROOT_OUT=$(abs $out)
 
 # to use relative paths
 cd $(dirname $0)
 
 rm -iRf $ROOT_OUT
 mkdir -p $ROOT_OUT
-cp -R ./testdata/root/* $ROOT_OUT
-find $ROOT_OUT -name apex_manifest.json -exec sh -c '$2 proto $1 -o ${1%.json}.pb' sh  {} conv_apex_manifest \;
-find $ROOT_OUT -name apex_manifest.json -exec sh -c 'mkdir `dirname $1`/lib' sh  {}  \;
+mkdir -p $ROOT_OUT/apex
+cp -R $ROOT_IN/* $ROOT_OUT
+
+apexInfo=$ROOT_OUT/apex/apex-info-list.xml
+echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>" > $apexInfo
+echo "<apex-info-list>" > $apexInfo
+
+for partition in system product system_ext vendor; do
+  if [ -d $ROOT_OUT/$partition/apex ]; then
+    for src in $ROOT_OUT/$partition/apex/*/; do
+      name=$(basename $src)
+      dst=$ROOT_OUT/apex/$name
+      preinstalled_path=/$(realpath --relative-to=$ROOT_OUT $src)
+      module_path=/$(realpath --relative-to=$ROOT_OUT $dst)
+      if [ $(get_level $name) -le $activate_level ]; then
+        cp -r $src $dst
+        conv_apex_manifest proto $dst/apex_manifest.json -o $dst/apex_manifest.pb
+        mkdir $dst/lib
+        echo " <apex-info moduleName=\"$name\" modulePath=\"$module_path\" preinstalledModulePath=\"$preinstalled_path\" isFactory=\"true\" isActive=\"true\" />" >> $apexInfo
+      else
+        echo " <apex-info moduleName=\"$name\" preinstalledModulePath=\"$preinstalled_path\" isFactory=\"true\" isActive=\"false\" />" >> $apexInfo
+      fi
+    done
+  fi
+done
+
+echo "</apex-info-list>" >> $apexInfo
