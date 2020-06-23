@@ -29,7 +29,6 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
   bool is_system_or_unrestricted_section = ctx.IsSystemSection() ||
                                            ctx.IsApexBinaryConfig() ||
                                            ctx.IsUnrestrictedSection();
-  bool is_vndklite = ctx.IsVndkliteConfig();
   // In the system section, we need to have an additional vndk namespace for
   // product apps. We must have a different name "vndk_product" for this
   // namespace. "vndk_product" namespace is used only from the native_loader for
@@ -77,9 +76,7 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
     ns.AddPermittedPath("/odm/${LIB}/egl");
     ns.AddPermittedPath("/vendor/${LIB}/hw");
     ns.AddPermittedPath("/vendor/${LIB}/egl");
-    if (!is_vndklite) {
-      ns.AddPermittedPath("/system/vendor/${LIB}/hw");
-    }
+    ns.AddPermittedPath("/system/vendor/${LIB}/hw");
     ns.AddPermittedPath("/system/vendor/${LIB}/egl");
 
     // This is exceptionally required since android.hidl.memory@1.0-impl.so is here
@@ -97,22 +94,20 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
         .AddSharedLib({Var("LLNDK_LIBRARIES_VENDOR")});
   }
 
-  if (!is_vndklite) {
-    if (is_system_or_unrestricted_section) {
-      if (vndk_user == VndkUserPartition::Vendor) {
-        // The "vndk" namespace links to the system namespace for LLNDK libs above
-        // and links to "sphal" namespace for vendor libs. The ordering matters;
-        // the system namespace has higher priority than the "sphal" namespace.
-        ns.GetLink("sphal").AllowAllSharedLibs();
-      }
-    } else {
-      // [vendor] or [product] section
-      ns.GetLink("default").AllowAllSharedLibs();
+  if (is_system_or_unrestricted_section) {
+    if (vndk_user == VndkUserPartition::Vendor) {
+      // The "vndk" namespace links to the system namespace for LLNDK libs above
+      // and links to "sphal" namespace for vendor libs. The ordering matters;
+      // the system namespace has higher priority than the "sphal" namespace.
+      ns.GetLink("sphal").AllowAllSharedLibs();
+    }
+  } else {
+    // [vendor] or [product] section
+    ns.GetLink("default").AllowAllSharedLibs();
 
-      if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
-        ns.GetLink("vndk_in_system")
-            .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
-      }
+    if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
+      ns.GetLink("vndk_in_system")
+          .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
     }
   }
 
