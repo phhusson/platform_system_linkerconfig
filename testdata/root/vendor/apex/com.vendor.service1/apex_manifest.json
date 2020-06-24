@@ -1,0 +1,11 @@
+{
+  "name": "com.vendor.service1",
+  "version": 1,
+  "requireNativeLibs": [
+    "libbinder_ndk.so",
+    "libc.so",
+    "libdl.so",
+    "liblog.so",
+    "libm.so"
+  ]
+}
