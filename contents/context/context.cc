@@ -55,11 +55,6 @@ bool Context::IsLegacyConfig() const {
   return current_linkerconfig_type_ == LinkerConfigType::Legacy;
 }
 
-// TODO(b/153944540) : Remove VNDK Lite supports
-bool Context::IsVndkliteConfig() const {
-  return current_linkerconfig_type_ == LinkerConfigType::Vndklite;
-}
-
 bool Context::IsRecoveryConfig() const {
   return current_linkerconfig_type_ == LinkerConfigType::Recovery;
 }
@@ -73,8 +68,7 @@ void Context::SetCurrentSection(SectionType section_type) {
 }
 
 std::string Context::GetSystemNamespaceName() const {
-  return (IsVendorSection() || IsProductSection() || IsApexBinaryConfig()) &&
-                 !IsVndkliteConfig()
+  return IsVendorSection() || IsProductSection() || IsApexBinaryConfig()
              ? "system"
              : "default";
 }
@@ -125,7 +119,7 @@ std::string Var(const std::string& name, const std::string& default_value) {
 }
 
 bool Context::IsSectionVndkEnabled() const {
-  if (!IsVndkAvailable() || android::linkerconfig::modules::IsVndkLiteDevice()) {
+  if (!IsVndkAvailable()) {
     return false;
   }
   if (IsVendorSection()) {
