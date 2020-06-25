@@ -318,6 +318,11 @@ int main(int argc, char* argv[]) {
     PrintUsage(EXIT_FAILURE);
   }
 
+  if (android::linkerconfig::modules::IsVndkLiteDevice()) {
+    LOG(ERROR) << "Linkerconfig no longer supports VNDK-Lite configuration";
+    exit(EXIT_FAILURE);
+  }
+
   LoadVariables(args);
   Context ctx = GetContext(args);
 
