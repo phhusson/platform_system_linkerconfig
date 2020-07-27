@@ -24,6 +24,7 @@
 #include "linkerconfig/namespace.h"
 
 using android::linkerconfig::modules::ApexInfo;
+using android::linkerconfig::modules::IsProductVndkVersionDefined;
 using android::linkerconfig::modules::Namespace;
 
 namespace {
@@ -59,6 +60,10 @@ Namespace BuildApexPlatformNamespace([[maybe_unused]] const Context& ctx) {
   Namespace ns("system", /*is_isolated=*/true, /*is_visible=*/true);
 
   ns.AddSearchPath("/system/${LIB}");
+  ns.AddSearchPath(Var("SYSTEM_EXT") + "/${LIB}");
+  if (!IsProductVndkVersionDefined()) {
+    ns.AddSearchPath(Var("PRODUCT") + "/${LIB}");
+  }
   ns.AddPermittedPath("/apex/com.android.runtime/${LIB}/bionic");
 
   ns.AddProvides(GetSystemStubLibraries());
