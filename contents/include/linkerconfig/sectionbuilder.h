@@ -43,6 +43,7 @@ SectionBuilder BuildUnrestrictedSection;
 SectionBuilder BuildLegacySection;
 SectionBuilder BuildPostInstallSection;
 SectionBuilder BuildRecoverySection;
+SectionBuilder BuildIsolatedSection;
 ApexSectionBuilder BuildApexDefaultSection;
 ApexSectionBuilder BuildApexArtSection;
 }  // namespace contents

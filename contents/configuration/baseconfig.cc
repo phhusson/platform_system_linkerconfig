@@ -75,6 +75,11 @@ android::linkerconfig::modules::Configuration CreateBaseConfiguration(
       {"/data/nativetest/unrestricted", "unrestricted"},
       {"/data/nativetest64/unrestricted", "unrestricted"},
 
+      // Create isolated namespace for development purpose.
+      // This isolates binary from the system so binaries and libraries from
+      // this location can be separated from system libraries.
+      {"/data/local/tmp/isolated", "isolated"},
+
       // TODO(b/123864775): Ensure tests are run from /data/nativetest{,64} or
       // (if necessary) the unrestricted subdirs above. Then clean this up.
       {"/data/local/tmp", "unrestricted"},
@@ -100,6 +105,8 @@ android::linkerconfig::modules::Configuration CreateBaseConfiguration(
 
   sections.emplace_back(BuildUnrestrictedSection(ctx));
   sections.emplace_back(BuildPostInstallSection(ctx));
+
+  sections.emplace_back(BuildIsolatedSection(ctx));
 
   return android::linkerconfig::modules::Configuration(std::move(sections),
                                                        dirToSection);
