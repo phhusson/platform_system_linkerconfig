@@ -54,8 +54,7 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
 
   if (ctx.IsApexBinaryConfig()) {
     if (ctx.IsVndkAvailable()) {
-      ns.GetLink("vndk").AddSharedLib(
-          Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR", ""));
+      ns.AddRequires(std::vector{":vndksp"});
       ns.GetLink(ctx.GetSystemNamespaceName())
           .AddSharedLib(Var("LLNDK_LIBRARIES_VENDOR", ""));
     }
