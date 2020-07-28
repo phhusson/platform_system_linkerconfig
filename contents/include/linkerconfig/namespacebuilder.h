@@ -40,6 +40,7 @@ NamespaceBuilder BuildProductDefaultNamespace;
 NamespaceBuilder BuildUnrestrictedDefaultNamespace;
 NamespaceBuilder BuildPostInstallNamespace;
 NamespaceBuilder BuildRecoveryDefaultNamespace;
+NamespaceBuilder BuildIsolatedDefaultNamespace;
 
 modules::Namespace BuildVndkNamespace(const Context& ctx,
                                       VndkUserPartition vndk_user);
