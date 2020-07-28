@@ -68,9 +68,7 @@ void Context::SetCurrentSection(SectionType section_type) {
 }
 
 std::string Context::GetSystemNamespaceName() const {
-  return IsVendorSection() || IsProductSection() || IsApexBinaryConfig()
-             ? "system"
-             : "default";
+  return IsSystemSection() || IsUnrestrictedSection() ? "default" : "system";
 }
 
 void Context::SetCurrentLinkerConfigType(LinkerConfigType config_type) {
