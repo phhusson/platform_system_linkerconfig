@@ -2,6 +2,7 @@
   "name": "com.vendor.service1",
   "version": 1,
   "requireNativeLibs": [
+    ":vndk",
     "libbinder_ndk.so",
     "libc.so",
     "libdl.so",
