@@ -16,6 +16,7 @@
 
 #include "linkerconfig/sectionbuilder.h"
 
+#include <functional>
 #include <vector>
 
 #include "linkerconfig/common.h"
@@ -25,12 +26,22 @@
 
 using android::linkerconfig::contents::SectionType;
 using android::linkerconfig::modules::ApexInfo;
+using android::linkerconfig::modules::LibProvider;
+using android::linkerconfig::modules::LibProviders;
 using android::linkerconfig::modules::Namespace;
 using android::linkerconfig::modules::Section;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
+
+// Builds default section for the apex
+// For com.android.foo,
+//   dir.com.android.foo = /apex/com.android.foo/bin
+//   [com.android.foo]
+//   additional.namespaces = system
+//   namespace.default....
+//   namespace.system...
 Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
   std::vector<Namespace> namespaces;
 
@@ -49,8 +60,21 @@ Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
     }
   }
 
-  return BuildSection(ctx, apex_info.name, std::move(namespaces), {});
+  // add "vndk" namespace when an apex requires ":vndk"(alias)
+  LibProviders libs_providers;
+  if (ctx.IsVndkAvailable()) {
+    // TODO(b/159576928): choose partition from the location of the apex
+    libs_providers[":vndk"] = LibProvider{
+        "vndk",
+        std::bind(BuildVndkNamespace, ctx, VndkUserPartition::Vendor),
+        {Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR"),
+         Var("VNDK_CORE_LIBRARIES_VENDOR")},
+    };
+  }
+  return BuildSection(
+      ctx, apex_info.name, std::move(namespaces), {}, libs_providers);
 }
+
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android
