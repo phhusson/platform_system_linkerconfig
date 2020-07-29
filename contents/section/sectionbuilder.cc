@@ -25,12 +25,14 @@ namespace android {
 namespace linkerconfig {
 namespace contents {
 
+using modules::LibProviders;
 using modules::Namespace;
 using modules::Section;
 
 Section BuildSection(const Context& ctx, const std::string& name,
                      std::vector<Namespace>&& namespaces,
-                     const std::set<std::string>& visible_apexes) {
+                     const std::set<std::string>& visible_apexes,
+                     const LibProviders& providers) {
   // add additional visible APEX namespaces
   for (const auto& apex : ctx.GetApexModules()) {
     if (visible_apexes.find(apex.name) != visible_apexes.end()) {
@@ -41,7 +43,7 @@ Section BuildSection(const Context& ctx, const std::string& name,
 
   // resolve provide/require constraints
   Section section(std::move(name), std::move(namespaces));
-  if (auto res = section.Resolve(ctx); !res.ok()) {
+  if (auto res = section.Resolve(ctx, providers); !res.ok()) {
     LOG(ERROR) << res.error();
   }
 
