@@ -170,3 +170,34 @@ genrule {
     tools: ["linkerconfig"],
     cmd: "$(location linkerconfig) --recovery --target $(genDir)",
 }
+
+genrule {
+    name: "linkerconfig_diff_test_host_tools",
+    out: ["linkerconfig_diff_test_host_tools.zip"],
+    tools: ["conv_apex_manifest", "linkerconfig", "soong_zip"],
+    cmd: "HOST_OUT_BIN=$$(dirname $(location conv_apex_manifest)) && " +
+         "HOST_SOONG_OUT=$$(dirname $$HOST_OUT_BIN) && " +
+         "LIBCPLUSPLUS=$$(find $${HOST_SOONG_OUT}/lib64 -name \"libc++.*\") && " +
+         "mkdir -p $(genDir)/tools/bin && " +
+         "mkdir -p $(genDir)/tools/lib64 && " +
+         "cp $(location conv_apex_manifest) $(genDir)/tools/bin && " +
+         "cp $(location linkerconfig) $(genDir)/tools/bin && " +
+         "cp $$LIBCPLUSPLUS $(genDir)/tools/lib64 && " +
+         "$(location soong_zip) -C $(genDir)/tools -D $(genDir)/tools -o $(out)",
+}
+
+sh_test_host {
+    name: "linkerconfig_diff_test",
+    src: "rundiff.sh",
+    filename: "linkerconfig_diff_test.sh",
+    test_suites: ["general-tests"],
+    test_config: "linkerconfig_diff_test.xml",
+    data: [
+        "testdata/**/*",
+        "testdata/**/.*", // copy .keep files
+        // workaround to use host tools(conv_apex_manifest, linkerconfig) on build server
+        // ":conv_apex_manifest",
+        // ":linkerconfig",
+        ":linkerconfig_diff_test_host_tools",
+    ],
+}
