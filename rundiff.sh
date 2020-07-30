@@ -27,6 +27,11 @@ if [[ $(basename $0) == "rundiff.sh" ]]; then
     exit 1
   fi
   $ANDROID_BUILD_TOP/build/soong/soong_ui.bash --make-mode linkerconfig conv_apex_manifest
+else
+  # workaround to use host tools(conv_apex_manifest, linkerconfig) on build server
+  unzip -qqo linkerconfig_diff_test_host_tools.zip -d tools
+  export PATH=$(realpath tools)/bin:$PATH
+  export LD_LIBRARY_PATH=$(realpath tools)/lib64:$LD_LIBRARY_PATH
 fi
 
 # $1: tmp root
@@ -42,15 +47,15 @@ function run_linkerconfig_to {
 
   TMP_ROOT=$(mktemp -d -t linkerconfig-root-XXXXXXXX)
 
-  ./prepare_root.sh --in testdata/root --out $TMP_ROOT
+  ./testdata/prepare_root.sh --in testdata/root --out $TMP_ROOT
   mkdir -p $1/stage0
   linkerconfig -v R -r $TMP_ROOT -t $1/stage0
 
-  ./prepare_root.sh --bootstrap --in testdata/root --out $TMP_ROOT
+  ./testdata/prepare_root.sh --bootstrap --in testdata/root --out $TMP_ROOT
   mkdir -p $1/stage1
   linkerconfig -v R -r $TMP_ROOT -t $1/stage1
 
-  ./prepare_root.sh --all --in testdata/root --out $TMP_ROOT
+  ./testdata/prepare_root.sh --all --in testdata/root --out $TMP_ROOT
   mkdir -p $1/stage2
   linkerconfig -v R -r $TMP_ROOT -t $1/stage2
 
