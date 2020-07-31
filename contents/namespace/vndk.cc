@@ -53,20 +53,28 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
   std::vector<std::string> vndk_paths;
   std::string vndk_version;
   if (vndk_user == VndkUserPartition::Product) {
-    lib_paths = {"/product/${LIB}/"};
+    lib_paths = {Var("PRODUCT") + "/${LIB}"};
     vndk_version = Var("PRODUCT_VNDK_VERSION");
   } else {
     // default for vendor
-    lib_paths = {"/odm/${LIB}/", "/vendor/${LIB}/"};
+    lib_paths = {"/odm/${LIB}", "/vendor/${LIB}"};
     vndk_version = Var("VENDOR_VNDK_VERSION");
   }
 
+  // Search order:
+  // 1. VNDK Extensions
+  // 2. VNDK APEX
+  // 3. vendor/lib or product/lib to allow extensions to use them
+
+  // 1. VNDK Extensions
   for (const auto& lib_path : lib_paths) {
-    ns.AddSearchPath(lib_path + "vndk-sp");
+    ns.AddSearchPath(lib_path + "/vndk-sp");
     if (!is_system_or_unrestricted_section) {
-      ns.AddSearchPath(lib_path + "vndk");
+      ns.AddSearchPath(lib_path + "/vndk");
     }
   }
+
+  // 2. VNDK APEX
   ns.AddSearchPath("/apex/com.android.vndk.v" + vndk_version + "/${LIB}");
 
   if (is_system_or_unrestricted_section &&
@@ -84,6 +92,11 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
                         Var("VENDOR_VNDK_VERSION") + "/${LIB}/hw");
   }
 
+  // 3. vendor/lib or product/lib
+  for (const auto& lib_path : lib_paths) {
+    ns.AddSearchPath(lib_path);
+  }
+
   // For the non-system section, the links should be identical to that of the
   // 'vndk_in_system' namespace, except the links to 'default' and 'vndk_in_system'.
   if (vndk_user == VndkUserPartition::Product) {
@@ -94,17 +107,7 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
         .AddSharedLib({Var("LLNDK_LIBRARIES_VENDOR")});
   }
 
-  if (is_system_or_unrestricted_section) {
-    if (vndk_user == VndkUserPartition::Vendor) {
-      // The "vndk" namespace links to the system namespace for LLNDK libs above
-      // and links to "sphal" namespace for vendor libs. The ordering matters;
-      // the system namespace has higher priority than the "sphal" namespace.
-      ns.GetLink("sphal").AllowAllSharedLibs();
-    }
-  } else {
-    // [vendor] or [product] section
-    ns.GetLink("default").AllowAllSharedLibs();
-
+  if (ctx.IsProductSection() || ctx.IsVendorSection()) {
     if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
       ns.GetLink("vndk_in_system")
           .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
