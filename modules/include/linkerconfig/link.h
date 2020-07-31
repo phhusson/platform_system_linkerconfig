@@ -42,6 +42,9 @@ class Link {
   void WriteConfig(ConfigWriter& writer) const;
 
   // accessors
+  bool Empty() const {
+    return !allow_all_shared_libs_ && shared_libs_.empty();
+  }
   std::vector<std::string> GetSharedLibs() const {
     return shared_libs_;
   }
