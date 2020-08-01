@@ -50,18 +50,12 @@ Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
   namespaces.emplace_back(BuildApexDefaultNamespace(ctx, apex_info));
   namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
 
-  // SWCodec APEX requires extra access to SPHAL (and corresponding VNDK)
-  // namespace(s)
-  if (apex_info.name == "com.android.media.swcodec") {
-    namespaces.emplace_back(BuildSphalNamespace(ctx));
-    if (ctx.IsVndkAvailable()) {
-      namespaces.emplace_back(
-          BuildVndkNamespace(ctx, VndkUserPartition::Vendor));
-    }
-  }
-
-  // add "vndk" namespace when an apex requires ":vndk"(alias)
   LibProviders libs_providers;
+  libs_providers[":sphal"] = LibProvider{
+      "sphal",
+      std::bind(BuildSphalNamespace, ctx),
+      {},
+  };
   if (ctx.IsVndkAvailable()) {
     // TODO(b/159576928): choose partition from the location of the apex
     libs_providers[":vndk"] = LibProvider{
@@ -69,6 +63,11 @@ Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
         std::bind(BuildVndkNamespace, ctx, VndkUserPartition::Vendor),
         {Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR"),
          Var("VNDK_CORE_LIBRARIES_VENDOR")},
+    };
+    libs_providers[":vndksp"] = LibProvider{
+        "vndk",
+        std::bind(BuildVndkNamespace, ctx, VndkUserPartition::Vendor),
+        {Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR")},
     };
   }
   return BuildSection(
