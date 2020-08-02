@@ -61,15 +61,16 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
   writer.WriteVars(prefix + "asan.permitted.paths", asan_permitted_paths_);
   writer.WriteVars(prefix + "whitelisted", whitelisted_);
 
-  if (!links_.empty()) {
-    std::vector<std::string> link_list;
-    link_list.reserve(links_.size());
-    for (const auto& link : links_) {
-      link_list.push_back(link.To());
-    }
+  std::vector<std::string> link_list;
+  link_list.reserve(links_.size());
+  for (const auto& link : links_) {
+    if (link.Empty()) continue;
+    link_list.push_back(link.To());
+  }
+  if (!link_list.empty()) {
     writer.WriteLine(prefix + "links = " + android::base::Join(link_list, ","));
-
     for (const auto& link : links_) {
+      if (link.Empty()) continue;
       link.WriteConfig(writer);
     }
   }
