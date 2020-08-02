@@ -63,7 +63,7 @@ namespace.test_namespace.link.target_namespace1.shared_libs += lib3.so
 namespace.test_namespace.link.target_namespace2.allow_all_shared_libs = true
 )";
 
-constexpr const char* kExpectedNamespaceWithWhitelisted =
+constexpr const char* kExpectedNamespaceWithAllowedLibs =
     R"(namespace.test_namespace.isolated = false
 namespace.test_namespace.search.paths = /search_path1
 namespace.test_namespace.search.paths += /apex/search_path2
@@ -75,8 +75,8 @@ namespace.test_namespace.asan.search.paths += /apex/search_path2
 namespace.test_namespace.asan.permitted.paths = /data/asan/permitted_path1
 namespace.test_namespace.asan.permitted.paths += /permitted_path1
 namespace.test_namespace.asan.permitted.paths += /apex/permitted_path2
-namespace.test_namespace.whitelisted = whitelisted_path1
-namespace.test_namespace.whitelisted += whitelisted_path2
+namespace.test_namespace.allowed_libs = allowed_libs_path1
+namespace.test_namespace.allowed_libs += allowed_libs_path2
 )";
 
 TEST(linkerconfig_namespace, simple_namespace) {
@@ -99,16 +99,16 @@ TEST(linkerconfig_namespace, namespace_with_links) {
   ASSERT_EQ(config, kExpectedNamespaceWithLinkConfig);
 }
 
-TEST(linkerconfig_namespace, namespace_with_whitelisted) {
+TEST(linkerconfig_namespace, namespace_with_allowed_libs) {
   ConfigWriter writer;
   auto ns = CreateNamespaceWithPaths("test_namespace", false, false);
-  ns.AddWhitelisted("whitelisted_path1");
-  ns.AddWhitelisted("whitelisted_path2");
+  ns.AddAllowedLib("allowed_libs_path1");
+  ns.AddAllowedLib("allowed_libs_path2");
   ns.WriteConfig(writer);
 
   auto config = writer.ToString();
 
-  ASSERT_EQ(config, kExpectedNamespaceWithWhitelisted);
+  ASSERT_EQ(config, kExpectedNamespaceWithAllowedLibs);
 }
 
 TEST(linkerconfig_namespace, namespace_links_should_be_ordered) {
