@@ -51,7 +51,7 @@ class Namespace {
   Link& GetLink(const std::string& target_namespace);
 
   void WriteConfig(ConfigWriter& writer);
-  void AddWhitelisted(const std::string& path);
+  void AddAllowedLib(const std::string& path);
 
   std::string GetName() const;
 
@@ -102,7 +102,7 @@ class Namespace {
   std::vector<std::string> permitted_paths_;
   std::vector<std::string> asan_search_paths_;
   std::vector<std::string> asan_permitted_paths_;
-  std::vector<std::string> whitelisted_;
+  std::vector<std::string> allowed_libs_;
   std::vector<Link> links_;
   std::set<std::string> provides_;
   std::set<std::string> requires_;
