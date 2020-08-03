@@ -59,7 +59,7 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
   writer.WriteVars(prefix + "permitted.paths", permitted_paths_);
   writer.WriteVars(prefix + "asan.search.paths", asan_search_paths_);
   writer.WriteVars(prefix + "asan.permitted.paths", asan_permitted_paths_);
-  writer.WriteVars(prefix + "whitelisted", whitelisted_);
+  writer.WriteVars(prefix + "allowed_libs", allowed_libs_);
 
   std::vector<std::string> link_list;
   link_list.reserve(links_.size());
@@ -94,8 +94,8 @@ void Namespace::AddPermittedPath(const std::string& path) {
   asan_permitted_paths_.push_back(path);
 }
 
-void Namespace::AddWhitelisted(const std::string& path) {
-  whitelisted_.push_back(path);
+void Namespace::AddAllowedLib(const std::string& path) {
+  allowed_libs_.push_back(path);
 }
 
 std::string Namespace::GetName() const {
