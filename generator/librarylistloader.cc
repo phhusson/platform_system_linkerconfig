@@ -64,7 +64,7 @@ Result<LibraryList> GetLibrariesFromFile(std::string file_path) {
 namespace android {
 namespace linkerconfig {
 namespace generator {
-std::string GetLibrariesString(std::string library_file_path) {
+std::string GetLibrariesString(const std::string& library_file_path) {
   auto library_list_result = GetLibrariesFromFile(library_file_path);
   if (library_list_result.ok()) {
     return android::base::Join(*library_list_result, ':');
@@ -75,8 +75,9 @@ std::string GetLibrariesString(std::string library_file_path) {
   }
 }
 
-std::string GetPublicLibrariesString(std::string library_file_path,
-                                     std::string private_library_file_path) {
+std::string GetPublicLibrariesString(
+    const std::string& library_file_path,
+    const std::string& private_library_file_path) {
   auto library_list = GetLibrariesFromFile(library_file_path);
   auto private_library_list = GetLibrariesFromFile(private_library_file_path);
 
@@ -104,8 +105,9 @@ std::string GetPublicLibrariesString(std::string library_file_path,
   return android::base::Join(public_library_list, ':');
 }
 
-std::string GetPrivateLibrariesString(std::string library_file_path,
-                                      std::string private_library_file_path) {
+std::string GetPrivateLibrariesString(
+    const std::string& library_file_path,
+    const std::string& private_library_file_path) {
   auto library_list = GetLibrariesFromFile(library_file_path);
   auto private_library_list = GetLibrariesFromFile(private_library_file_path);
 
