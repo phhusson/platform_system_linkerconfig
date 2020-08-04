@@ -60,15 +60,12 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
 
   std::string info_list_file = apex_root + "/apex-info-list.xml";
   auto info_list = com::android::apex::readApexInfoList(info_list_file.c_str());
-  if (info_list.has_value()) {
+  if (info_list) {
     for (const auto& info : info_list->getApexInfo()) {
       apexes[info.getModuleName()].original_path =
           info.getPreinstalledModulePath();
     }
-  } else {
-    PLOG(ERROR) << "Can't read " << info_list_file;
   }
-
   return apexes;
 }
 
