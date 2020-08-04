@@ -27,10 +27,8 @@ namespace contents {
 Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
                              VndkUserPartition vndk_user) {
   bool is_system_or_unrestricted_section = ctx.IsSystemSection() ||
+                                           ctx.IsApexBinaryConfig() ||
                                            ctx.IsUnrestrictedSection();
-  if (ctx.IsApexBinaryConfig()) {
-    is_system_or_unrestricted_section = ctx.GetCurrentApex().InSystem();
-  }
   // In the system section, we need to have an additional vndk namespace for
   // product apps. We must have a different name "vndk_product" for this
   // namespace. "vndk_product" namespace is used only from the native_loader for
