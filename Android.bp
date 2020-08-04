@@ -26,7 +26,19 @@ cc_defaults {
         "libapexutil",
         "libbase",
         "liblog",
+        "libxml2",
     ],
+    target: {
+        host: {
+            static_libs: [
+                "libicui18n",
+                "libicuuc",
+            ],
+        },
+        not_windows: {
+            static_libs: ["libicuuc_stubdata"],
+        },
+    },
     host_supported: true,
 }
 
@@ -47,6 +59,7 @@ cc_library_static {
     srcs: [
         "modules/*.cc",
     ],
+    generated_sources: ["apex-info-list"],
 }
 
 cc_library_static {
