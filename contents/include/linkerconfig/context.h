@@ -49,14 +49,12 @@ class Context : public modules::BaseContext {
  public:
   Context()
       : current_section_(SectionType::System),
-        current_linkerconfig_type_(LinkerConfigType::Default),
-        current_apex_(nullptr) {
+        current_linkerconfig_type_(LinkerConfigType::Default) {
   }
   bool IsSystemSection() const;
   bool IsVendorSection() const;
   bool IsProductSection() const;
   bool IsUnrestrictedSection() const;
-  const modules::ApexInfo& GetCurrentApex() const;
 
   bool IsDefaultConfig() const;
   bool IsLegacyConfig() const;
@@ -65,7 +63,6 @@ class Context : public modules::BaseContext {
 
   void SetCurrentSection(SectionType value);
   void SetCurrentLinkerConfigType(LinkerConfigType value);
-  void SetCurrentApex(const modules::ApexInfo* apex);
 
   // Returns true if vndk apex is available
   bool IsVndkAvailable() const;
@@ -85,7 +82,6 @@ class Context : public modules::BaseContext {
 
   SectionType current_section_;
   LinkerConfigType current_linkerconfig_type_;
-  const modules::ApexInfo* current_apex_;
 };
 
 std::string Var(const std::string& name);
