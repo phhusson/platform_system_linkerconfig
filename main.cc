@@ -214,7 +214,8 @@ Configuration GetConfiguration(Context& ctx) {
   return android::linkerconfig::contents::CreateBaseConfiguration(ctx);
 }
 
-Result<void> GenerateConfiguration(Configuration config, std::string dir_path,
+Result<void> GenerateConfiguration(Configuration config,
+                                   const std::string& dir_path,
                                    bool update_permission) {
   std::string file_path = "";
   if (dir_path != "") {
