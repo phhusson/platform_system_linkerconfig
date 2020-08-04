@@ -27,7 +27,6 @@ struct ApexInfo {
   std::string name;
   std::string namespace_name;
   std::string path;
-  std::string original_path;
   std::vector<std::string> provide_libs;
   std::vector<std::string> require_libs;
   std::vector<std::string> jni_libs;
@@ -50,8 +49,6 @@ struct ApexInfo {
     std::replace(
         this->namespace_name.begin(), this->namespace_name.end(), '.', '_');
   }
-
-  bool InSystem() const;
 };
 
 std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root);
