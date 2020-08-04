@@ -63,11 +63,6 @@ bool Context::IsApexBinaryConfig() const {
   return current_linkerconfig_type_ == LinkerConfigType::ApexBinary;
 }
 
-const ApexInfo& Context::GetCurrentApex() const {
-  CHECK(current_apex_ != nullptr) << "only valid when IsApexBinaryConfig()";
-  return *current_apex_;
-}
-
 void Context::SetCurrentSection(SectionType section_type) {
   current_section_ = section_type;
 }
@@ -78,10 +73,6 @@ std::string Context::GetSystemNamespaceName() const {
 
 void Context::SetCurrentLinkerConfigType(LinkerConfigType config_type) {
   current_linkerconfig_type_ = config_type;
-}
-
-void Context::SetCurrentApex(const ApexInfo* apex) {
-  current_apex_ = apex;
 }
 
 bool Context::IsVndkAvailable() const {
@@ -136,12 +127,7 @@ bool Context::IsSectionVndkEnabled() const {
       android::linkerconfig::modules::IsProductVndkVersionDefined()) {
     return true;
   }
-  if (IsApexBinaryConfig()) {
-    // section for non-system APEX (aka Vendor APEX)
-    // can be seen as vndk-enabled because the apex either bundles
-    // with vndk libs in it or relies on VNDK from "vndk" namespace
-    return !GetCurrentApex().InSystem();
-  }
+
   return false;
 }
 
