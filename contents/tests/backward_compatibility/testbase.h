@@ -17,10 +17,13 @@
 
 #include <android-base/strings.h>
 
+#include <algorithm>
+
 #include "linkerconfig/namespace.h"
 #include "linkerconfig/variables.h"
 
-inline void MockVndkVariables(std::string partition, std::string vndk_ver) {
+inline void MockVndkVariables(const std::string& partition,
+                              const std::string& vndk_ver) {
   using android::linkerconfig::modules::Variables;
 
   Variables::AddValue(partition + "_VNDK_VERSION", vndk_ver);
@@ -55,13 +58,9 @@ inline void MockVariables(std::string vndk_ver = "Q") {
 
 inline bool ContainsPath(const std::vector<std::string>& path_list,
                          const std::string& path) {
-  for (auto item : path_list) {
-    if (item == path) {
-      return true;
-    }
-  }
-
-  return false;
+  return std::any_of(path_list.begin(),
+                     path_list.end(),
+                     [&](const std::string& item) { return item == path; });
 }
 
 inline bool ContainsSearchPath(

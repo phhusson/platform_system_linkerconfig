@@ -50,7 +50,6 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
                /*is_visible=*/is_system_or_unrestricted_section);
 
   std::vector<std::string> lib_paths;
-  std::vector<std::string> vndk_paths;
   std::string vndk_version;
   if (vndk_user == VndkUserPartition::Product) {
     lib_paths = {Var("PRODUCT") + "/${LIB}"};

@@ -18,6 +18,8 @@
 
 #include <android-base/strings.h>
 
+#include <algorithm>
+
 #include "linkerconfig/apex.h"
 #include "linkerconfig/log.h"
 
@@ -64,9 +66,10 @@ void Namespace::WriteConfig(ConfigWriter& writer) {
   if (!links_.empty()) {
     std::vector<std::string> link_list;
     link_list.reserve(links_.size());
-    for (const auto& link : links_) {
-      link_list.push_back(link.To());
-    }
+    std::transform(links_.begin(),
+                   links_.end(),
+                   std::back_inserter(link_list),
+                   [&](const auto& link) { return link.To(); });
     writer.WriteLine(prefix + "links = " + android::base::Join(link_list, ","));
 
     for (const auto& link : links_) {

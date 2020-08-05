@@ -55,7 +55,7 @@ struct ApexTest : ::testing::Test {
         << "Failed to create a directory: " << dir_path;
   }
 
-  void WriteFile(std::string file, std::string content) {
+  void WriteFile(const std::string& file, const std::string& content) {
     std::string file_path = root + file;
     Mkdir(::android::base::Dirname(file_path));
     ASSERT_TRUE(::android::base::WriteStringToFile(content, file_path))
