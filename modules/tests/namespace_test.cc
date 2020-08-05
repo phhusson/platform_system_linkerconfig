@@ -116,7 +116,7 @@ TEST(linkerconfig_namespace, namespace_links_should_be_ordered) {
 
   Namespace ns("test_namespace");
   for (auto link : expected_links) {
-    ns.GetLink(link);
+    ns.GetLink(link).AddSharedLib("lib");
   }
 
   ConfigWriter writer;
