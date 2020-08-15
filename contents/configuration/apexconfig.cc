@@ -31,6 +31,7 @@ android::linkerconfig::modules::Configuration CreateApexConfiguration(
 
   ctx.SetCurrentLinkerConfigType(
       android::linkerconfig::contents::LinkerConfigType::ApexBinary);
+  ctx.SetCurrentApex(&apex_info);
 
   std::vector<DirToSection> dirToSection = {
       {apex_info.path + "/bin", apex_info.name}};
