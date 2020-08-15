@@ -15,11 +15,18 @@
  */
 #include "linkerconfig/apex.h"
 
+#include <android-base/strings.h>
+#include <apexutil.h>
 #include <unistd.h>
 
-#include <apexutil.h>
-
+#include "linkerconfig/environment.h"
+#include "linkerconfig/log.h"
 #include "linkerconfig/stringutil.h"
+
+// include after log.h to avoid macro redefnition error
+#include "com_android_apex.h"
+
+using android::base::StartsWith;
 
 namespace {
 
@@ -50,7 +57,26 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
                   has_lib);
     apexes.emplace(manifest.name(), std::move(info));
   }
+
+  std::string info_list_file = apex_root + "/apex-info-list.xml";
+  auto info_list = com::android::apex::readApexInfoList(info_list_file.c_str());
+  if (info_list.has_value()) {
+    for (const auto& info : info_list->getApexInfo()) {
+      apexes[info.getModuleName()].original_path =
+          info.getPreinstalledModulePath();
+    }
+  } else {
+    PLOG(ERROR) << "Can't read " << info_list_file;
+  }
+
   return apexes;
+}
+
+bool ApexInfo::InSystem() const {
+  return StartsWith(original_path, "/system/apex/") ||
+         StartsWith(original_path, "/system_ext/apex/") ||
+         (!IsProductVndkVersionDefined() &&
+          StartsWith(original_path, "/product/apex/"));
 }
 
 }  // namespace modules
