@@ -184,18 +184,20 @@ Result<void> UpdatePermission([[maybe_unused]] const std::string& file_path) {
 }
 
 Context GetContext(ProgramArgs args) {
-  auto apex_list = android::linkerconfig::modules::ScanActiveApexes(args.root);
   Context ctx;
-  for (auto const& apex_item : apex_list) {
-    auto apex_info = apex_item.second;
-    if (apex_info.has_bin || apex_info.has_lib) {
-      ctx.AddApexModule(std::move(apex_info));
-    }
-  }
   if (args.strict) {
     ctx.SetStrictMode(true);
   }
-  android::linkerconfig::contents::RegisterApexNamespaceBuilders(ctx);
+  if (!args.is_recovery) {
+    auto apex_list = android::linkerconfig::modules::ScanActiveApexes(args.root);
+    for (auto const& apex_item : apex_list) {
+      auto apex_info = apex_item.second;
+      if (apex_info.has_bin || apex_info.has_lib) {
+        ctx.AddApexModule(std::move(apex_info));
+      }
+    }
+    android::linkerconfig::contents::RegisterApexNamespaceBuilders(ctx);
+  }
   return ctx;
 }
 
