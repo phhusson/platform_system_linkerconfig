@@ -82,6 +82,16 @@ bool ApexInfo::InSystem() const {
           StartsWith(original_path, "/product/apex/"));
 }
 
+bool ApexInfo::InProduct() const {
+  return IsProductVndkVersionDefined() &&
+         StartsWith(original_path, "/product/apex/");
+}
+
+bool ApexInfo::InVendor() const {
+  return StartsWith(original_path, "/vendor/apex/") ||
+         StartsWith(original_path, "/odm/apex/");
+}
+
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
