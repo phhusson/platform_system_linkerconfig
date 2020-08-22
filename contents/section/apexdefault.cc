@@ -57,17 +57,22 @@ Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
       {},
   };
   if (ctx.IsVndkAvailable()) {
-    // TODO(b/159576928): choose partition from the location of the apex
+    VndkUserPartition user_partition = VndkUserPartition::Vendor;
+    std::string user_partition_suffix = "VENDOR";
+    if (apex_info.InProduct()) {
+      user_partition = VndkUserPartition::Product;
+      user_partition_suffix = "PRODUCT";
+    }
     libs_providers[":vndk"] = LibProvider{
         "vndk",
-        std::bind(BuildVndkNamespace, ctx, VndkUserPartition::Vendor),
-        {Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR"),
-         Var("VNDK_CORE_LIBRARIES_VENDOR")},
+        std::bind(BuildVndkNamespace, ctx, user_partition),
+        {Var("VNDK_SAMEPROCESS_LIBRARIES_" + user_partition_suffix),
+         Var("VNDK_CORE_LIBRARIES_" + user_partition_suffix)},
     };
     libs_providers[":vndksp"] = LibProvider{
         "vndk",
-        std::bind(BuildVndkNamespace, ctx, VndkUserPartition::Vendor),
-        {Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR")},
+        std::bind(BuildVndkNamespace, ctx, user_partition),
+        {Var("VNDK_SAMEPROCESS_LIBRARIES_" + user_partition_suffix)},
     };
   }
   return BuildSection(
