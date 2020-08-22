@@ -52,6 +52,8 @@ struct ApexInfo {
   }
 
   bool InSystem() const;
+  bool InProduct() const;
+  bool InVendor() const;
 };
 
 std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root);
