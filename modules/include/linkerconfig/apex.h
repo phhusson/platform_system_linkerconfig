@@ -32,6 +32,7 @@ struct ApexInfo {
   std::vector<std::string> require_libs;
   std::vector<std::string> jni_libs;
   std::vector<std::string> permitted_paths;
+  std::vector<std::string> public_libs;
   bool has_bin;
   bool has_lib;
 
