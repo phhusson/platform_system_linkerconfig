@@ -119,6 +119,9 @@ cc_binary {
             // libraries, so enable this only on device.
             static_executable: true,
         },
+        host: {
+            stl: "c++_static",  // Link libc++ statically.
+        },
     },
 }
 
