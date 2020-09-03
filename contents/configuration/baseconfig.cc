@@ -80,8 +80,15 @@ android::linkerconfig::modules::Configuration CreateBaseConfiguration(
       // this location can be separated from system libraries.
       {"/data/local/tmp/isolated", "isolated"},
 
-      // TODO(b/123864775): Ensure tests are run from /data/nativetest{,64} or
-      // (if necessary) the unrestricted subdirs above. Then clean this up.
+      // Create directories under shell-writable /data/local/tests for
+      // each namespace in order to run tests.
+      {"/data/local/tests/product", "product"},
+      {"/data/local/tests/system", "system"},
+      {"/data/local/tests/unrestricted", "unrestricted"},
+      {"/data/local/tests/vendor", "vendor"},
+
+      // TODO(b/123864775): Ensure tests are run from one of the subdirectories
+      // above.  Then clean this up.
       {"/data/local/tmp", "unrestricted"},
 
       {"/postinstall", "postinstall"},
