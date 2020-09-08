@@ -1,0 +1,4 @@
+# Test config with unknown section
+
+[test_section]
+visible = true

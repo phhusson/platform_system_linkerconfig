@@ -1,0 +1,5 @@
+# APEX module with permitted paths
+[permitted_path]
+/a
+/b/c
+/d/e/f

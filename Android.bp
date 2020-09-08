@@ -135,6 +135,9 @@ cc_test {
         "libgmock",
         "linkerconfig_modules",
     ],
+    data: [
+        "modules/tests/data/linker.config.*",
+    ],
 }
 
 cc_test {
