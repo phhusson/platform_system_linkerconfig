@@ -36,22 +36,6 @@ Namespace BuildArtNamespace([[maybe_unused]] const Context& ctx,
                /*is_visible=*/!ctx.IsVendorSection());
   InitializeWithApex(ns, apex);
 
-  if (ctx.IsApexBinaryConfig()) {
-    // JVMTI libraries used in ART testing are located under /data; dalvikvm has
-    // to be able to dlopen them.
-    // TODO(b/129534335): Move this to the linker configuration of the Test ART
-    // APEX when it is available.
-    ns.AddPermittedPath("/data");
-
-    // odex files are in /system/framework and /apex/com.android.art/javalib.
-    // dalvikvm has to be able to dlopen the files for CTS.
-    ns.AddPermittedPath("/system/framework");
-  }
-
-  // Primary boot image is loaded through dlopen, so pass the primary boot image
-  // to the list of paths.
-  ns.AddPermittedPath("/apex/com.android.art/javalib");
-
   // Need allow_all_shared_libs to let libart.so dlopen oat files in
   // /system/framework and /data.
   // TODO(b/130340935): Use a dynamically created linker namespace similar to
