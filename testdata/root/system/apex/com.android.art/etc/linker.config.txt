@@ -1,0 +1,6 @@
+#Test config
+
+[permitted_path]
+/data
+/system/framework
+/apex/com.android.art/javalib

@@ -15,25 +15,26 @@
  */
 #include "linkerconfig/apex.h"
 
+#include <android-base/file.h>
 #include <android-base/strings.h>
 #include <apexutil.h>
 #include <unistd.h>
+#include <vector>
 
+#include "linkerconfig/apexlinkerconfig.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/log.h"
 #include "linkerconfig/stringutil.h"
 
-// include after log.h to avoid macro redefnition error
+// include after log.h to avoid macro redefinition error
 #include "com_android_apex.h"
 
 using android::base::StartsWith;
 
 namespace {
-
 bool DirExists(const std::string& path) {
   return access(path.c_str(), F_OK) == 0;
 }
-
 }  // namespace
 
 namespace android {
@@ -46,6 +47,13 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
   for (const auto& [path, manifest] : apex::GetActivePackages(apex_root)) {
     bool has_bin = DirExists(path + "/bin");
     bool has_lib = DirExists(path + "/lib") || DirExists(path + "/lib64");
+
+    auto apex_config = ParseApexLinkerConfig(path + "/etc/linker.config.txt");
+    std::vector<std::string> permitted_paths;
+    if (apex_config.ok()) {
+      permitted_paths = std::move(apex_config->permitted_paths);
+    }
+
     ApexInfo info(manifest.name(),
                   TrimPrefix(path, root),
                   {manifest.providenativelibs().begin(),
@@ -53,6 +61,7 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
                   {manifest.requirenativelibs().begin(),
                    manifest.requirenativelibs().end()},
                   {manifest.jnilibs().begin(), manifest.jnilibs().end()},
+                  std::move(permitted_paths),
                   has_bin,
                   has_lib);
     apexes.emplace(manifest.name(), std::move(info));
