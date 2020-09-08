@@ -35,6 +35,9 @@ void InitializeWithApex(Namespace& ns, const ApexInfo& apex_info) {
   ns.AddSearchPath(apex_info.path + "/${LIB}");
   ns.AddPermittedPath(apex_info.path + "/${LIB}");
   ns.AddPermittedPath("/system/${LIB}");
+  for (const auto& permitted_path : apex_info.permitted_paths) {
+    ns.AddPermittedPath(permitted_path);
+  }
   ns.AddProvides(apex_info.provide_libs);
   ns.AddRequires(apex_info.require_libs);
 }
