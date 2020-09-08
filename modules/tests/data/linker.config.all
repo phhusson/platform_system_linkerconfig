@@ -1,0 +1,5 @@
+# APEX module with all information
+[permitted_path]
+/a
+/b/c
+/d/e/f

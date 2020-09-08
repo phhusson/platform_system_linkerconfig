@@ -48,6 +48,7 @@ TEST(apex_namespace, build_namespace) {
                               /*provide_libs=*/{},
                               /*require_libs=*/{},
                               /*jni_libs=*/{},
+                              /*permitted_paths=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true));
 
@@ -74,6 +75,7 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
                               /*provide_libs=*/{"foo.so"},
                               /*require_libs=*/{"bar.so"},
                               /*jni_libs=*/{},
+                              /*permitted_paths=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true));
   InitializeWithApex(bar,
@@ -82,6 +84,7 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
                               /*provide_libs=*/{"bar.so"},
                               /*require_libs=*/{},
                               /*jni_libs=*/{},
+                              /*permitted_paths=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true));
 
@@ -96,6 +99,38 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
   // See if two namespaces are linked correctly
   ASSERT_THAT(section.GetNamespace("foo")->GetLink("bar").GetSharedLibs(),
               Contains("bar.so"));
+}
+
+TEST(apex_namespace, extra_permitted_paths) {
+  Namespace ns("foo");
+  InitializeWithApex(ns,
+                     ApexInfo("com.android.foo",
+                              "/apex/com.android.foo",
+                              /*provide_libs=*/{},
+                              /*require_libs=*/{},
+                              /*jni_libs=*/{},
+                              /*permitted_paths=*/{"/a", "/b/c"},
+                              /*has_bin=*/false,
+                              /*has_lib=*/true));
+
+  ConfigWriter writer;
+  ns.WriteConfig(writer);
+  ASSERT_EQ(
+      "namespace.foo.isolated = false\n"
+      "namespace.foo.search.paths = /apex/com.android.foo/${LIB}\n"
+      "namespace.foo.permitted.paths = /apex/com.android.foo/${LIB}\n"
+      "namespace.foo.permitted.paths += /system/${LIB}\n"
+      "namespace.foo.permitted.paths += /a\n"
+      "namespace.foo.permitted.paths += /b/c\n"
+      "namespace.foo.asan.search.paths = /apex/com.android.foo/${LIB}\n"
+      "namespace.foo.asan.permitted.paths = /apex/com.android.foo/${LIB}\n"
+      "namespace.foo.asan.permitted.paths += /data/asan/system/${LIB}\n"
+      "namespace.foo.asan.permitted.paths += /system/${LIB}\n"
+      "namespace.foo.asan.permitted.paths += /data/asan/a\n"
+      "namespace.foo.asan.permitted.paths += /a\n"
+      "namespace.foo.asan.permitted.paths += /data/asan/b/c\n"
+      "namespace.foo.asan.permitted.paths += /b/c\n",
+      writer.ToString());
 }
 
 TEST_F(ApexTest, scan_apex_dir) {
