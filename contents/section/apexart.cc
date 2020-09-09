@@ -36,16 +36,21 @@ Section BuildApexArtSection(Context& ctx, const ApexInfo& apex_info) {
 
   namespaces.emplace_back(BuildApexArtDefaultNamespace(ctx));
   namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
+  namespaces.emplace_back(BuildArtNamespace(ctx, apex_info));
 
-  return BuildSection(ctx,
-                      apex_info.name,
-                      std::move(namespaces),
-                      {
-                          "com.android.art",
-                          "com.android.i18n",
-                          "com.android.conscrypt",
-                          "com.android.neuralnetworks",
-                      });
+  std::set<std::string> visible_apexes{
+      "com.android.conscrypt",
+  };
+
+  // APEXes with public libs should be visible
+  for (const auto& apex : ctx.GetApexModules()) {
+    if (apex.public_libs.size() > 0) {
+      visible_apexes.insert(apex.name);
+    }
+  }
+
+  return BuildSection(
+      ctx, apex_info.name, std::move(namespaces), visible_apexes);
 }
 }  // namespace contents
 }  // namespace linkerconfig
