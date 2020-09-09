@@ -36,8 +36,6 @@ Section BuildLegacySection(Context& ctx) {
   std::set<std::string> visible_apexes{
       "com.android.runtime",
       "com.android.media",
-      "com.android.conscrypt",
-      "com.android.os.statsd",
   };
 
   // APEXes with JNI libs or public libs should be visible
