@@ -348,6 +348,7 @@ namespace.com_android_art.link.com_android_i18n.shared_libs += libicu_jni.so
 namespace.com_android_art.link.com_android_i18n.shared_libs += libicui18n.so
 namespace.com_android_art.link.com_android_i18n.shared_libs += libicuuc.so
 namespace.com_android_i18n.isolated = true
+namespace.com_android_i18n.visible = true
 namespace.com_android_i18n.search.paths = /apex/com.android.i18n/${LIB}
 namespace.com_android_i18n.permitted.paths = /apex/com.android.i18n/${LIB}
 namespace.com_android_i18n.permitted.paths += /system/${LIB}
