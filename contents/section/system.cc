@@ -44,18 +44,13 @@ Section BuildSystemSection(Context& ctx) {
   }
 
   std::set<std::string> visible_apexes{
-      "com.android.art",
-      "com.android.i18n",
-      "com.android.neuralnetworks",
       "com.android.runtime",
       "com.android.media",
-      "com.android.conscrypt",
-      "com.android.os.statsd",
   };
 
-  // APEXes with JNI libs should be visible
+  // APEXes with JNI libs or public libs should be visible
   for (const auto& apex : ctx.GetApexModules()) {
-    if (apex.jni_libs.size() > 0) {
+    if (apex.jni_libs.size() > 0 || apex.public_libs.size() > 0) {
       visible_apexes.insert(apex.name);
     }
   }
