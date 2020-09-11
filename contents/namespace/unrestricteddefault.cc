@@ -42,6 +42,7 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
       "libnativehelper.so",
       "libnativeloader.so",
       "libandroidicu.so",
+      "libicu.so",
       // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
       "libpac.so",
       // TODO(b/120786417 or b/134659294): libicuuc.so
