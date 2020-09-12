@@ -32,6 +32,7 @@ std::vector<std::string> required_libs = {
     "libandroidicu.so",
     "libdexfile_external.so",
     "libdexfiled_external.so",
+    "libicu.so",
     // TODO(b/120786417 or b/134659294): libicuuc.so and libicui18n.so are kept
     // for app compat. Uncomment those once they are marked as provided from ART
     // APEX.
