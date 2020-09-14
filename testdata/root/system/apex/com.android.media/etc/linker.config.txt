@@ -1,0 +1,3 @@
+#Test config
+[properties]
+visible = true
