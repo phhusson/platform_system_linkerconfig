@@ -39,6 +39,13 @@ TEST(apexlinkerconfig, unknown_section) {
   ASSERT_FALSE(result.ok());
 }
 
+TEST(apexlinkerconfig, unknown_property) {
+  auto result =
+      ParseApexLinkerConfig(kBaseDir + "linker.config.unknown_property");
+
+  ASSERT_FALSE(result.ok());
+}
+
 TEST(apexlinkerconfig, permitted_paths) {
   auto result =
       ParseApexLinkerConfig(kBaseDir + "linker.config.permitted_path");
@@ -47,9 +54,17 @@ TEST(apexlinkerconfig, permitted_paths) {
   ASSERT_EQ(result->permitted_paths, kPermittedPaths);
 }
 
+TEST(apexlinkerconfig, properties) {
+  auto result = ParseApexLinkerConfig(kBaseDir + "linker.config.properties");
+
+  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result->visible);
+}
+
 TEST(apexlinkerconfig, all_contents) {
   auto result = ParseApexLinkerConfig(kBaseDir + "linker.config.all");
 
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->permitted_paths, kPermittedPaths);
+  ASSERT_TRUE(result->visible);
 }

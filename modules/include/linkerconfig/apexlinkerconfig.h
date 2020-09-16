@@ -24,6 +24,7 @@ namespace linkerconfig {
 namespace modules {
 struct ApexLinkerConfig {
   std::vector<std::string> permitted_paths;
+  bool visible;
 };
 
 android::base::Result<ApexLinkerConfig> ParseApexLinkerConfig(

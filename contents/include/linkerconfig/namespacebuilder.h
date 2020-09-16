@@ -51,6 +51,8 @@ modules::Namespace BuildArtNamespace(const Context& ctx,
 // Namespaces for APEX binaries
 modules::Namespace BuildApexDefaultNamespace(const Context& ctx,
                                              const modules::ApexInfo& apex_info);
+modules::Namespace BuildApexEmptyDefaultNamespace(
+    const Context& ctx, const modules::ApexInfo& apex_info);
 NamespaceBuilder BuildApexPlatformNamespace;
 NamespaceBuilder BuildApexArtDefaultNamespace;
 

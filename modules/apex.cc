@@ -91,8 +91,10 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
 
     auto apex_config = ParseApexLinkerConfig(path + "/etc/linker.config.txt");
     std::vector<std::string> permitted_paths;
+    bool visible = false;
     if (apex_config.ok()) {
       permitted_paths = std::move(apex_config->permitted_paths);
+      visible = apex_config->visible;
     }
 
     ApexInfo info(manifest.name(),
@@ -104,7 +106,8 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
                   {manifest.jnilibs().begin(), manifest.jnilibs().end()},
                   std::move(permitted_paths),
                   has_bin,
-                  has_lib);
+                  has_lib,
+                  visible);
     apexes.emplace(manifest.name(), std::move(info));
   }
 
