@@ -37,7 +37,8 @@ Section BuildSection(const Context& ctx, const std::string& name,
                      const LibProviders& providers) {
   // add additional visible APEX namespaces
   for (const auto& apex : ctx.GetApexModules()) {
-    if (visible_apexes.find(apex.name) == visible_apexes.end()) {
+    if (visible_apexes.find(apex.name) == visible_apexes.end() &&
+        !apex.visible) {
       continue;
     }
     if (auto it = std::find_if(
