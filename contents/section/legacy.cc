@@ -33,10 +33,7 @@ Section BuildLegacySection(Context& ctx) {
 
   namespaces.emplace_back(BuildSystemDefaultNamespace(ctx));
 
-  std::set<std::string> visible_apexes{
-      "com.android.runtime",
-      "com.android.media",
-  };
+  std::set<std::string> visible_apexes;
 
   // APEXes with JNI libs or public libs should be visible
   for (const auto& apex : ctx.GetApexModules()) {

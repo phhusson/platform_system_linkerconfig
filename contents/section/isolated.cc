@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/context.h"
-#include "linkerconfig/namespace.h"
 #include "linkerconfig/sectionbuilder.h"
 
+#include "linkerconfig/context.h"
+#include "linkerconfig/namespace.h"
 #include "linkerconfig/namespacebuilder.h"
 #include "linkerconfig/section.h"
 
@@ -35,10 +35,7 @@ Section BuildIsolatedSection(Context& ctx) {
   namespaces.emplace_back(BuildIsolatedDefaultNamespace(ctx));
   namespaces.emplace_back(BuildSystemNamespace(ctx));
 
-  std::set<std::string> visible_apexes{
-      "com.android.runtime",
-      "com.android.media",
-  };
+  std::set<std::string> visible_apexes;
 
   // APEXes with JNI libs or public libs should be visible
   for (const auto& apex : ctx.GetApexModules()) {
