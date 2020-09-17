@@ -47,7 +47,16 @@ Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
 
   ctx.SetCurrentSection(SectionType::Other);
 
-  namespaces.emplace_back(BuildApexDefaultNamespace(ctx, apex_info));
+  // If target APEX should be visible, then there will be two namespaces -
+  // default and APEX namespace - with same set of library. To avoid any
+  // confusion based on two same namespaces, and also to avoid loading same
+  // library twice based on the namespace, use empty default namespace which
+  // does not contain any search path and fully links to visible APEX namespace.
+  if (apex_info.visible) {
+    namespaces.emplace_back(BuildApexEmptyDefaultNamespace(ctx, apex_info));
+  } else {
+    namespaces.emplace_back(BuildApexDefaultNamespace(ctx, apex_info));
+  }
   namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
 
   LibProviders libs_providers;
