@@ -14,37 +14,31 @@
  * limitations under the License.
  */
 
-#include "linkerconfig/sectionbuilder.h"
-
-#include "linkerconfig/context.h"
-#include "linkerconfig/namespace.h"
 #include "linkerconfig/namespacebuilder.h"
-#include "linkerconfig/section.h"
 
-using android::linkerconfig::contents::SectionType;
+#include "linkerconfig/apex.h"
+#include "linkerconfig/namespace.h"
+
+using android::linkerconfig::modules::ApexInfo;
 using android::linkerconfig::modules::Namespace;
-using android::linkerconfig::modules::Section;
 
 namespace android {
 namespace linkerconfig {
 namespace contents {
-Section BuildIsolatedSection(Context& ctx) {
-  ctx.SetCurrentSection(SectionType::Other);
-  std::vector<Namespace> namespaces;
+Namespace BuildApexEmptyDefaultNamespace([[maybe_unused]] const Context& ctx,
+                                         const ApexInfo& apex_info) {
+  Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/false);
 
-  namespaces.emplace_back(BuildIsolatedDefaultNamespace(ctx));
-  namespaces.emplace_back(BuildSystemNamespace(ctx));
+  // Do not include any search or permitted path to keep this namespace empty
+  // and load all libraries in the APEX from APEX namespace (com_android_foo).
 
-  std::set<std::string> visible_apexes;
+  // Use all libraries from APEX namespace instead of default
+  // Link to the APEX namespace should come first from output to ensure all
+  // libraries from the APEX links to the APEX namespace.
+  ns.GetLink(apex_info.namespace_name).AllowAllSharedLibs();
+  ns.AddRequires(apex_info.require_libs);
 
-  // APEXes with JNI libs or public libs should be visible
-  for (const auto& apex : ctx.GetApexModules()) {
-    if (apex.jni_libs.size() > 0 || apex.public_libs.size() > 0) {
-      visible_apexes.insert(apex.name);
-    }
-  }
-
-  return BuildSection(ctx, "isolated", std::move(namespaces), visible_apexes);
+  return ns;
 }
 }  // namespace contents
 }  // namespace linkerconfig
