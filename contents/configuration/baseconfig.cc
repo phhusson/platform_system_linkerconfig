@@ -95,6 +95,9 @@ android::linkerconfig::modules::Configuration CreateBaseConfiguration(
       // Fallback entry to provide APEX namespace lookups for binaries anywhere
       // else. This must be last.
       {"/data", "system"},
+      // TODO(b/168556887): Remove this when we have a dedicated section for
+      // binaries in APKs
+      {Var("PRODUCT") + "/app/", "system"},
   };
 
   sections.emplace_back(BuildSystemSection(ctx));

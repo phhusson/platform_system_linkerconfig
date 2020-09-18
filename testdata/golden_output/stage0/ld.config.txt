@@ -9,6 +9,7 @@ dir.unrestricted = /data/local/tests/unrestricted
 dir.unrestricted = /data/local/tmp
 dir.postinstall = /postinstall
 dir.system = /data
+dir.system = /product/app/
 [system]
 namespace.default.isolated = true
 namespace.default.visible = true
