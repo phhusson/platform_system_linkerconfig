@@ -17,6 +17,7 @@
 // This namespace is exclusively for vndk-sp libs.
 
 #include "linkerconfig/environment.h"
+using android::linkerconfig::modules::GetVendorVndkVersion;
 #include "linkerconfig/namespacebuilder.h"
 
 using android::linkerconfig::modules::AsanPath;
@@ -120,6 +121,10 @@ Namespace BuildVndkNamespace([[maybe_unused]] const Context& ctx,
   }
 
   ns.AddRequires(std::vector{"libneuralnetworks.so"});
+
+  if(GetVendorVndkVersion() == "26" || GetVendorVndkVersion() == "27" ) {
+      ns.GetLink("com_android_art").AddSharedLib("libnativeloader.so");
+  }
 
   return ns;
 }
