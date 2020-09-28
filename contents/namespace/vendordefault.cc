@@ -17,6 +17,7 @@
 // This is the default linker namespace for a vendor process (a process started
 // from /vendor/bin/*).
 
+#include <iostream>
 #include "linkerconfig/namespacebuilder.h"
 
 #include "linkerconfig/common.h"
@@ -105,9 +106,20 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
     ns.AddRequires(kVndkLiteVendorRequires);
     ns.AddProvides(GetSystemStubLibraries());
   } else {
+    auto llndk = Var("LLNDK_LIBRARIES_VENDOR");
+    std::cerr << "handing llndk for default vendor namespace" << std::endl;
+    if(GetVendorVndkVersion()== "26") {
+        std::cerr << "vndk 26" << std::endl;
+        std::string lookFor = ":liblog.so";
+        std::cerr << "Before " << llndk << std::endl;
+
+        llndk = llndk.replace(llndk.find(lookFor), lookFor.length(), "");
+        std::cerr << "After " << llndk << std::endl;
+    }
+
     ns.GetLink(ctx.GetSystemNamespaceName())
         .AddSharedLib(
-            {Var("LLNDK_LIBRARIES_VENDOR"), Var("SANITIZER_DEFAULT_VENDOR")});
+            {llndk, Var("SANITIZER_DEFAULT_VENDOR")});
     ns.GetLink("vndk").AddSharedLib({Var("VNDK_SAMEPROCESS_LIBRARIES_VENDOR"),
                                      Var("VNDK_CORE_LIBRARIES_VENDOR")});
     if (android::linkerconfig::modules::IsVndkInSystemNamespace()) {
