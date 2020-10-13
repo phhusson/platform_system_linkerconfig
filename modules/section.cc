@@ -97,7 +97,7 @@ Result<void> Section::Resolve(const BaseContext& ctx,
   auto add_namespace = [&](auto name, auto builder) {
     for (auto& ns : namespaces_) {
       if (ns.GetName() == name) {
-        LOG(WARNING) << "Skip to create a duplicate namespace(" << name << ")";
+        // it's there, we don't need to create a new one.
         return;
       }
     }
