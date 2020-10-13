@@ -123,6 +123,12 @@ cc_binary {
             stl: "c++_static",  // Link libc++ statically.
         },
     },
+
+    // Device does not boot when global ThinLTO is enabled for linkerconfig.
+    // http://b/170573443
+    lto: {
+        never: true,
+    },
 }
 
 cc_test {
