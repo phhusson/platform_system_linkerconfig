@@ -72,6 +72,12 @@ Section BuildApexDefaultSection(Context& ctx, const ApexInfo& apex_info) {
       user_partition = VndkUserPartition::Product;
       user_partition_suffix = "PRODUCT";
     }
+    libs_providers[":sanitizer"] = LibProvider{
+        ctx.GetSystemNamespaceName(),
+        std::bind(BuildApexPlatformNamespace,
+                  ctx),  // "system" should be available
+        {Var("SANITIZER_DEFAULT_" + user_partition_suffix)},
+    };
     libs_providers[":vndk"] = LibProvider{
         "vndk",
         std::bind(BuildVndkNamespace, ctx, user_partition),

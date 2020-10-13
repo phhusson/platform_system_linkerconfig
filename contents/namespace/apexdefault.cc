@@ -15,6 +15,8 @@
  */
 #include "linkerconfig/namespacebuilder.h"
 
+#include <vector>
+
 #include "linkerconfig/apex.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/namespace.h"
@@ -35,6 +37,11 @@ Namespace BuildApexDefaultNamespace([[maybe_unused]] const Context& ctx,
 
   ns.AddRequires(apex_info.require_libs);
   ns.AddProvides(apex_info.provide_libs);
+
+  // non-system "default" namespace should link Sanitizer
+  if (!apex_info.InSystem()) {
+    ns.AddRequires(std::vector{":sanitizer"});
+  }
 
   return ns;
 }
