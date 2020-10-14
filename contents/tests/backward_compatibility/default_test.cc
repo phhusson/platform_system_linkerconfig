@@ -102,6 +102,8 @@ TEST_F(linkerconfig_default_backward_compatibility, common_vendor_section) {
 
   ASSERT_TRUE(ContainsSearchPath(default_namespace, "/odm/${LIB}"));
   ASSERT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}"));
+  ASSERT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}/hw"));
+  ASSERT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}/egl"));
   ASSERT_TRUE(ContainsPermittedPath(default_namespace, "/odm"));
   ASSERT_TRUE(ContainsPermittedPath(default_namespace, "/vendor"));
   ASSERT_TRUE(ContainsPermittedPath(default_namespace, "/system/vendor"));
@@ -127,19 +129,4 @@ TEST_F(linkerconfig_default_backward_compatibility,
 
   ASSERT_TRUE(ContainsSearchPath(default_namespace, "/odm/${LIB}"));
   ASSERT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}"));
-}
-
-TEST_F(linkerconfig_default_backward_compatibility, vndk_27) {
-  android::linkerconfig::modules::Variables::AddValue("ro.vndk.version", "27");
-
-  auto config = android::linkerconfig::contents::CreateBaseConfiguration(ctx);
-
-  auto vendor_section = config.GetSection("vendor");
-  ASSERT_TRUE(vendor_section);
-
-  auto default_namespace = vendor_section->GetNamespace("default");
-  ASSERT_TRUE(default_namespace);
-
-  ASSERT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}/hw"));
-  ASSERT_TRUE(ContainsSearchPath(default_namespace, "/vendor/${LIB}/egl"));
 }

@@ -33,11 +33,8 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
 
   ns.AddSearchPath("/odm/${LIB}");
   ns.AddSearchPath("/vendor/${LIB}");
-
-  if (ctx.IsDefaultConfig() && GetVendorVndkVersion() == "27") {
-    ns.AddSearchPath("/vendor/${LIB}/hw");
-    ns.AddSearchPath("/vendor/${LIB}/egl");
-  }
+  ns.AddSearchPath("/vendor/${LIB}/hw");
+  ns.AddSearchPath("/vendor/${LIB}/egl");
 
   ns.AddPermittedPath("/odm");
   ns.AddPermittedPath("/vendor");
