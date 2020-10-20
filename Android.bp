@@ -26,7 +26,9 @@ cc_defaults {
         "libapexutil",
         "libbase",
         "liblog",
+        "libprotobuf-cpp-lite",
         "libxml2",
+        "lib_linker_config_proto_lite",
     ],
     target: {
         host: {
@@ -207,13 +209,14 @@ genrule {
 genrule {
     name: "linkerconfig_diff_test_host_tools",
     out: ["linkerconfig_diff_test_host_tools.zip"],
-    tools: ["conv_apex_manifest", "linkerconfig", "soong_zip"],
+    tools: ["conv_apex_manifest", "conv_linker_config", "linkerconfig", "soong_zip"],
     cmd: "HOST_OUT_BIN=$$(dirname $(location conv_apex_manifest)) && " +
          "HOST_SOONG_OUT=$$(dirname $$HOST_OUT_BIN) && " +
          "LIBCPLUSPLUS=$$(find $${HOST_SOONG_OUT}/lib64 -name \"libc++.*\") && " +
          "mkdir -p $(genDir)/tools/bin && " +
          "mkdir -p $(genDir)/tools/lib64 && " +
          "cp $(location conv_apex_manifest) $(genDir)/tools/bin && " +
+         "cp $(location conv_linker_config) $(genDir)/tools/bin && " +
          "cp $(location linkerconfig) $(genDir)/tools/bin && " +
          "cp $$LIBCPLUSPLUS $(genDir)/tools/lib64 && " +
          "$(location soong_zip) -C $(genDir)/tools -D $(genDir)/tools -o $(out)",
