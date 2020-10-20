@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <vector>
 
-#include "linkerconfig/apexlinkerconfig.h"
+#include "linkerconfig/configparser.h"
 #include "linkerconfig/environment.h"
 #include "linkerconfig/log.h"
 #include "linkerconfig/stringutil.h"
@@ -89,7 +89,7 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
     bool has_bin = DirExists(path + "/bin");
     bool has_lib = DirExists(path + "/lib") || DirExists(path + "/lib64");
 
-    auto apex_config = ParseApexLinkerConfig(path + "/etc/linker.config.txt");
+    auto apex_config = ParseApexLinkerConfig(path + "/etc/linker.config.pb");
     std::vector<std::string> permitted_paths;
     bool visible = false;
     if (apex_config.ok()) {
