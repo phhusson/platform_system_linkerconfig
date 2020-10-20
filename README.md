@@ -13,49 +13,29 @@ executable.
 TODO: explain inputs (e.g. /system/etc/public.libraries.txt,
 /apex/apex-info-list.xml, ..)
 
-### /apex/*/etc/linker.config.txt
+### linker.config.json
 
-APEX linker configuration file can be used to add extra information while
-linkerconfig creates linker configuration with the APEX module.
+Linker configuration file can be used to add extra information while linkerconfig
+creates linker configuration with the module. This module can be defined as
+'linker_config' from Soong, and it will be translated as protobuf file at build
+time.
 
 #### Format
 
-This configuration has multiple sections, which is defined with `[section_name]`
-and there are multiple properties for each section. Format of the property can
-be varied based on the section, but in usual it is list of items or assiging
-value to name with `<property_name> = <property_value>` format. Available
-sections are pre-defined as below.
-
-##### Extra permitted path section
-
-Extra permitted path section has section name as `permitted_paths`. This section
-contains property as a list of items, and each item is an extra permitted path
-which should be added in the APEX namespace.
-
-##### APEX namespace property section
-
-APEX namespace property section with section name `property` sets many values
-for the APEX namespace. List of available properties are as below.
+linker.config.json file is in json format which can contain properties as below.
 
 | Property Name | Type | Description                                          |
 | ------------- | ---- | ---------------------------------------------------- |
+| permittedPaths| List<string> | Additional permitted paths |
 | visible       | bool | Force APEX namespace to be visible from all sections if the value is true |
 
 #### Example
 
 ```
-# This is a example APEX linker configuration
-
-# Extra permitted path section
-[permitted_paths]
-/system/${LIB}
-/data
-
-# Property section
-[properties]
-visible = true
-
-# EOF
+{
+    "permittedPaths" : [ "/a", "/b/c", "/d/e/f"],
+    "visible": true
+}
 ```
 
 ## Outputs
