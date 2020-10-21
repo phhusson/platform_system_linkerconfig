@@ -93,6 +93,10 @@ mkdir -p $ROOT_OUT
 mkdir -p $ROOT_OUT/apex
 cp -R $ROOT_IN/* $ROOT_OUT
 
+if test -f $ROOT_OUT/system/etc/linker.config.json; then
+  conv_linker_config proto -s $ROOT_OUT/system/etc/linker.config.json -o $ROOT_OUT/system/etc/linker.config.pb
+fi
+
 apexInfo=$ROOT_OUT/apex/apex-info-list.xml
 echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>" > $apexInfo
 echo "<apex-info-list>" > $apexInfo

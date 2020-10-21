@@ -45,8 +45,6 @@ inline void MockGenericVariables() {
       "VNDK_CORE_LIBRARIES_PRODUCT", "vndk_core_libraries");
   android::linkerconfig::modules::Variables::AddValue(
       "VNDK_USING_CORE_VARIANT_LIBRARIES", "");
-  android::linkerconfig::modules::Variables::AddValue("STUB_LIBRARIES",
-                                                      "stub_libraries");
   android::linkerconfig::modules::Variables::AddValue(
       "SANITIZER_DEFAULT_VENDOR", "sanitizer_default_libraries");
   android::linkerconfig::modules::Variables::AddValue(
