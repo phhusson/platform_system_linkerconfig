@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-#include <string>
-#include <vector>
+#pragma once
 
 #include <android-base/result.h>
+
+#include "linkerconfig/configtype.h"
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
-struct ApexLinkerConfig {
-  std::vector<std::string> permitted_paths;
-  bool visible;
-};
-
 android::base::Result<ApexLinkerConfig> ParseApexLinkerConfig(
     const std::string& config_path);
 }  // namespace modules
