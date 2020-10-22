@@ -17,14 +17,13 @@
 #pragma once
 
 #include <android-base/result.h>
-
-#include "linkerconfig/configtype.h"
+#include <linker_config.pb.h>
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
-android::base::Result<ApexLinkerConfig> ParseApexLinkerConfig(
-    const std::string& config_path);
+android::base::Result<android::linkerconfig::proto::LinkerConfig>
+ParseLinkerConfig(const std::string& config_path);
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android
