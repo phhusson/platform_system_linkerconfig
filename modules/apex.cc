@@ -41,7 +41,7 @@ using android::base::Result;
 using android::base::StartsWith;
 
 namespace {
-bool DirExists(const std::string& path) {
+bool PathExists(const std::string& path) {
   return access(path.c_str(), F_OK) == 0;
 }
 
@@ -86,15 +86,24 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
   std::map<std::string, ApexInfo> apexes;
   const auto apex_root = root + apex::kApexRoot;
   for (const auto& [path, manifest] : apex::GetActivePackages(apex_root)) {
-    bool has_bin = DirExists(path + "/bin");
-    bool has_lib = DirExists(path + "/lib") || DirExists(path + "/lib64");
+    bool has_bin = PathExists(path + "/bin");
+    bool has_lib = PathExists(path + "/lib") || PathExists(path + "/lib64");
 
-    auto apex_config = ParseApexLinkerConfig(path + "/etc/linker.config.pb");
     std::vector<std::string> permitted_paths;
     bool visible = false;
-    if (apex_config.ok()) {
-      permitted_paths = std::move(apex_config->permitted_paths);
-      visible = apex_config->visible;
+
+    std::string linker_config_path = path + "/etc/linker.config.pb";
+    if (PathExists(linker_config_path)) {
+      auto linker_config = ParseLinkerConfig(linker_config_path);
+
+      if (linker_config.ok()) {
+        permitted_paths = {linker_config->permittedpaths().begin(),
+                           linker_config->permittedpaths().end()};
+        visible = linker_config->visible();
+      } else {
+        LOG(ERROR) << "Failed to read APEX linker config : "
+                   << linker_config.error();
+      }
     }
 
     ApexInfo info(manifest.name(),
