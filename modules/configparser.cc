@@ -26,8 +26,12 @@ using android::base::ReadFileToString;
 using android::base::Result;
 using ::android::linkerconfig::proto::LinkerConfig;
 
-namespace {
-Result<LinkerConfig> ParseConfig(const std::string& config_path) {
+namespace android {
+namespace linkerconfig {
+namespace modules {
+
+// Format of the file can be found from README.md file
+Result<LinkerConfig> ParseLinkerConfig(const std::string& config_path) {
   std::string file_content;
 
   if (!ReadFileToString(config_path, &file_content)) {
@@ -39,27 +43,6 @@ Result<LinkerConfig> ParseConfig(const std::string& config_path) {
     return Errorf("Failed to parse file {}", config_path);
   }
   return config;
-}
-}  // namespace
-
-namespace android {
-namespace linkerconfig {
-namespace modules {
-
-// Format of the file can be found from README.md file
-Result<ApexLinkerConfig> ParseApexLinkerConfig(const std::string& config_path) {
-  auto config = ParseConfig(config_path);
-
-  if (!config.ok()) {
-    return config.error();
-  }
-
-  ApexLinkerConfig apex_linker_config;
-  apex_linker_config.permitted_paths = {config->permittedpaths().begin(),
-                                        config->permittedpaths().end()};
-  apex_linker_config.visible = config->visible();
-
-  return apex_linker_config;
 }
 
 }  // namespace modules

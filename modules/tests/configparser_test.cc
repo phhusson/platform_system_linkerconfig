@@ -19,8 +19,7 @@
 #include <android-base/file.h>
 #include <gtest/gtest.h>
 
-using android::linkerconfig::modules::ApexLinkerConfig;
-using android::linkerconfig::modules::ParseApexLinkerConfig;
+using android::linkerconfig::modules::ParseLinkerConfig;
 
 const std::string kBaseDir =
     android::base::GetExecutableDirectory() + "/modules/tests/data/";
@@ -28,15 +27,17 @@ const std::string kBaseDir =
 const std::vector<std::string> kPermittedPaths = {"/a", "/b/c", "/d/e/f"};
 
 TEST(apexlinkerconfig, apex_file_not_exist) {
-  auto result = ParseApexLinkerConfig(kBaseDir + "linker.config.noexist.pb");
+  auto result = ParseLinkerConfig(kBaseDir + "linker.config.noexist.pb");
 
   ASSERT_FALSE(result.ok());
 }
 
 TEST(apexlinkerconfig, apex_contents) {
-  auto result = ParseApexLinkerConfig(kBaseDir + "linker.config.apex.pb");
+  auto result = ParseLinkerConfig(kBaseDir + "linker.config.apex.pb");
 
   ASSERT_TRUE(result.ok());
-  ASSERT_EQ(result->permitted_paths, kPermittedPaths);
-  ASSERT_TRUE(result->visible);
+  std::vector<std::string> permitted_paths = {result->permittedpaths().begin(),
+                                              result->permittedpaths().end()};
+  ASSERT_EQ(permitted_paths, kPermittedPaths);
+  ASSERT_TRUE(result->visible());
 }
