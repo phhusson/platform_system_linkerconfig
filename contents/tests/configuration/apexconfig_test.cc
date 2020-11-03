@@ -45,7 +45,8 @@ struct ApexConfigTest : ::testing::Test {
                     /*permitted_paths=*/{},
                     /*has_bin=*/true,
                     /*has_lib=*/true,
-                    /*visible=*/false);
+                    /*visible=*/false,
+                    /*has_shared_lib=*/false);
   }
 };
 }  // namespace
