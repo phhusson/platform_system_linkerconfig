@@ -51,7 +51,8 @@ TEST(apex_namespace, build_namespace) {
                               /*permitted_paths=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true,
-                              /*visible=*/false));
+                              /*visible=*/false,
+                              /*has_shared_lib=*/false));
 
   ConfigWriter writer;
   ns.WriteConfig(writer);
@@ -79,7 +80,8 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
                               /*permitted_paths=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true,
-                              /*visible=*/false));
+                              /*visible=*/false,
+                              /*has_shared_lib=*/false));
   InitializeWithApex(bar,
                      ApexInfo("com.android.bar",
                               "/apex/com.android.bar",
@@ -89,7 +91,8 @@ TEST(apex_namespace, resolve_between_apex_namespaces) {
                               /*permitted_paths=*/{},
                               /*has_bin=*/false,
                               /*has_lib=*/true,
-                              /*visible=*/false));
+                              /*visible=*/false,
+                              /*has_shared_lib=*/false));
 
   std::vector<Namespace> namespaces;
   namespaces.push_back(std::move(foo));
@@ -115,7 +118,8 @@ TEST(apex_namespace, extra_permitted_paths) {
                               /*permitted_paths=*/{"/a", "/b/c"},
                               /*has_bin=*/false,
                               /*has_lib=*/true,
-                              /*visible=*/false));
+                              /*visible=*/false,
+                              /*has_shared_lib=*/false));
 
   ConfigWriter writer;
   ns.WriteConfig(writer);
