@@ -204,12 +204,12 @@ TEST(linkerconfig_section, ignore_unmet_requirements) {
 
 TEST(linkerconfig_section, resolve_section_with_apex) {
   BaseContext ctx;
+  ctx.AddApexModule(ApexInfo(
+      "foo", "", {"a.so"}, {"b.so"}, {}, {}, true, true, false, false));
   ctx.AddApexModule(
-      ApexInfo("foo", "", {"a.so"}, {"b.so"}, {}, {}, true, true, false));
-  ctx.AddApexModule(
-      ApexInfo("bar", "", {"b.so"}, {}, {}, {}, true, true, false));
-  ctx.AddApexModule(
-      ApexInfo("baz", "", {"c.so"}, {"a.so"}, {}, {}, true, true, false));
+      ApexInfo("bar", "", {"b.so"}, {}, {}, {}, true, true, false, false));
+  ctx.AddApexModule(ApexInfo(
+      "baz", "", {"c.so"}, {"a.so"}, {}, {}, true, true, false, false));
 
   std::vector<Namespace> namespaces;
   Namespace& default_ns = namespaces.emplace_back("default");

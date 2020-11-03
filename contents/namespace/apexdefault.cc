@@ -34,6 +34,10 @@ Namespace BuildApexDefaultNamespace([[maybe_unused]] const Context& ctx,
   ns.AddSearchPath(apex_info.path + "/${LIB}");
   ns.AddPermittedPath(apex_info.path + "/${LIB}");
   ns.AddPermittedPath("/system/${LIB}");
+  if (apex_info.has_shared_lib) {
+    // TODO(b/161542925) : Replace with common APEX path name
+    ns.AddPermittedPath("/apex/com.android.apex.test.sharedlibs/${LIB}");
+  }
 
   ns.AddRequires(apex_info.require_libs);
   ns.AddProvides(apex_info.provide_libs);
