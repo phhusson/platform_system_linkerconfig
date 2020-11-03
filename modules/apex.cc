@@ -88,6 +88,7 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
   for (const auto& [path, manifest] : apex::GetActivePackages(apex_root)) {
     bool has_bin = PathExists(path + "/bin");
     bool has_lib = PathExists(path + "/lib") || PathExists(path + "/lib64");
+    bool has_shared_lib = manifest.sharedapexlibs().size() != 0;
 
     std::vector<std::string> permitted_paths;
     bool visible = false;
@@ -116,7 +117,8 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
                   std::move(permitted_paths),
                   has_bin,
                   has_lib,
-                  visible);
+                  visible,
+                  has_shared_lib);
     apexes.emplace(manifest.name(), std::move(info));
   }
 

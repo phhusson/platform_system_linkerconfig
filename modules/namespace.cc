@@ -36,6 +36,10 @@ void InitializeWithApex(Namespace& ns, const ApexInfo& apex_info) {
   for (const auto& permitted_path : apex_info.permitted_paths) {
     ns.AddPermittedPath(permitted_path);
   }
+  if (apex_info.has_shared_lib) {
+    // TODO(b/161542925) : Replace with common APEX path name
+    ns.AddPermittedPath("/apex/com.android.apex.test.sharedlibs/${LIB}");
+  }
   ns.AddProvides(apex_info.provide_libs);
   ns.AddRequires(apex_info.require_libs);
 }
