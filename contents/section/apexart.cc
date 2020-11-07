@@ -44,6 +44,7 @@ Section BuildApexArtSection(Context& ctx, const ApexInfo& apex_info) {
                           "com.android.art",
                           "com.android.conscrypt",
                           "com.android.neuralnetworks",
+                          "com.android.os.statsd",
                       });
 }
 }  // namespace contents
