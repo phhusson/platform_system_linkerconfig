@@ -24,20 +24,47 @@ using android::linkerconfig::modules::ParseLinkerConfig;
 const std::string kBaseDir =
     android::base::GetExecutableDirectory() + "/modules/tests/data/";
 
-const std::vector<std::string> kPermittedPaths = {"/a", "/b/c", "/d/e/f"};
-
-TEST(apexlinkerconfig, apex_file_not_exist) {
+TEST(configparser, apex_file_not_exist) {
   auto result = ParseLinkerConfig(kBaseDir + "linker.config.noexist.pb");
 
   ASSERT_FALSE(result.ok());
 }
 
-TEST(apexlinkerconfig, apex_contents) {
+TEST(configparser, apex_contents) {
+  std::vector<std::string> expected_permitted_paths = {
+      "/a",
+      "/b/c",
+      "/d/e/f",
+  };
+
   auto result = ParseLinkerConfig(kBaseDir + "linker.config.apex.pb");
 
   ASSERT_TRUE(result.ok());
   std::vector<std::string> permitted_paths = {result->permittedpaths().begin(),
                                               result->permittedpaths().end()};
-  ASSERT_EQ(permitted_paths, kPermittedPaths);
+  ASSERT_EQ(permitted_paths, expected_permitted_paths);
   ASSERT_TRUE(result->visible());
+}
+
+TEST(configparser, system_contents) {
+  std::vector<std::string> expected_provide_libs = {
+      "a.so",
+      "b.so",
+      "c.so",
+  };
+  std::vector<std::string> expected_require_libs = {
+      "foo.so",
+      "bar.so",
+      "baz.so",
+  };
+
+  auto result = ParseLinkerConfig(kBaseDir + "linker.config.system.pb");
+
+  ASSERT_TRUE(result.ok());
+  std::vector<std::string> provide_libs = {result->providelibs().begin(),
+                                           result->providelibs().end()};
+  std::vector<std::string> require_libs = {result->requirelibs().begin(),
+                                           result->requirelibs().end()};
+  ASSERT_EQ(provide_libs, expected_provide_libs);
+  ASSERT_EQ(require_libs, expected_require_libs);
 }
