@@ -67,8 +67,8 @@ Namespace BuildApexPlatformNamespace([[maybe_unused]] const Context& ctx) {
   }
   ns.AddPermittedPath("/apex/com.android.runtime/${LIB}/bionic");
 
-  ns.AddProvides(GetSystemStubLibraries());
-  ns.AddRequires(required_libs);
+  ns.AddProvides(ctx.GetSystemProvideLibs());
+  ns.AddRequires(ctx.GetSystemRequireLibs());
 
   return ns;
 }

@@ -60,10 +60,6 @@ void AddStandardSystemLinks(const Context& ctx, Section* section) {
   });
 }
 
-std::vector<std::string> GetSystemStubLibraries() {
-  return android::base::Split(Var("STUB_LIBRARIES", ""), ":");
-}
-
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

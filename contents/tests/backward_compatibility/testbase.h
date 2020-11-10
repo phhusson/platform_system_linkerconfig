@@ -51,7 +51,6 @@ inline void MockVariables(std::string vndk_ver = "Q") {
 
   Variables::AddValue("VNDK_USING_CORE_VARIANT_LIBRARIES",
                       "vndk_using_core_variant_libraries");
-  Variables::AddValue("STUB_LIBRARIES", "stub_libraries");
   Variables::AddValue("SANITIZER_RUNTIME_LIBRARIES",
                       "sanitizer_runtime_libraries");
 }
