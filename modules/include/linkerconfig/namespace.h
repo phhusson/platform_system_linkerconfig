@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#include <android-base/result.h>
+
 #include "linkerconfig/apex.h"
 #include "linkerconfig/configwriter.h"
 #include "linkerconfig/link.h"
@@ -60,6 +62,14 @@ class Namespace {
   }
   bool IsVisible() const {
     return is_visible_;
+  }
+
+  void SetApexSource(std::string apex_name) {
+    source_apex_name_ = apex_name;
+  }
+
+  std::string GetApexSource() const {
+    return source_apex_name_;
   }
 
   // For test usage
@@ -106,11 +116,13 @@ class Namespace {
   std::vector<Link> links_;
   std::set<std::string> provides_;
   std::set<std::string> requires_;
+  std::string source_apex_name_;
 
   void WritePathString(ConfigWriter& writer, const std::string& path_type,
                        const std::vector<std::string>& path_list);
   bool RequiresAsanPath(const std::string& path);
   const std::string CreateAsanPath(const std::string& path);
+  android::base::Result<void> VerifyContents();
 };
 
 void InitializeWithApex(Namespace& ns, const ApexInfo& apex_info);
