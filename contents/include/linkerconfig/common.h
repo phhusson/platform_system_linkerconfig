@@ -30,8 +30,6 @@ namespace contents {
 // /system/${LIB} for standard libraries like Bionic (libc.so, libm.so,
 // libdl.so) and applicable libclang_rt.*.
 void AddStandardSystemLinks(const Context& ctx, modules::Section* section);
-
-std::vector<std::string> GetSystemStubLibraries();
 }  // namespace contents
 }  // namespace linkerconfig
 }  // namespace android

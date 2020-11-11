@@ -34,31 +34,8 @@ Namespace BuildUnrestrictedDefaultNamespace([[maybe_unused]] const Context& ctx)
   ns.AddSearchPath("/vendor/${LIB}");
   ns.AddSearchPath(Var("PRODUCT") + "/${LIB}");
 
-  ns.AddRequires(std::vector{
-      // Keep in sync with the "platform" namespace in art/build/apex/ld.config.txt.
-      "libdexfile_external.so",
-      "libdexfiled_external.so",
-      "libnativebridge.so",
-      "libnativehelper.so",
-      "libnativeloader.so",
-      "libandroidicu.so",
-      "libicu.so",
-      // TODO(b/122876336): Remove libpac.so once it's migrated to Webview
-      "libpac.so",
-      // TODO(b/120786417 or b/134659294): libicuuc.so
-      // and libicui18n.so are kept for app compat.
-      "libicui18n.so",
-      "libicuuc.so",
-      // resolv
-      "libnetd_resolv.so",
-      // nn
-      "libneuralnetworks.so",
-      // statsd
-      "libstatspull.so",
-      "libstatssocket.so",
-  });
-
-  ns.AddProvides(GetSystemStubLibraries());
+  ns.AddRequires(ctx.GetSystemRequireLibs());
+  ns.AddProvides(ctx.GetSystemProvideLibs());
   return ns;
 }
 }  // namespace contents

@@ -24,17 +24,28 @@ time.
 
 linker.config.json file is in json format which can contain properties as below.
 
-| Property Name | Type | Description                                          |
-| ------------- | ---- | ---------------------------------------------------- |
-| permittedPaths| List<string> | Additional permitted paths |
-| visible       | bool | Force APEX namespace to be visible from all sections if the value is true |
+| Property Name | Type | Description                                          | Allowed module |
+| ------------- | ---- | ---------------------------------------------------- | -------------- |
+| permittedPaths| List<string> | Additional permitted paths | APEX |
+| visible       | bool | Force APEX namespace to be visible from all sections if the value is true | APEX |
+| provideLibs   | List<string> | Libraries providing from the module | System |
+| requireLibs   | List<string> | Libraries required from the module | System |
 
 #### Example
 
+##### APEX module
 ```
 {
     "permittedPaths" : [ "/a", "/b/c", "/d/e/f"],
     "visible": true
+}
+```
+
+##### System
+```
+{
+    "provideLibs" : [ "a.so", "b.so", "c.so" ],
+    "requireLibs" : [ "foo.so", "bar.so", "baz.so" ]
 }
 ```
 
