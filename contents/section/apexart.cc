@@ -38,13 +38,11 @@ Section BuildApexArtSection(Context& ctx, const ApexInfo& apex_info) {
   namespaces.emplace_back(BuildApexPlatformNamespace(ctx));
   namespaces.emplace_back(BuildArtNamespace(ctx, apex_info));
 
-  std::set<std::string> visible_apexes{
-      "com.android.conscrypt",
-  };
+  std::set<std::string> visible_apexes;
 
-  // APEXes with public libs should be visible
+  // APEXes with JNI libs or public libs should be visible
   for (const auto& apex : ctx.GetApexModules()) {
-    if (apex.public_libs.size() > 0) {
+    if (apex.jni_libs.size() > 0 || apex.public_libs.size() > 0) {
       visible_apexes.insert(apex.name);
     }
   }
