@@ -130,3 +130,14 @@ TEST(linkerconfig_namespace, namespace_links_should_be_ordered) {
   }
   ASSERT_EQ(android::base::Join(expected_links, ","), actual_links);
 }
+
+TEST(linkerconfig_namespace, apex_should_not_allow_all_links) {
+  Namespace ns("test_namespace");
+  ns.SetApexSource("com.android.test");
+  ns.GetLink("target_namespace").AllowAllSharedLibs();
+
+  ConfigWriter writer;
+  ns.WriteConfig(writer);
+
+  ASSERT_EQ("", writer.ToString());
+}
