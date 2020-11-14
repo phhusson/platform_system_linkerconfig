@@ -22,6 +22,7 @@
 #include "linkerconfig/namespace.h"
 
 using android::linkerconfig::modules::ApexInfo;
+using android::linkerconfig::modules::InitializeWithApex;
 using android::linkerconfig::modules::Namespace;
 
 namespace android {
@@ -30,17 +31,7 @@ namespace contents {
 Namespace BuildApexDefaultNamespace([[maybe_unused]] const Context& ctx,
                                     const ApexInfo& apex_info) {
   Namespace ns("default", /*is_isolated=*/true, /*is_visible=*/false);
-
-  ns.AddSearchPath(apex_info.path + "/${LIB}");
-  ns.AddPermittedPath(apex_info.path + "/${LIB}");
-  ns.AddPermittedPath("/system/${LIB}");
-  if (apex_info.has_shared_lib) {
-    // TODO(b/161542925) : Replace with common APEX path name
-    ns.AddPermittedPath("/apex/com.android.apex.test.sharedlibs/${LIB}");
-  }
-
-  ns.AddRequires(apex_info.require_libs);
-  ns.AddProvides(apex_info.provide_libs);
+  InitializeWithApex(ns, apex_info);
 
   // non-system "default" namespace should link Sanitizer
   if (!apex_info.InSystem()) {

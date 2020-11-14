@@ -21,8 +21,32 @@
 #include "linkerconfig/apex.h"
 #include "linkerconfig/log.h"
 
+using android::base::Result;
+
 namespace {
 constexpr const char* kDataAsanPath = "/data/asan";
+
+Result<void> VerifyIfApexNamespaceContainsAllSharedLink(
+    const android::linkerconfig::modules::Namespace& ns) {
+  auto apex_name = ns.GetApexSource();
+  // If namespace is not from APEX there is no need to check this.
+  // TODO(b/130340935): Also do not allow all shared links from ART APEX.
+  if (apex_name == "" || apex_name == "com.android.art") {
+    return {};
+  }
+
+  const auto& links = ns.Links();
+  for (const auto& link : links) {
+    if (link.IsAllSharedLibsAllowed()) {
+      return Errorf(
+          "APEX namespace {} is not allowed to have link with all shared libs "
+          "allowed.",
+          ns.GetName());
+    }
+  }
+  return {};
+}
+
 }  // namespace
 
 namespace android {
@@ -42,6 +66,7 @@ void InitializeWithApex(Namespace& ns, const ApexInfo& apex_info) {
   }
   ns.AddProvides(apex_info.provide_libs);
   ns.AddRequires(apex_info.require_libs);
+  ns.SetApexSource(apex_info.name);
 }
 
 Link& Namespace::GetLink(const std::string& target_namespace) {
@@ -54,6 +79,13 @@ Link& Namespace::GetLink(const std::string& target_namespace) {
 }
 
 void Namespace::WriteConfig(ConfigWriter& writer) {
+  auto verify_result = VerifyContents();
+  if (!verify_result.ok()) {
+    LOG(ERROR) << "Namespace " << name_
+               << " is not valid : " << verify_result.error();
+    return;
+  }
+
   const auto prefix = "namespace." + name_ + ".";
 
   writer.WriteLine(prefix + "isolated = " + (is_isolated_ ? "true" : "false"));
@@ -115,6 +147,16 @@ bool Namespace::RequiresAsanPath(const std::string& path) {
 
 const std::string Namespace::CreateAsanPath(const std::string& path) {
   return kDataAsanPath + path;
+}
+
+Result<void> Namespace::VerifyContents() {
+  auto apex_with_all_shared_link =
+      VerifyIfApexNamespaceContainsAllSharedLink(*this);
+  if (!apex_with_all_shared_link.ok()) {
+    return apex_with_all_shared_link.error();
+  }
+
+  return {};
 }
 
 }  // namespace modules
