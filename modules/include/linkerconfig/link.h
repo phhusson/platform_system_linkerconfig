@@ -41,6 +41,10 @@ class Link {
   void AllowAllSharedLibs();
   void WriteConfig(ConfigWriter& writer) const;
 
+  bool IsAllSharedLibsAllowed() const {
+    return allow_all_shared_libs_;
+  }
+
   // accessors
   bool Empty() const {
     return !allow_all_shared_libs_ && shared_libs_.empty();
