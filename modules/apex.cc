@@ -88,7 +88,7 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
   for (const auto& [path, manifest] : apex::GetActivePackages(apex_root)) {
     bool has_bin = PathExists(path + "/bin");
     bool has_lib = PathExists(path + "/lib") || PathExists(path + "/lib64");
-    bool has_shared_lib = manifest.sharedapexlibs().size() != 0;
+    bool has_shared_lib = manifest.requiresharedapexlibs().size() != 0;
 
     std::vector<std::string> permitted_paths;
     bool visible = false;
