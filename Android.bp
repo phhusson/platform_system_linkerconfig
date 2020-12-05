@@ -62,6 +62,10 @@ cc_library_static {
         "modules/*.cc",
     ],
     generated_sources: ["apex-info-list"],
+    apex_available: [
+        "//apex_available:platform",
+        "com.android.runtime",
+    ],
 }
 
 cc_library_static {
@@ -78,6 +82,10 @@ cc_library_static {
         "contents/context/*.cc",
         "contents/common/*.cc",
     ],
+    apex_available: [
+        "//apex_available:platform",
+        "com.android.runtime",
+    ],
 }
 
 cc_library_static {
@@ -87,10 +95,13 @@ cc_library_static {
     static_libs: [
         "linkerconfig_modules",
         "linkerconfig_contents",
-        "libc++fs",
     ],
     srcs: [
         "generator/*.cc",
+    ],
+    apex_available: [
+        "//apex_available:platform",
+        "com.android.runtime",
     ],
 }
 
@@ -131,6 +142,11 @@ cc_binary {
     lto: {
         never: true,
     },
+
+    apex_available: [
+        "//apex_available:platform",
+        "com.android.runtime",
+    ],
 }
 
 cc_test {
