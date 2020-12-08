@@ -20,6 +20,8 @@
 #include <string>
 #include <vector>
 
+#include <android-base/result.h>
+
 namespace android {
 namespace linkerconfig {
 namespace modules {
@@ -65,7 +67,8 @@ struct ApexInfo {
   bool InVendor() const;
 };
 
-std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root);
+android::base::Result<std::map<std::string, ApexInfo>> ScanActiveApexes(
+    const std::string& root);
 }  // namespace modules
 }  // namespace linkerconfig
 }  // namespace android

@@ -148,19 +148,23 @@ TEST_F(ApexTest, scan_apex_dir) {
   WriteFile("/apex/bar/lib64/bar.so", "");
   PrepareApex("baz", {}, {}, {"baz.so"});
   WriteFile("/apex/baz/lib64/baz.so", "");
+  CreateApexInfoList();
+  CreatePublicLibrariesTxt();
 
   auto apexes = ScanActiveApexes(root);
-  ASSERT_EQ(3U, apexes.size());
+  ASSERT_TRUE(apexes.ok()) << "Failed to scan active APEXes : "
+                           << apexes.error();
+  ASSERT_EQ(3U, apexes->size());
 
-  ASSERT_THAT(apexes["foo"].require_libs, Contains("bar.so"));
-  ASSERT_TRUE(apexes["foo"].has_bin);
-  ASSERT_FALSE(apexes["foo"].has_lib);
+  ASSERT_THAT((*apexes)["foo"].require_libs, Contains("bar.so"));
+  ASSERT_TRUE((*apexes)["foo"].has_bin);
+  ASSERT_FALSE((*apexes)["foo"].has_lib);
 
-  ASSERT_THAT(apexes["bar"].provide_libs, Contains("bar.so"));
-  ASSERT_FALSE(apexes["bar"].has_bin);
-  ASSERT_TRUE(apexes["bar"].has_lib);
+  ASSERT_THAT((*apexes)["bar"].provide_libs, Contains("bar.so"));
+  ASSERT_FALSE((*apexes)["bar"].has_bin);
+  ASSERT_TRUE((*apexes)["bar"].has_lib);
 
-  ASSERT_THAT(apexes["baz"].jni_libs, Contains("baz.so"));
-  ASSERT_FALSE(apexes["baz"].has_bin);
-  ASSERT_TRUE(apexes["baz"].has_lib);
+  ASSERT_THAT((*apexes)["baz"].jni_libs, Contains("baz.so"));
+  ASSERT_FALSE((*apexes)["baz"].has_bin);
+  ASSERT_TRUE((*apexes)["baz"].has_lib);
 }
