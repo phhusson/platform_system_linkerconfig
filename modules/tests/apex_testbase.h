@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <filesystem>
+
 #include <android-base/file.h>
 #include <apex_manifest.pb.h>
 #include <gtest/gtest.h>
@@ -60,5 +62,32 @@ struct ApexTest : ::testing::Test {
     Mkdir(::android::base::Dirname(file_path));
     ASSERT_TRUE(::android::base::WriteStringToFile(content, file_path))
         << "Failed to write a file: " << file_path;
+  }
+
+  void CreateApexInfoList() {
+    std::string content =
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<apex-info-list>\n";
+    for (const auto& file :
+         std::filesystem::directory_iterator(root + "/apex")) {
+      if (!file.is_directory()) {
+        continue;
+      }
+
+      content += "<apex-info moduleName=\"";
+      content += file.path().filename();
+      content += "\" modulePath=\"";
+      content += file.path().string();
+      content +=
+          "\" preinstalledModulePath=\"/test/path/1234\" isFactory=\"true\" "
+          "isActive=\"true\" />\n";
+    }
+    content += "</apex-info-list>";
+
+    WriteFile("/apex/apex-info-list.xml", content);
+  }
+
+  void CreatePublicLibrariesTxt() {
+    std::string content = "foo.so\nbar.so\nbaz.so";
+    WriteFile("/system/etc/public.libraries.txt", content);
   }
 };
