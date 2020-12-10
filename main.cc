@@ -191,11 +191,15 @@ Context GetContext(ProgramArgs args) {
   }
   if (!args.is_recovery) {
     auto apex_list = android::linkerconfig::modules::ScanActiveApexes(args.root);
-    for (auto const& apex_item : apex_list) {
-      auto apex_info = apex_item.second;
-      if (apex_info.has_bin || apex_info.has_lib) {
-        ctx.AddApexModule(std::move(apex_info));
+    if (apex_list.ok()) {
+      for (auto const& apex_item : *apex_list) {
+        auto apex_info = apex_item.second;
+        if (apex_info.has_bin || apex_info.has_lib) {
+          ctx.AddApexModule(std::move(apex_info));
+        }
       }
+    } else {
+      LOG(ERROR) << "Failed to scan APEX modules : " << apex_list.error();
     }
     android::linkerconfig::contents::RegisterApexNamespaceBuilders(ctx);
   }

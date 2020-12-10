@@ -16,6 +16,7 @@
 #include "linkerconfig/apex.h"
 
 #include <algorithm>
+#include <regex>
 #include <set>
 #include <string>
 #include <vector>
@@ -25,7 +26,6 @@
 #include <android-base/strings.h>
 #include <apexutil.h>
 #include <unistd.h>
-#include <vector>
 
 #include "linkerconfig/configparser.h"
 #include "linkerconfig/environment.h"
@@ -36,6 +36,7 @@
 #include "com_android_apex.h"
 
 using android::base::ErrnoError;
+using android::base::Error;
 using android::base::ReadFileToString;
 using android::base::Result;
 using android::base::StartsWith;
@@ -75,14 +76,13 @@ std::vector<std::string> Intersect(const std::vector<std::string>& as,
                [&bs](const auto& a) { return bs.find(a) != bs.end(); });
   return intersect;
 }
-
 }  // namespace
 
 namespace android {
 namespace linkerconfig {
 namespace modules {
 
-std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
+Result<std::map<std::string, ApexInfo>> ScanActiveApexes(const std::string& root) {
   std::map<std::string, ApexInfo> apexes;
   const auto apex_root = root + apex::kApexRoot;
   for (const auto& [path, manifest] : apex::GetActivePackages(apex_root)) {
@@ -102,8 +102,8 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
                            linker_config->permittedpaths().end()};
         visible = linker_config->visible();
       } else {
-        LOG(ERROR) << "Failed to read APEX linker config : "
-                   << linker_config.error();
+        return Error() << "Failed to read APEX linker config : "
+                       << linker_config.error();
       }
     }
 
@@ -132,7 +132,7 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
             info.getPreinstalledModulePath();
       }
     } else {
-      PLOG(ERROR) << "Can't read " << info_list_file;
+      return ErrnoError() << "Can't read " << info_list_file;
     }
 
     const std::string public_libraries_file =
@@ -147,8 +147,8 @@ std::map<std::string, ApexInfo> ScanActiveApexes(const std::string& root) {
         apex.public_libs = Intersect(apex.provide_libs, *public_libraries);
       }
     } else {
-      LOG(ERROR) << "Can't read " << public_libraries_file << ": "
-                 << public_libraries.error();
+      return Error() << "Can't read " << public_libraries_file << ": "
+                     << public_libraries.error();
     }
   }
 
