@@ -147,8 +147,10 @@ Result<std::map<std::string, ApexInfo>> ScanActiveApexes(const std::string& root
         apex.public_libs = Intersect(apex.provide_libs, *public_libraries);
       }
     } else {
-      return Error() << "Can't read " << public_libraries_file << ": "
-                     << public_libraries.error();
+      // Do not fail when public.libraries.txt is missing for minimal Android
+      // environment with no ART.
+      LOG(WARNING) << "Can't read " << public_libraries_file << ": "
+                   << public_libraries.error();
     }
   }
 
