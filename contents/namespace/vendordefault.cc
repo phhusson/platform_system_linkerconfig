@@ -92,10 +92,8 @@ Namespace BuildVendorDefaultNamespace([[maybe_unused]] const Context& ctx) {
         AsanPath::SAME_PATH);
   }
 
-  if (ctx.IsDefaultConfig() && GetVendorVndkVersion() == "27") {
-    ns.AddSearchPath("/vendor/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
-    ns.AddSearchPath("/vendor/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
-  }
+  ns.AddSearchPath("/vendor/${LIB}/hw", AsanPath::WITH_DATA_ASAN);
+  ns.AddSearchPath("/vendor/${LIB}/egl", AsanPath::WITH_DATA_ASAN);
 
   ns.AddPermittedPath("/odm", AsanPath::WITH_DATA_ASAN);
   ns.AddPermittedPath("/vendor", AsanPath::WITH_DATA_ASAN);
