@@ -21,6 +21,7 @@
 #include <apex_manifest.pb.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <linker_config.pb.h>
 
 #include "apex_testbase.h"
 #include "linkerconfig/apex.h"
@@ -167,4 +168,56 @@ TEST_F(ApexTest, scan_apex_dir) {
   ASSERT_THAT((*apexes)["baz"].jni_libs, Contains("baz.so"));
   ASSERT_FALSE((*apexes)["baz"].has_bin);
   ASSERT_TRUE((*apexes)["baz"].has_lib);
+}
+
+TEST_F(ApexTest, validate_path) {
+  PrepareApex("foo", {}, {}, {});
+  CreateApexInfoList();
+  CreatePublicLibrariesTxt();
+
+  ::android::linkerconfig::proto::LinkerConfig two_slash;
+  two_slash.add_permittedpaths("/two//slash");
+
+  WriteFile("/apex/foo/etc/linker.config.pb", two_slash.SerializeAsString());
+  auto apexes = ScanActiveApexes(root);
+  ASSERT_FALSE(apexes.ok()) << "Two slash is not allowed from path string";
+
+  ::android::linkerconfig::proto::LinkerConfig invalid_char;
+  invalid_char.add_permittedpaths("/path/with*/invalid/char");
+
+  WriteFile("/apex/foo/etc/linker.config.pb", invalid_char.SerializeAsString());
+  apexes = ScanActiveApexes(root);
+  ASSERT_FALSE(apexes.ok()) << "* is invalid char for path.";
+
+  ::android::linkerconfig::proto::LinkerConfig end_with_lib;
+  end_with_lib.add_permittedpaths("/somewhere/${LIB}");
+
+  WriteFile("/apex/foo/etc/linker.config.pb", end_with_lib.SerializeAsString());
+  apexes = ScanActiveApexes(root);
+  ASSERT_TRUE(apexes.ok()) << "Path ends with ${LIB} should be accepted. : "
+                           << apexes.error();
+
+  ::android::linkerconfig::proto::LinkerConfig lib_plus_char;
+  lib_plus_char.add_permittedpaths("/somewhere/${LIB}x/hw");
+
+  WriteFile("/apex/foo/etc/linker.config.pb", lib_plus_char.SerializeAsString());
+  apexes = ScanActiveApexes(root);
+  ASSERT_FALSE(apexes.ok())
+      << "There should be no extra char after ${LIB} in path.";
+
+  ::android::linkerconfig::proto::LinkerConfig char_plus_lib;
+  char_plus_lib.add_permittedpaths("/somewhere/x${LIB}/hw");
+
+  WriteFile("/apex/foo/etc/linker.config.pb", char_plus_lib.SerializeAsString());
+  apexes = ScanActiveApexes(root);
+  ASSERT_FALSE(apexes.ok())
+      << "There should be no extra char before ${LIB} in path.";
+
+  ::android::linkerconfig::proto::LinkerConfig lib_and_lib64;
+  lib_and_lib64.add_permittedpaths("/somewhere/${LIB}/hw");
+
+  WriteFile("/apex/foo/etc/linker.config.pb", lib_and_lib64.SerializeAsString());
+  apexes = ScanActiveApexes(root);
+  ASSERT_TRUE(apexes.ok()) << "Valid path with ${LIB} should be accepted. : "
+                           << apexes.error();
 }

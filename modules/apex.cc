@@ -16,9 +16,11 @@
 #include "linkerconfig/apex.h"
 
 #include <algorithm>
+#include <cstring>
 #include <regex>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <android-base/file.h>
@@ -76,6 +78,58 @@ std::vector<std::string> Intersect(const std::vector<std::string>& as,
                [&bs](const auto& a) { return bs.find(a) != bs.end(); });
   return intersect;
 }
+
+bool IsValidForPath(const uint_fast8_t c) {
+  if (c >= 'a' && c <= 'z') return true;
+  if (c >= 'A' && c <= 'Z') return true;
+  if (c >= '0' && c <= '9') return true;
+  if (c == '-' || c == '_' || c == '.') return true;
+  return false;
+}
+
+Result<void> VerifyPath(const std::string& path) {
+  const size_t length = path.length();
+  constexpr char lib_dir[] = "${LIB}";
+  constexpr size_t lib_dir_len = (sizeof lib_dir) - 1;
+  const std::string_view path_view(path);
+
+  if (length == 0) {
+    return Error() << "Empty path is not allowed";
+  }
+
+  for (size_t i = 0; i < length; i++) {
+    uint_fast8_t current_char = path[i];
+    if (current_char == '/') {
+      i++;
+      if (i >= length) {
+        return {};
+      } else if (path[i] == '/') {
+        return Error() << "'/' should not appear twice in " << path;
+      } else if (i + lib_dir_len <= length &&
+                 path_view.substr(i, lib_dir_len) == lib_dir) {
+        i += lib_dir_len - 1;
+      } else {
+        for (; i < length; i++) {
+          current_char = path[i];
+          if (current_char == '/') {
+            i--;
+            break;
+          }
+
+          if (!IsValidForPath(current_char)) {
+            return Error() << "Invalid char '" << current_char << "' in "
+                           << path;
+          }
+        }
+      }
+    } else {
+      return Error() << "Invalid char '" << current_char << "' in " << path
+                     << " at " << i;
+    }
+  }
+
+  return {};
+}
 }  // namespace
 
 namespace android {
@@ -100,6 +154,14 @@ Result<std::map<std::string, ApexInfo>> ScanActiveApexes(const std::string& root
       if (linker_config.ok()) {
         permitted_paths = {linker_config->permittedpaths().begin(),
                            linker_config->permittedpaths().end()};
+        for (const std::string& path : permitted_paths) {
+          Result<void> verify_permitted_path = VerifyPath(path);
+          if (!verify_permitted_path.ok()) {
+            return Error() << "Failed to validate path from APEX linker config"
+                           << linker_config_path << " : "
+                           << verify_permitted_path.error();
+          }
+        }
         visible = linker_config->visible();
       } else {
         return Error() << "Failed to read APEX linker config : "
